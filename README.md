@@ -1,4 +1,6 @@
 # moviestream
+install node npm 
+run npm install
 for finding and streaming movies
 INSTRUCTIONS TO SETUP
 Create your own .env file in root 
