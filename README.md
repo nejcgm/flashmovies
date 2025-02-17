@@ -1,7 +1,7 @@
 # moviestream
 INSTRUCTIONS TO SETUP
 install node npm 
-run npm install
+npm install
 for finding and streaming movies
 Create your own .env file in root 
 add TMDB api Key in .env file
