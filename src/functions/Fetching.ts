@@ -1,0 +1,79 @@
+import axios, { AxiosResponse } from "axios";
+import { DataInfoProps } from "../functions/Interfaces.ts";
+const apiKey: string = import.meta.env.VITE_API_KEY;
+
+export interface FetchSpecificResponse extends DataInfoProps {
+  // Define the structure of the response data here
+  // Example:
+  id: string;
+  title: string;
+  results: [];
+  genres: [];
+  reviews: [];
+  cast: [];
+  profiles: [];
+}
+
+export const fetchSpecific = async (
+  type: string | number | null,
+  movieId: number | string | null,
+  search: string | null,
+  genreList?: number[] | null,
+  page?: number | string | null
+): Promise<FetchSpecificResponse | null> => {
+  const url = `https://api.themoviedb.org/3/${type}/${movieId}${search}?language=en-US${
+    genreList ? `&with_genres=${genreList.join(",")}` : ""
+  }${page ? `&page=${page}&sort_by=popularity.desc` : ""}`;
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization: apiKey,
+    },
+  };
+
+  const response: AxiosResponse<FetchSpecificResponse> = await axios.request({
+    url,
+    ...options,
+  });
+
+  if (response && response.data) {
+    const fetchedInfo = { ...response.data };
+    return fetchedInfo;
+  }
+  return null;
+};
+
+export interface SearchResult {
+  // Define the structure of the search result here
+  // Example:
+  poster_path: string;
+  profile_path: string;
+  title: string;
+  name: string;
+  id: string;
+  vote_count: number;
+  release_date: string;
+  first_air_date: string;
+  media_type: string;
+  // Add other fields as needed
+}
+
+export const fetchSearch = async (query: string): Promise<SearchResult[]> => {
+  const url = `https://api.themoviedb.org/3/search/multi?query=${query}&include_adult=false&language=en-US&page=1`;
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization: apiKey,
+    },
+  };
+  const response: AxiosResponse<{ results: SearchResult[] }> =
+    await axios.request({ url, ...options });
+
+  if (response && response.data) {
+    const fetchedSearch = response.data.results || [];
+    return fetchedSearch;
+  }
+  return [];
+};
