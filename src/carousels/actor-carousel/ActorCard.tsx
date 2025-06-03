@@ -21,6 +21,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
   media,
 }) => {
   const navigate = useNavigate();
+  
   return (
     <>
       <div className="max-w-[200px] min-w-[150px] md:min-w-[180px] xl:min-w-[200px] w-full text-white font-roboto flex flex-col items-center">

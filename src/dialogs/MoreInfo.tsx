@@ -43,7 +43,7 @@ const MoreInfo: React.FC<MoreInfoProps> = ({
       {info && (
         <>
           <div className="z-50 fixed bg-black bg-opacity-35 top-0 left-0 w-full h-screen justify-center items-center flex flex-col">
-            <div className="h-auto w-[320px] sm:w-[620px] flex flex-col">
+            <div className="h-auto w-[350px] sm:w-[620px] flex flex-col">
               <button
                 onClick={() => {
                   onCancel();

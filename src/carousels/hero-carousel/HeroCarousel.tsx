@@ -95,7 +95,6 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
     };
   }, [isVisible, timerActive]);
 
-//handle touch swipe mobile
 const { handleTouchStart, handleTouchEnd } = useSwipe({
   onSwipeLeft: () => { scrollToRight(); setTimerActive(false); },
   onSwipeRight: () => { scrollToLeft(); setTimerActive(false); },
@@ -110,7 +109,7 @@ const { handleTouchStart, handleTouchEnd } = useSwipe({
         {showTitle}
       </div>
 
-      <div className="flex">
+      <div className="flex pr-[6px] sm:pr-[0px]">
         <div className=" xl:max-w-[850px] relative lg:max-w-[650px] w-full ">
 
           <div className=" hidden sm:flex">

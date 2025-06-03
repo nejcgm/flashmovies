@@ -106,7 +106,7 @@ const HeroCard: React.FC<HeroCardProps> = ({
                       {title}
                     </div>
                     <div className="text-[#b3b3b3] text-[11px] leading-[14px] sm:leading-[16px] sm:text-[12px] md:text-[16px]">
-                      {`${overview?.slice(0, 100)}...`}
+                      {`${overview?.slice(0, 120)}...`}
                     </div>
                     <div className="flex items-center text-[#BBBBBB] text-[12px] sm:text-[16px] gap-3">
                       <Rating rating={rating} />

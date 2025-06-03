@@ -47,7 +47,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </button>
           <div className="bg-[#1A1A1A] p-[12px] sm:p-[24px] flex flex-col rounded-md">
             <iframe
-              className="lg:w-[800px] lg:h-[500px] sm:w-[500px] sm:h-[300px] w-[300px] h-[200px]"
+              className="lg:w-[800px] lg:h-[500px] sm:w-[500px] sm:h-[300px] w-[330px] h-[210px]"
               src={`https://www.youtube.com/embed/${trailer?.key}`}
               title="YouTube video player"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

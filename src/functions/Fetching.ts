@@ -3,8 +3,7 @@ import { DataInfoProps } from "../functions/Interfaces.ts";
 const apiKey: string = import.meta.env.VITE_API_KEY;
 
 export interface FetchSpecificResponse extends DataInfoProps {
-  // Define the structure of the response data here
-  // Example:
+
   id: string;
   title: string;
   results: [];
@@ -45,8 +44,6 @@ export const fetchSpecific = async (
 };
 
 export interface SearchResult {
-  // Define the structure of the search result here
-  // Example:
   poster_path: string;
   profile_path: string;
   title: string;
@@ -56,7 +53,6 @@ export interface SearchResult {
   release_date: string;
   first_air_date: string;
   media_type: string;
-  // Add other fields as needed
 }
 
 export const fetchSearch = async (query: string): Promise<SearchResult[]> => {
