@@ -26,7 +26,7 @@ const MovieSpecificDescription: React.FC<MovieSpecificDescriptionProps> = ({
         <div className="flex lg:hidden">
           <img
             onClick={() => {
-              navigate(`/fullmovie/?id=${movieId}&type=${type}`);
+              navigate(`/full-movie/?id=${movieId}&type=${type}`);
             }}
             className=" flex-1  rounded-lg min-w-[120px] max-h-[180px] w-[150px]"
             src={`https://image.tmdb.org/t/p/w500${poster}`}
