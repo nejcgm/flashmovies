@@ -3,7 +3,6 @@ import { DataInfoProps } from "../functions/Interfaces.ts";
 const apiKey: string = import.meta.env.VITE_API_KEY;
 
 export interface FetchSpecificResponse extends DataInfoProps {
-
   id: string;
   title: string;
   results: [];
