@@ -44,6 +44,7 @@ const Iframe = () => {
         title="Choose a Provider"
         movieId={movieId!}
         type={type!}
+        className="mt-[8px]"
       />
       </div>
     </>
