@@ -29,8 +29,8 @@ const Iframe = () => {
 
   return (
     <>
-      <div className="flex font-roboto  text-white justify-between">
-        <div className="flex gap-4 items-center  mb-[24px]">
+      <div className="flex font-roboto items-center mb-[14px] content-center text-white justify-between">
+        <div className="flex gap-4 content-center">
           <BackButton />
           <div className="text-[48px]">
             {info?.title || info?.name}
