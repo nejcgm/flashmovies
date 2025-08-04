@@ -13,7 +13,7 @@ function Root() {
         const newCount = count + 1;
         if (newCount % 3 === 0) {
           window.open(
-            'https://www.profitableratecpm.com/s950viwd5w?key=22e656243ca5f0a2aef1c31a7cf4a3a7',
+            'https://raptripeessentially.com/s950viwd5w?key=22e656243ca5f0a2aef1c31a7cf4a3a7',
             '_blank',
             'noopener,noreferrer'
           );
