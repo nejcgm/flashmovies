@@ -4,6 +4,7 @@ import Carousel from "../carousels/classic-carousel/Carousel";
 import HeroCarousel from "../carousels/hero-carousel/HeroCarousel";
 import ActorCarousel from "../carousels/actor-carousel/ActorCarousel";
 import Spinner from "../components/Spinner";
+import Meta from "../SEO/meta.tsx";
 
 const Home = () => {
   const [classicCarousel, setClassicCarousel] = useState<[]>([]);
@@ -46,6 +47,16 @@ const Home = () => {
 
   return (
     <>
+      <Meta 
+        title="Flash Movies - Free Movie & TV Show Streaming"
+        description="Watch free movies and TV shows online in HD. Stream the latest movies, popular TV series, and discover new content on Flash Movies - your free entertainment destination."
+        keywords={[
+          "free movies", "movie streaming", "watch movies online", "free tv shows", 
+          "stream movies", "HD movies", "TV series", "popular movies", "latest movies",
+          "flash movies", "free streaming", "online movies", "watch tv shows"
+        ]}
+        type="website"
+      />
       {loading && (
         <div className="flex w-full justify-center">
           <Spinner />

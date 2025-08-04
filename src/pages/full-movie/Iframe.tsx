@@ -8,6 +8,7 @@ import BackButton from "../../components/BackButton";
 import ShareButton from "../../components/ShareButton.js";
 import ProviderButton from "./components/ProviderButton.js";
 import ProviderComponent from "./components/ProviderComponent.js";
+import Meta from "../../SEO/meta.tsx";
 
 const Iframe = () => {
   const [info, setInfo] = useState<FetchSpecificResponse>();
@@ -29,10 +30,23 @@ const Iframe = () => {
 
   return (
     <>
+      <Meta 
+        title={`Watch ${info?.title || info?.name} ${info?.release_date ? `(${new Date(info.release_date).getFullYear()})` : info?.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} Free - Flash Movies`}
+        description={info?.overview ? `Stream ${info?.title || info?.name} in HD. ${info.overview.slice(0, 100)}... Watch free on Flash Movies.` : `Stream ${info?.title || info?.name} free in HD quality on Flash Movies.`}
+        image={info?.backdrop_path ? `https://image.tmdb.org/t/p/w1280${info.backdrop_path}` : info?.poster_path ? `https://image.tmdb.org/t/p/w500${info.poster_path}` : undefined}
+        url={window.location.href}
+        keywords={[
+          info?.title || info?.name || '',
+          ...(info?.genres?.map((genre: { name: string }) => genre.name) || []),
+          `stream ${type}`, `watch ${type} online`, `${type} free`, 'flash movies', 'HD streaming'
+        ].filter(Boolean)}
+        type={type === 'movie' ? 'video.movie' : 'video.tv_show'}
+        publishedTime={info?.release_date || info?.first_air_date}
+      />
       <div className="flex font-roboto items-center mb-[14px] content-center text-white justify-between">
         <div className="flex gap-4 content-center">
           <BackButton />
-          <div className="text-[48px]">
+          <div className="text-[24px] md:text-[32px] lg:text-[48px]">
             {info?.title || info?.name}
           </div>
           <ShareButton />

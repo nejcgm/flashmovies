@@ -5,7 +5,7 @@ import './index.css';
 import App from './App';
 
 function Root() {
-  const [clickCount, setClickCount] = useState(0);
+  const [, setClickCount] = useState(0);
 
   useEffect(() => {
     const handlePageClick = () => {

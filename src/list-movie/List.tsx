@@ -7,6 +7,7 @@ import BackButton from "../components/BackButton";
 import { fetchSpecific } from "../functions/Fetching.ts";
 import { formatTitle } from "../functions/Functions.ts";
 import { DataInfoProps, MediaType } from "../functions/Interfaces.ts";
+import Meta from "../SEO/meta.tsx";
 
 const List: React.FC = () => {
   const [listItems, setListItems] = useState<DataInfoProps[]>([]);
@@ -84,6 +85,17 @@ const List: React.FC = () => {
 
   return (
     <>
+      <Meta 
+        title={`${formatTitle(title)} - Flash Movies`}
+        description={`Browse and watch ${formatTitle(title)} on Flash Movies. Stream ${type === 'movie' ? 'movies' : 'TV shows'} in HD for free. Discover ${formatTitle(title)} and start watching now.`}
+        image={listItems[0]?.poster_path ? `https://image.tmdb.org/t/p/w500${listItems[0].poster_path}` : listItems[0]?.profile_path ? `https://image.tmdb.org/t/p/w500${listItems[0].profile_path}` : undefined}
+        url={window.location.href}
+        keywords={[
+          ...(listItems.slice(0, 10).map((item: DataInfoProps) => item.title || item.name).filter(Boolean)),
+          `${type} streaming`, `free ${type}s`, `watch ${type}s online`, formatTitle(title) || ''
+        ]}
+        type="website"
+      />
       <div className="w-full flex flex-col">
         <div className="flex flex-col w-[100%] sm:w-[70%] self-center gap-2 sm:gap-4 p-4 bg-[#101010] rounded-lg">
           <div className="font-roboto text-[#f5c518] text-[24px] sm:text-[32px] mb-[16px] flex gap-1 sm:gap-3 font-semibold">

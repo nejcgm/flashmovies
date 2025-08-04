@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Allow access to CSS and JS files for proper rendering
+Allow: /src/
+Allow: /assets/
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
+
+# Disallow admin or sensitive areas (if any exist)
+# Disallow: /admin/
+# Disallow: /api/keys/
+
+# Sitemap location
+Sitemap: https://flashmovies.xyz/sitemap.xml
+
+# Crawl delay (optional - helps prevent overwhelming your server)
+Crawl-delay: 1

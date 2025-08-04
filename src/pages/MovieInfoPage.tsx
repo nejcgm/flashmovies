@@ -9,6 +9,8 @@ import Spinner from "../components/Spinner";
 import TopSection from "./info-Page-Components/TopSection.jsx";
 import MovieSpecificDescription from "./info-Page-Components/MovieSpecificDescription.jsx";
 import { DataInfoProps } from "../functions/Interfaces.ts";
+import Meta from "../SEO/meta.tsx";
+import MovieSchema from "../SEO/MovieSchema.tsx";
 
 const MovieInfoPage = () => {
   const [info, setInfo] = useState<DataInfoProps>();
@@ -30,7 +32,6 @@ const MovieInfoPage = () => {
       ]);
       if (dataMoreInfo && dataRelated && dataCredits) {
         const dataInfo = { dataMoreInfo };
-        console.log(dataInfo.dataMoreInfo);
         setInfo(dataInfo.dataMoreInfo);
         setRelatedMovies(dataRelated.results);
         setCredits(dataCredits.cast);
@@ -63,6 +64,33 @@ const MovieInfoPage = () => {
 
   return (
     <>
+      <Meta 
+        title={`${info?.title || info?.name} ${info?.release_date ? `(${new Date(info.release_date).getFullYear()})` : info?.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} - Watch Free on Flash Movies`}
+        description={info?.overview ? `${info.overview.slice(0, 150)}... Watch ${info?.title || info?.name} free on Flash Movies.` : `Watch ${info?.title || info?.name} free on Flash Movies. Stream in HD quality.`}
+        image={info?.poster_path ? `https://image.tmdb.org/t/p/w500${info.poster_path}` : info?.backdrop_path ? `https://image.tmdb.org/t/p/w1280${info.backdrop_path}` : undefined}
+        url={window.location.href}
+        keywords={[
+          info?.title || info?.name || '',
+          ...(info?.genres?.map((genre: { name: string }) => genre.name) || []),
+          `${type} streaming`, `watch ${type} free`, `${type} online`, 'flash movies'
+        ].filter(Boolean)}
+        type={type === 'movie' ? 'video.movie' : type === 'tv' ? 'video.tv_show' : 'article'}
+        publishedTime={info?.release_date || info?.first_air_date}
+      />
+      {info && type !== 'person' && (
+        <MovieSchema
+          title={info?.title || info?.name || ''}
+          description={info?.overview}
+          image={info?.poster_path}
+          releaseDate={info?.release_date || info?.first_air_date}
+          genre={info?.genres?.map((g: {name: string}) => g.name) || []}
+          rating={info?.vote_average}
+          ratingCount={info?.vote_count}
+          duration={info?.runtime}
+          type={type === 'movie' ? 'movie' : 'tv'}
+          url={window.location.href}
+        />
+      )}
       {loading && (
         <div className="flex w-full justify-center">
           <Spinner />

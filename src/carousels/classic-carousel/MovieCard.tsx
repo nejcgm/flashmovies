@@ -3,7 +3,8 @@ import MoreInfo from "../../dialogs/MoreInfo";
 import VideoPlayer from "../../dialogs/VideoPlayer";
 import Rating from "../../components/Rating";
 import InfoCta from "../../components/InfoCta";
-import RickRoll from "../../assets/rickroll.jpg";
+import LazyImage from "../../components/LazyImage";
+const MoviePlaceholder = "/movie-baner-placeholder.png";
 import { useNavigate } from "react-router-dom";
 
 interface MovieCardProps {
@@ -55,10 +56,11 @@ const MovieCard: React.FC<MovieCardProps> = ({
           className="group relative bottom-[-7px]"
         >
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <img
-            className="rounded-t-lg h-[200px] sm:h-[270px] xl:h-[300px]"
-            src={image ? `https://image.tmdb.org/t/p/w500${image}` : RickRoll}
-            alt=""
+          <LazyImage
+            className="rounded-t-lg h-[200px] sm:h-[270px] xl:h-[300px] w-full object-cover"
+            src={image ? `https://image.tmdb.org/t/p/w500${image}` : MoviePlaceholder}
+            alt={`${title || 'Movie'} poster`}
+            placeholder={MoviePlaceholder}
           />
         </button>
 
