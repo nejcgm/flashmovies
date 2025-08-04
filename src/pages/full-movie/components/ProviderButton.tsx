@@ -2,16 +2,16 @@ import React from "react";
 
 interface ProviderButtonProps {
   provider: string;
-  url: string;
-  updateProvider: (url: string) => void;
+  url?: string;
+  updateProvider?: (url: string) => void;
   style?: React.CSSProperties;
   className?: string;
 }
 
 const ProviderButton = ({
   provider,
-  url,
-  updateProvider,
+  url = '',
+  updateProvider = () => {},
   style,
   className,
 }: ProviderButtonProps) => {
