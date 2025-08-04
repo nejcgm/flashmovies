@@ -17,8 +17,10 @@ async function generateSitemap() {
   // Helper function to add URL with proper formatting
   const addUrl = (url, changefreq, priority, lastmod = null) => {
     const formattedDate = lastmod || new Date().toISOString().split('T')[0];
+    // Properly encode XML entities
+    const encodedUrl = url.replace(/&/g, '&amp;');
     writeStream.write(`  <url>\n`);
-    writeStream.write(`    <loc>https://flashmovies.xyz${url}</loc>\n`);
+    writeStream.write(`    <loc>https://flashmovies.xyz${encodedUrl}</loc>\n`);
     writeStream.write(`    <lastmod>${formattedDate}</lastmod>\n`);
     writeStream.write(`    <changefreq>${changefreq}</changefreq>\n`);
     writeStream.write(`    <priority>${priority}</priority>\n`);
