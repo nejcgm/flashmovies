@@ -1,5 +1,4 @@
 // generate-sitemap.js
-import { SitemapStream, streamToPromise } from 'sitemap';
 import { createWriteStream } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -10,29 +9,29 @@ const __dirname = path.dirname(__filename);
 async function generateSitemap() {
   console.log('🚀 Starting sitemap generation...');
   
-  const sitemap = new SitemapStream({ 
-    hostname: 'https://flashmovies.xyz',
-    cacheTime: 600000, // 10 minutes cache
-  });
-
   const writeStream = createWriteStream(path.resolve(__dirname, 'public', 'sitemap.xml'));
-  sitemap.pipe(writeStream);
-
+  
   // Add stats counter
   let urlCount = 0;
 
-  // Helper function to add URL with logging
+  // Helper function to add URL with proper formatting
   const addUrl = (url, changefreq, priority, lastmod = null) => {
-    sitemap.write({ 
-      url, 
-      changefreq, 
-      priority,
-      lastmod: lastmod || new Date().toISOString().split('T')[0]
-    });
+    const formattedDate = lastmod || new Date().toISOString().split('T')[0];
+    writeStream.write(`  <url>\n`);
+    writeStream.write(`    <loc>https://flashmovies.xyz${url}</loc>\n`);
+    writeStream.write(`    <lastmod>${formattedDate}</lastmod>\n`);
+    writeStream.write(`    <changefreq>${changefreq}</changefreq>\n`);
+    writeStream.write(`    <priority>${priority}</priority>\n`);
+    writeStream.write(`  </url>\n`);
     urlCount++;
   };
 
+  // Write XML header
+  writeStream.write('<?xml version="1.0" encoding="UTF-8"?>\n');
+  writeStream.write('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n');
+
   // 1. Homepage - Highest Priority
+  console.log('🏠 Adding homepage...');
   addUrl('/', 'daily', 1.0);
 
   // 2. Movie Categories - High Priority
@@ -63,7 +62,19 @@ async function generateSitemap() {
     addUrl(category.path, 'daily', category.priority);
   });
 
+  // 3.5. Celebrity/People Categories
+  console.log('🌟 Adding celebrity pages...');
+  const celebrityCategories = [
+    { path: '/list-items?type=person&search=popular&title=most-popular-actors', priority: 0.8, name: 'Most Popular Actors' },
+    { path: '/list-items?type=person&title=celebrities', priority: 0.7, name: 'All Celebrities' }
+  ];
+
+  celebrityCategories.forEach(category => {
+    addUrl(category.path, 'weekly', category.priority);
+  });
+
   // 4. Genre-specific pages for Movies
+  console.log('🎭 Adding movie genre pages...');
   const movieGenres = [
     { id: 28, name: 'Action' }, { id: 12, name: 'Adventure' }, { id: 16, name: 'Animation' },
     { id: 35, name: 'Comedy' }, { id: 80, name: 'Crime' }, { id: 99, name: 'Documentary' },
@@ -75,9 +86,8 @@ async function generateSitemap() {
   ];
 
   movieGenres.forEach(genre => {
-    addUrl(`/list-items?type=movie&search=discover&with_genres=${genre.id}&title=${genre.name.toLowerCase()}-movies`, 'weekly', 0.6);
-    // Add dedicated genre landing pages
-    addUrl(`/genre?genre=${genre.id}&type=movie`, 'weekly', 0.7);
+    const genreName = genre.name.toLowerCase().replace(/\s+/g, '-');
+    addUrl(`/list-items?type=movie&search=discover&with_genres=${genre.id}&title=${genreName}-movies`, 'weekly', 0.6);
   });
 
   // 5. Genre-specific pages for TV Shows
@@ -92,12 +102,12 @@ async function generateSitemap() {
   ];
 
   tvGenres.forEach(genre => {
-    addUrl(`/list-items?type=tv&search=discover&with_genres=${genre.id}&title=${genre.name.toLowerCase()}-shows`, 'weekly', 0.6);
-    // Add dedicated genre landing pages
-    addUrl(`/genre?genre=${genre.id}&type=tv`, 'weekly', 0.7);
+    const genreName = genre.name.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and');
+    addUrl(`/list-items?type=tv&search=discover&with_genres=${genre.id}&title=${genreName}-shows`, 'weekly', 0.6);
   });
 
   // 6. Popular Movie Pages - Current trending and classic movies
+  console.log('🌟 Adding popular movie pages...');
   const popularMovieIds = [
     // Recent blockbusters and classics
     550, 155, 13, 122, 680, 27205, 18, 278, 238, 424, 389, 129, 769, 914, 103, 120, 311, 601, 372058,
@@ -106,7 +116,7 @@ async function generateSitemap() {
     // Popular recent releases
     436270, 338952, 508442, 460465, 419704, 324857, 335983, 862, 557, 489, 
     // Classic movies
-    49047, 49051, 49529, 49538, 598, 11216, 11423, 807, 11036, 769
+    49047, 49051, 49529, 49538, 598, 11216, 11423, 807, 11036
   ];
 
   popularMovieIds.forEach(id => {
@@ -114,6 +124,8 @@ async function generateSitemap() {
     addUrl(`/full-movie?type=movie&id=${id}`, 'weekly', 0.6);
   });
 
+  // 7. Popular TV Show Pages
+  console.log('📺 Adding popular TV show pages...');
   const popularTvIds = [
     // Current popular shows
     1399, 60735, 1396, 456, 62560, 1402, 60059, 85271, 95557, 100088,
@@ -129,12 +141,16 @@ async function generateSitemap() {
     addUrl(`/full-movie?type=tv&id=${id}`, 'weekly', 0.6);
   });
 
+  // 8. Year-specific pages
+  console.log('📅 Adding year-specific pages...');
   const currentYear = new Date().getFullYear();
   for (let year = currentYear; year >= currentYear - 10; year--) {
     addUrl(`/list-items?type=movie&search=discover&primary_release_year=${year}&title=${year}-movies`, 'monthly', 0.5);
     addUrl(`/list-items?type=tv&search=discover&first_air_date_year=${year}&title=${year}-tv-shows`, 'monthly', 0.5);
   }
 
+  // 9. Rating-based pages
+  console.log('⭐ Adding rating-based pages...');
   const ratingRanges = [
     { min: 8, max: 10, title: 'highly-rated' },
     { min: 7, max: 8, title: 'good-rated' },
@@ -146,11 +162,20 @@ async function generateSitemap() {
     addUrl(`/list-items?type=tv&search=discover&vote_average.gte=${range.min}&vote_average.lte=${range.max}&title=${range.title}-tv-shows`, 'monthly', 0.4);
   });
 
-  // Finalize sitemap
-  sitemap.end();
-  await streamToPromise(sitemap);
-  
-  
+  // Close XML
+  writeStream.write('</urlset>\n');
+  writeStream.end();
+
+  // Wait for write to complete
+  await new Promise((resolve, reject) => {
+    writeStream.on('finish', resolve);
+    writeStream.on('error', reject);
+  });
+
+  console.log(`✅ Sitemap generated successfully!`);
+  console.log(`📊 Total URLs: ${urlCount}`);
+  console.log(`📁 File saved to: public/sitemap.xml`);
+  console.log(`🌐 Size: ${(await import('fs')).statSync(path.resolve(__dirname, 'public', 'sitemap.xml')).size} bytes`);
 }
 
 generateSitemap().catch(error => {
