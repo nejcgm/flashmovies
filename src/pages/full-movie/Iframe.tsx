@@ -51,16 +51,6 @@ const Iframe = () => {
           </div>
           <ShareButton />
         </div>
-        <div className="flex flex-col gap-1 items-center">
-          <div className="text-[22px] font-bold">Recommended Adblock</div>
-          <a
-            href={addBlockUrl}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <ProviderButton provider="Download" className={"bg-gray-500"} />
-          </a>
-        </div>
       </div>
       <div className=" w-full aspect-[16/9] max-w-[1200px] mx-auto relative">
         <iframe
