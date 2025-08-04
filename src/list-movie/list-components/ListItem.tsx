@@ -3,7 +3,8 @@ import VideoPlayer from "../../dialogs/VideoPlayer";
 import VoteCount from "../../components/VoteCount";
 import InfoCta from "../../components/InfoCta";
 import MoreInfo from "../../dialogs/MoreInfo";
-import RickRoll from "../../assets/rickroll.jpg";
+import LazyImage from "../../components/LazyImage";
+const MoviePlaceholder = "/movie-baner-placeholder.png";
 import Rating from "../../components/Rating";
 import { useNavigate } from "react-router-dom";
 //import { MediaType } from "../../functions/Interfaces.ts";
@@ -65,14 +66,15 @@ const ListItem: React.FC<ListItemProps> = ({
             setTrailer(true);
           }}
         >
-          <img
+          <LazyImage
             className={`${
               largeScreen
                 ? "lg:w-[90px] lg:h-[130px] w-[60px] h-[90px] "
                 : `sm:w-[70px] sm:h-[100px] h-[80px] w-[50px]`
-            } rounded-lg`}
-            src={poster ? `https://image.tmdb.org/t/p/w500${poster}` : RickRoll}
-            alt=""
+            } rounded-lg object-cover`}
+            src={poster ? `https://image.tmdb.org/t/p/w500${poster}` : MoviePlaceholder}
+            alt={`${title || 'Content'} poster`}
+            placeholder={MoviePlaceholder}
           />
         </button>
 

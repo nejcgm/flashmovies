@@ -5,6 +5,7 @@ import MainLayout from "./layout/MainLayout";
 import { Routes, Route } from "react-router-dom";
 import Iframe from "./pages/full-movie/Iframe";
 import List from "./list-movie/List";
+import NotFound from "./pages/NotFound";
 
 const App: React.FC = () => {
   return (
@@ -15,6 +16,7 @@ const App: React.FC = () => {
           <Route path="/movie-info" element={<MovieInfoPage />} />
           <Route path="/full-movie" element={<Iframe />} />
           <Route path="/list-items" element={<List />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </>

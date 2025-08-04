@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import VideoPlayer from "../../dialogs/VideoPlayer";
 import VoteCount from "../../components/VoteCount";
 import { useNavigate } from "react-router-dom";
-import RickRoll from "../../assets/rickroll.jpg";
+const MoviePlaceholder = "/movie-baner-placeholder.png";
 
 interface HeaderInfoProps {
   poster: string;
@@ -43,7 +43,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
             backgroundImage: `url(${
               poster.length > 1
                 ? `https://image.tmdb.org/t/p/w500${poster}`
-                : RickRoll
+                : MoviePlaceholder
             })`,
           }}
         >
@@ -78,7 +78,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
               backgroundImage: `url(${
                 backdrop.length > 1
                   ? `https://image.tmdb.org/t/p/w1280${backdrop}`
-                  : RickRoll
+                  : MoviePlaceholder
               })`,
             }}
           >

@@ -1,5 +1,6 @@
 import React from "react";
-import RickRoll from "../../assets/rickroll.jpg";
+import LazyImage from "../../components/LazyImage";
+const PersonPlaceholder = "/person-placeholder.jpg";
 import ChartIcon from "../../assets/chart.png";
 import { useNavigate } from "react-router-dom";
 
@@ -33,12 +34,11 @@ const ActorCard: React.FC<ActorCardProps> = ({
         >
           <div className="aspect-square overflow-hidden rounded-full">
             <div className="absolute inset-0 flex items-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <img
-              className="object-cover w-[120px] sm:w-full sm:h-fulll"
-              src={
-                image ? `https://image.tmdb.org/t/p/w500/${image}` : RickRoll
-              }
-              alt=""
+            <LazyImage
+              className="object-cover w-[120px] sm:w-full sm:h-full"
+              src={image ? `https://image.tmdb.org/t/p/w500/${image}` : PersonPlaceholder}
+              alt={`${name || 'Actor'} photo`}
+              placeholder={PersonPlaceholder}
             />
           </div>
         </button>

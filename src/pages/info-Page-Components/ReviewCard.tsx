@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import RickRoll from "../../assets/rickroll.jpg";
+const PersonPlaceholder = "/person-placeholder.jpg";
 import Rating from "../../components/Rating";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -30,7 +30,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
           <img
             className="rounded-full h-[32px] w-[32px] sm:h-[48px] sm:w-[48px] lg:h-[70px] lg:w-[70px] "
             src={
-              avatar ? `https://image.tmdb.org/t/p/w200/${avatar}` : RickRoll
+              avatar ? `https://image.tmdb.org/t/p/w200/${avatar}` : PersonPlaceholder
             }
             alt=""
           />
