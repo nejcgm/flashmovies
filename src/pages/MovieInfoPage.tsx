@@ -8,9 +8,11 @@ import ActorCarousel from "../carousels/actor-carousel/ActorCarousel";
 import Spinner from "../components/Spinner";
 import TopSection from "./info-Page-Components/TopSection.jsx";
 import MovieSpecificDescription from "./info-Page-Components/MovieSpecificDescription.jsx";
-import { DataInfoProps } from "../functions/Interfaces.ts";
+import AffiliateLinks from "../components/AffiliateLinks";
+
 import Meta from "../SEO/meta.tsx";
 import MovieSchema from "../SEO/MovieSchema.tsx";
+import { DataInfoProps } from "../functions/Interfaces.ts";
 
 const MovieInfoPage = () => {
   const [info, setInfo] = useState<DataInfoProps>();
@@ -137,6 +139,9 @@ const MovieInfoPage = () => {
                   type={type}
                   genres={info.genres}
                 />
+
+                {/* Use the new AffiliateLinks component */}
+                <AffiliateLinks movieTitle={info.title || info.name || ''} />
               </>
             )}
           </div>
