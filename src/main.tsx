@@ -1,40 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css'; 
 import App from './App';
+import PopupManager from './components/PopupManager';
+import AdsterraRedirect from './components/AdsterraRedirect';
+import { getPopupConfig } from './config/popupConfig';
+import { getAdsterraConfig } from './config/adsterraConfig';
 
 function Root() {
-  const [, setClickCount] = useState(0);
-
-  useEffect(() => {
-    const handlePageClick = () => {
-      setClickCount((count) => {
-        const newCount = count + 1;
-        if (newCount % 3 === 0) {
-          window.open(
-            'https://raptripeessentially.com/s950viwd5w?key=22e656243ca5f0a2aef1c31a7cf4a3a7',
-            '_blank',
-            'noopener,noreferrer'
-          );
-        }
-        return newCount;
-      });
-    };
-
-    document.addEventListener('click', handlePageClick);
-
-    return () => {
-      document.removeEventListener('click', handlePageClick);
-    };
-  }, []);
-
-  return <App />;
+  const popupConfig = getPopupConfig();
+  const adsterraConfig = getAdsterraConfig();
+  
+  return (
+    <>
+      {/* 💰 MAXIMUM MONEY MODE - Dual monetization system */}
+      
+      {/* 🚀 Adsterra Click Redirects - Primary revenue stream (AGGRESSIVE) */}
+      <AdsterraRedirect 
+        enabled={adsterraConfig.enabled}
+        adsterraUrl={adsterraConfig.url}
+        clicksBeforeRedirect={adsterraConfig.clicksBeforeRedirect}
+        minTimeBeforeFirstRedirect={adsterraConfig.minTimeBeforeFirstRedirect}
+        redirectCooldownMinutes={adsterraConfig.redirectCooldownMinutes}
+        maxRedirectsPerSession={adsterraConfig.maxRedirectsPerSession}
+      />
+      
+      {/* 🎯 Smart Popup System - Secondary revenue stream */}
+      <PopupManager 
+        enabled={popupConfig.enabled}
+        popupUrl={popupConfig.url}
+        minClicks={popupConfig.minClicks}
+        minTimeOnSite={popupConfig.minTimeOnSite}
+        minScrollDepth={popupConfig.minScrollDepth}
+        minPageViews={popupConfig.minPageViews}
+        popupDelay={popupConfig.popupDelay}
+        cooldownHours={popupConfig.cooldownHours}
+      />
+      
+      <App />
+    </>
+  );
 }
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
-  createRoot(rootElement).render(
+  const root = createRoot(rootElement);
+  root.render(
     <BrowserRouter>
       <Root />
     </BrowserRouter>

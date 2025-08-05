@@ -8,6 +8,7 @@ import BackButton from "../../components/BackButton";
 import ShareButton from "../../components/ShareButton.js";
 import ProviderComponent from "./components/ProviderComponent.js";
 import Meta from "../../SEO/meta.tsx";
+import AffiliateLinks from '../../components/AffiliateLinks';
 
 const Iframe = () => {
   const [info, setInfo] = useState<FetchSpecificResponse>();
@@ -71,6 +72,14 @@ const Iframe = () => {
           type={type!}
           className="mt-[8px]"
         />
+
+        {/* FAST MONEY: High-converting placement on watch page */}
+        <div className="mt-6">
+          <AffiliateLinks 
+            movieTitle={info?.title || info?.name || 'This Movie'}
+            className="bg-gradient-to-r from-[#000] to-[#111] border border-[#f5c518]"
+          />
+        </div>
       </div>
     </>
   );

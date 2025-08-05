@@ -8,6 +8,7 @@ import { fetchSpecific } from "../functions/Fetching.ts";
 import { formatTitle } from "../functions/Functions.ts";
 import { DataInfoProps, MediaType } from "../functions/Interfaces.ts";
 import Meta from "../SEO/meta.tsx";
+import AffiliateLinks from '../components/AffiliateLinks';
 
 const List: React.FC = () => {
   const [listItems, setListItems] = useState<DataInfoProps[]>([]);
@@ -112,6 +113,14 @@ const List: React.FC = () => {
           {search == "discover" && (
             <GenreListComponent type={type} genreList={setGenreList} />
           )}
+
+          {/* FAST MONEY: Affiliate links on list pages */}
+          <div className="mt-4 mb-6">
+            <AffiliateLinks 
+              movieTitle={`${type === 'movie' ? 'Movies' : type === 'tv' ? 'TV Shows' : 'Content'}`}
+              className="bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]"
+            />
+          </div>
 
           {listItems.map((item: DataInfoProps, index: number) => {
             const isLastItem = index === listItems.length - 1;
