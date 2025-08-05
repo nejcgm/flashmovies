@@ -28,11 +28,11 @@ export const ADSTERRA_CONFIG = {
     
     // 🎯 MONEY FOCUSED - 70% revenue, 30% SEO (NEW)
     money_focused: {
-      clicksBeforeRedirect: 1,        // Every click for max revenue
-      minTimeBeforeFirstRedirect: 4,  // 4 seconds (minimal SEO protection)
-      redirectCooldownMinutes: 0.5,   // 30 seconds (optimized for 10min sessions)
-      maxRedirectsPerSession: 15,     // 15 per session (higher for short cooldown)
-      description: "70% revenue focus, 30% SEO protection - optimized for short sessions"
+      clicksBeforeRedirect: 2,        // Every second for max revenue
+      minTimeBeforeFirstRedirect: 15, // 15 seconds (better SEO protection)
+      redirectCooldownMinutes: 0.75,  // 45 seconds (more SEO-friendly)
+      maxRedirectsPerSession: 12,     // 12 per session (adjusted for longer cooldown)
+      description: "70% revenue focus, 30% SEO protection - SEO-optimized timing"
     },
     
     // ⚖️ BALANCED - Revenue vs UX
@@ -96,10 +96,10 @@ export const REVENUE_PROJECTIONS = {
     userExperience: 'Poor'
   },
   money_focused: {
-    dailyClicks: 60,
-    revenue: '$10-18/day',
-    seoRisk: 'Medium-High',
-    userExperience: 'Fair'
+    dailyClicks: 45,
+    revenue: '$8-14/day',
+    seoRisk: 'Medium',
+    userExperience: 'Good'
   },
   high_revenue: {
     dailyClicks: 35,
