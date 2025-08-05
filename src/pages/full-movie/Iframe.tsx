@@ -6,7 +6,6 @@ import {
 } from "../../functions/Fetching.js";
 import BackButton from "../../components/BackButton";
 import ShareButton from "../../components/ShareButton.js";
-import ProviderButton from "./components/ProviderButton.js";
 import ProviderComponent from "./components/ProviderComponent.js";
 import Meta from "../../SEO/meta.tsx";
 
@@ -16,7 +15,6 @@ const Iframe = () => {
   const [currentProviderUrl, setCurrentProviderUrl] = useState("");
   const movieId = searchParams.get("id");
   const type = searchParams.get("type");
-  const addBlockUrl = "https://chrome.google.com/webstore/detail/adblock-plus-free-ad-bloc/cfhdojbkjhnklbpkdaibdccddilifddb";
 
   useEffect(() => {
     const loadInfo = async () => {
@@ -33,7 +31,13 @@ const Iframe = () => {
       <Meta 
         title={`Watch ${info?.title || info?.name} ${info?.release_date ? `(${new Date(info.release_date).getFullYear()})` : info?.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} Free - Flash Movies`}
         description={info?.overview ? `Stream ${info?.title || info?.name} in HD. ${info.overview.slice(0, 100)}... Watch free on Flash Movies.` : `Stream ${info?.title || info?.name} free in HD quality on Flash Movies.`}
-        image={info?.backdrop_path ? `https://image.tmdb.org/t/p/w1280${info.backdrop_path}` : info?.poster_path ? `https://image.tmdb.org/t/p/w500${info.poster_path}` : undefined}
+        image={
+          info?.backdrop_path 
+            ? `https://image.tmdb.org/t/p/w1280${info.backdrop_path}` 
+            : info?.poster_path 
+              ? `https://image.tmdb.org/t/p/w500${info.poster_path}` 
+              : "https://flashmovies.xyz/flash-movies-logo.png"
+        }
         url={window.location.href}
         keywords={[
           info?.title || info?.name || '',

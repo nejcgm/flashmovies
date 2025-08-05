@@ -67,7 +67,13 @@ const MovieInfoPage = () => {
       <Meta 
         title={`${info?.title || info?.name} ${info?.release_date ? `(${new Date(info.release_date).getFullYear()})` : info?.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} - Watch Free on Flash Movies`}
         description={info?.overview ? `${info.overview.slice(0, 150)}... Watch ${info?.title || info?.name} free on Flash Movies.` : `Watch ${info?.title || info?.name} free on Flash Movies. Stream in HD quality.`}
-        image={info?.poster_path ? `https://image.tmdb.org/t/p/w500${info.poster_path}` : info?.backdrop_path ? `https://image.tmdb.org/t/p/w1280${info.backdrop_path}` : undefined}
+        image={
+          info?.poster_path 
+            ? `https://image.tmdb.org/t/p/w500${info.poster_path}` 
+            : info?.backdrop_path 
+              ? `https://image.tmdb.org/t/p/w1280${info.backdrop_path}` 
+              : "https://flashmovies.xyz/flash-movies-logo.png"
+        }
         url={window.location.href}
         keywords={[
           info?.title || info?.name || '',

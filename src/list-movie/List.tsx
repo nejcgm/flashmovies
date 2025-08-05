@@ -88,7 +88,13 @@ const List: React.FC = () => {
       <Meta 
         title={`${formatTitle(title)} - Flash Movies`}
         description={`Browse and watch ${formatTitle(title)} on Flash Movies. Stream ${type === 'movie' ? 'movies' : 'TV shows'} in HD for free. Discover ${formatTitle(title)} and start watching now.`}
-        image={listItems[0]?.poster_path ? `https://image.tmdb.org/t/p/w500${listItems[0].poster_path}` : listItems[0]?.profile_path ? `https://image.tmdb.org/t/p/w500${listItems[0].profile_path}` : undefined}
+        image={
+          listItems && listItems.length > 0 && listItems[0]?.poster_path 
+            ? `https://image.tmdb.org/t/p/w500${listItems[0].poster_path}` 
+            : listItems && listItems.length > 0 && listItems[0]?.backdrop_path 
+              ? `https://image.tmdb.org/t/p/w1280${listItems[0].backdrop_path}` 
+              : "https://flashmovies.xyz/flash-movies-logo.png"
+        }
         url={window.location.href}
         keywords={[
           ...(listItems.slice(0, 10).map((item: DataInfoProps) => item.title || item.name).filter(Boolean)),

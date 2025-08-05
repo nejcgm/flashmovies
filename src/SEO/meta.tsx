@@ -43,6 +43,27 @@ const Meta = ({
   publishedTime,
   modifiedTime,
 }: IMetaProps) => {
+  // Ensure image URL is absolute
+  const absoluteImageUrl = image?.startsWith('http') 
+    ? image 
+    : image?.startsWith('/') 
+      ? `https://flashmovies.xyz${image}`
+      : `https://flashmovies.xyz/${image}`;
+
+  // Set appropriate image dimensions based on image source
+  const getImageDimensions = (imageUrl: string) => {
+    if (imageUrl.includes('image.tmdb.org/t/p/w1280')) {
+      return { width: "1280", height: "720" }; // 16:9 ratio for backdrops
+    }
+    if (imageUrl.includes('image.tmdb.org/t/p/w500')) {
+      return { width: "500", height: "750" }; // 2:3 ratio for posters
+    }
+    // Default Flash Movies logo dimensions
+    return { width: "1200", height: "630" }; // 1.91:1 ratio recommended by Facebook
+  };
+
+  const imageDimensions = getImageDimensions(absoluteImageUrl);
+
   return (
     <Helmet>
       {/* Basic tags */}
@@ -73,10 +94,12 @@ const Meta = ({
       <meta property="og:url" content={url} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={image} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
+      <meta property="og:image" content={absoluteImageUrl} />
+      <meta property="og:image:width" content={imageDimensions.width} />
+      <meta property="og:image:height" content={imageDimensions.height} />
       <meta property="og:image:alt" content={title} />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:secure_url" content={absoluteImageUrl} />
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content="en_US" />
       {publishedTime && <meta property="article:published_time" content={publishedTime} />}
@@ -87,7 +110,7 @@ const Meta = ({
       <meta name="twitter:url" content={url} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
+      <meta name="twitter:image" content={absoluteImageUrl} />
       <meta name="twitter:image:alt" content={title} />
       <meta name="twitter:site" content="@flashmovies" />
       <meta name="twitter:creator" content="@flashmovies" />
