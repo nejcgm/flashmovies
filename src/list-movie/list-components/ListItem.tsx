@@ -4,7 +4,8 @@ import VoteCount from "../../components/VoteCount";
 import InfoCta from "../../components/InfoCta";
 import MoreInfo from "../../dialogs/MoreInfo";
 import LazyImage from "../../components/LazyImage";
-const MoviePlaceholder = "/movie-baner-placeholder.png";
+const MoviePlaceholder = "/dark-mode-img-placeholder.png";
+const PersonPlaceholder = "/dark-mode-avatar-placeholder.png";
 import Rating from "../../components/Rating";
 import { useNavigate } from "react-router-dom";
 //import { MediaType } from "../../functions/Interfaces.ts";
@@ -72,9 +73,9 @@ const ListItem: React.FC<ListItemProps> = ({
                 ? "lg:w-[90px] lg:h-[130px] w-[60px] h-[90px] "
                 : `sm:w-[70px] sm:h-[100px] h-[80px] w-[50px]`
             } rounded-lg object-cover`}
-            src={poster ? `https://image.tmdb.org/t/p/w500${poster}` : MoviePlaceholder}
-            alt={`${title || 'Content'} poster`}
-            placeholder={MoviePlaceholder}
+            src={poster ? `https://image.tmdb.org/t/p/w500${poster}` : (type === 'person' ? PersonPlaceholder : MoviePlaceholder)}
+            alt={`${title || 'Content'} ${type === 'person' ? 'photo' : 'poster'}`}
+            placeholder={type === 'person' ? PersonPlaceholder : MoviePlaceholder}
           />
         </button>
 

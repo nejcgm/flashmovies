@@ -1,6 +1,6 @@
 import React from "react";
 import LazyImage from "../../components/LazyImage";
-const PersonPlaceholder = "/person-placeholder.jpg";
+const PersonPlaceholder = "/dark-mode-avatar-placeholder.png";
 import ChartIcon from "../../assets/chart.png";
 import { useNavigate } from "react-router-dom";
 

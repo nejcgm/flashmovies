@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-const PersonPlaceholder = "/person-placeholder.jpg";
+const PersonPlaceholder = "/dark-mode-avatar-placeholder.png";
 import Rating from "../../components/Rating";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";

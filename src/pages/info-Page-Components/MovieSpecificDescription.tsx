@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import GenreSpecific from "./GenreSpecific";
+import VideoPlayer from "../../dialogs/VideoPlayer";
 
 interface MovieSpecificDescriptionProps {
   description: string;
@@ -18,16 +18,25 @@ const MovieSpecificDescription: React.FC<MovieSpecificDescriptionProps> = ({
 }) => {
   const [expand, setExpand] = useState(500);
   const ContentLength = description?.length;
-  const navigate = useNavigate();
+  const [trailer, setTrailer] = useState(false);
 
   return (
     <>
+    {trailer && (
+        <VideoPlayer
+          movieId={movieId}
+          type={type}
+          onCancel={() => {
+            setTrailer(false);
+          }}
+        />
+      )}
       <div className="w-full flex gap-4 md:w-[70%] mt-[24px] pr-[6px] md:pr-[0px]">
         <div className="flex lg:hidden">
           <img
-            onClick={() => {
-              navigate(`/full-movie/?id=${movieId}&type=${type}`);
-            }}
+           onClick={() => {
+            setTrailer(true);
+          }}
             className=" flex-1  rounded-lg min-w-[120px] max-h-[180px] w-[150px]"
             src={`https://image.tmdb.org/t/p/w500${poster}`}
             alt="poster"

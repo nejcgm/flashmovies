@@ -13,7 +13,7 @@ interface LazyImageProps {
 const LazyImage: React.FC<LazyImageProps> = ({
   src,
   alt,
-  placeholder = '/movie-baner-placeholder.png',
+  placeholder = '/dark-mode-img-placeholder.png',
   className = '',
   loading = 'lazy',
   onLoad,

@@ -4,7 +4,7 @@ import VideoPlayer from "../../dialogs/VideoPlayer";
 import Rating from "../../components/Rating";
 import InfoCta from "../../components/InfoCta";
 import LazyImage from "../../components/LazyImage";
-const MoviePlaceholder = "/movie-baner-placeholder.png";
+const MoviePlaceholder = "/dark-mode-img-placeholder.png";
 import { useNavigate } from "react-router-dom";
 
 interface MovieCardProps {

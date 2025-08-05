@@ -61,63 +61,60 @@ const MoreInfo: React.FC<MoreInfoProps> = ({
                 ) : (
                   <>
                     <div className="flex gap-3">
-                      <a href={info.homepage} target="_blank" rel="noreferrer">
+                      <button
+                      className="flex gap-3 w-full"
+                        onClick={() => {
+                          navigate(`/movie-info/?id=${movieId}&type=${type}`);
+                          onCancel();
+                        }}
+                      >
                         <img
                           className="rounded-lg w-[72px]"
                           src={`https://image.tmdb.org/t/p/w500${info.poster_path}`}
                           alt=""
                         />
-                      </a>
-
-                      <div className="text-white font-roboto w-full">
-                        <div className="font-bold w-fill items-center flex justify-between text-[18px] sm:text-[24px]">
-                          <div>{info.title || info.name}</div>
-                          <button
-                            onClick={() => {
-                              navigate(
-                                `/movie-info/?id=${movieId}&type=${type}`
-                              );
-                              onCancel();
-                            }}
-                          >
-                            <img
-                              className="w-[20px] sm:w-[28px]"
-                              src={Homeicon}
-                              alt=""
-                            />
-                          </button>
-                        </div>
-
-                        <ul className="list-disc list-inside flex text-[11px] sm:text-[14px] text-[#BBBBBB] gap-4 marker:text-[12px] ">
-                          <li className="list-none">
-                            {info.release_date || info.first_air_date}
-                          </li>
-                          {type == "movie" && (
-                            <li className="">
-                              {convertMinutesToHoursAndMinutes(
-                                info.runtime || 0
-                              )}
-                            </li>
-                          )}
-                          <li>{info.original_language}</li>
-                        </ul>
-                        <ul className="list-disc list-inside flex text-[11px] sm:text-[14px] text-[#BBBBBB] gap-2 marker:text-[12px] marker:leading-[24px]">
-                          {info?.genres
-                            ?.slice(0, 3)
-                            .map((item: { name: string }, index: number) => (
-                              <li className="first:list-none" key={index}>
-                                {item.name}
-                              </li>
-                            ))}
-                        </ul>
-
-                        {info.vote_average > 0 && (
-                          <div className="flex text-[#BBBBBB] text-[12px] sm:text-[16px]">
-                            <Rating rating={info.vote_average} />
-                            /10
+                        <div className="text-white font-roboto w-full">
+                          <div className="font-bold w-fill items-center flex justify-between text-[18px] sm:text-[24px]">
+                            <div className="text-left">{info.title || info.name}</div>
+                           
+                              <img
+                                className="w-[20px] sm:w-[28px]"
+                                src={Homeicon}
+                                alt=""
+                              />
                           </div>
-                        )}
-                      </div>
+
+                          <ul className="list-disc list-inside flex text-[11px] sm:text-[14px] text-[#BBBBBB] gap-4 marker:text-[12px] ">
+                            <li className="list-none">
+                              {info.release_date || info.first_air_date}
+                            </li>
+                            {type == "movie" && (
+                              <li className="">
+                                {convertMinutesToHoursAndMinutes(
+                                  info.runtime || 0
+                                )}
+                              </li>
+                            )}
+                            <li>{info.original_language}</li>
+                          </ul>
+                          <ul className="list-disc list-inside flex text-[11px] sm:text-[14px] text-[#BBBBBB] gap-2 marker:text-[12px] marker:leading-[24px]">
+                            {info?.genres
+                              ?.slice(0, 3)
+                              .map((item: { name: string }, index: number) => (
+                                <li className="first:list-none" key={index}>
+                                  {item.name}
+                                </li>
+                              ))}
+                          </ul>
+
+                          {info.vote_average > 0 && (
+                            <div className="flex text-[#BBBBBB] text-[12px] sm:text-[16px]">
+                              <Rating rating={info.vote_average} />
+                              /10
+                            </div>
+                          )}
+                        </div>
+                      </button>
                     </div>
                     <div className="font-roboto text-white text-[12px] sm:text-[14px] mt-[16px]">
                       {info.overview
