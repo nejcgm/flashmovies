@@ -63,6 +63,16 @@ export const POPUP_CONFIG = {
       minPageViews: 1,     // 1 page
       popupDelay: 500,     // Half second delay
       cooldownHours: 2     // Every 2 hours
+    },
+    
+    // 🎯 MONEY FOCUSED - 70% revenue, 30% SEO (NEW)
+    money_focused: {
+      minClicks: 2,        // 2 clicks (quick trigger for 10min sessions)
+      minTimeOnSite: 5,    // 5 seconds (very fast for backup system)
+      minScrollDepth: 5,   // 5% scroll (minimal engagement)
+      minPageViews: 1,     // 1 page view
+      popupDelay: 1000,    // 1 second delay (fast backup)
+      cooldownHours: 1     // Every 1 hour (perfect frequency)
     }
   },
   
@@ -75,7 +85,7 @@ export const POPUP_CONFIG = {
 };
 
 // 🚀 Active profile - change this to test different configurations
-export const ACTIVE_PROFILE = 'balanced'; // Better revenue with acceptable SEO risk
+export const ACTIVE_PROFILE = 'money_focused'; // 70% revenue, 30% SEO - maximum payout!
 
 // 🎯 Get current popup configuration
 export const getPopupConfig = () => {
