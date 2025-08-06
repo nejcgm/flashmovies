@@ -137,7 +137,7 @@ const AffiliateLinks: React.FC<AffiliateLinkProps> = ({ movieTitle, className = 
             key={index}
             href={link.url}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noopener"
             onClick={() => handleAffiliateClick(link.name)}
             className={`${link.bgColor} ${link.textColor} px-4 py-2 rounded-lg ${link.hoverColor} transition-colors text-sm font-medium shadow-lg text-center min-w-[140px] sm:min-w-0`}
           >

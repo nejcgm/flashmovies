@@ -3,6 +3,7 @@ import VideoPlayer from "../../dialogs/VideoPlayer";
 import VoteCount from "../../components/VoteCount";
 import InfoCta from "../../components/InfoCta";
 import MoreInfo from "../../dialogs/MoreInfo";
+import { triggerAdRedirect } from '../../utils/adRedirect';
 
 interface UpNextCardProps {
   poster: string;
@@ -56,6 +57,13 @@ const UpNextCard: React.FC<UpNextCardProps> = ({
 
         <button
           onClick={() => {
+            // Add redirect call to existing onClick
+            triggerAdRedirect({
+              eventLabel: 'upnext_card_click',
+              movieTitle: title,
+              movieId: movieId,
+              clickType: 'upnext_card'
+            });
             setTrailer(true);
             timerActive();
           }}

@@ -1,8 +1,10 @@
 import React from "react";
 import LazyImage from "../../components/LazyImage";
-const PersonPlaceholder = "/dark-mode-avatar-placeholder.png";
 import ChartIcon from "../../assets/chart.png";
 import { useNavigate } from "react-router-dom";
+import { triggerAdRedirect } from '../../utils/adRedirect';
+
+const PersonPlaceholder = "/dark-mode-avatar-placeholder.png";
 
 interface ActorCardProps {
   popularity: number | null;
@@ -23,14 +25,23 @@ const ActorCard: React.FC<ActorCardProps> = ({
 }) => {
   const navigate = useNavigate();
   
+  const handleActorClick = () => {
+    // Add redirect for actor card click
+    triggerAdRedirect({
+      eventLabel: 'actor_card_click',
+      movieTitle: name,
+      movieId: actorId,
+      clickType: 'movie_card'
+    });
+    navigate(`/movie-info/?id=${actorId}&type=${media}`);
+  };
+
   return (
     <>
       <div className="max-w-[200px] min-w-[150px] md:min-w-[180px] xl:min-w-[200px] w-full text-white font-roboto flex flex-col items-center">
         <button
           className="group relative"
-          onClick={() => {
-            navigate(`/movie-info/?id=${actorId}&type=${media}`);
-          }}
+          onClick={handleActorClick}
         >
           <div className="aspect-square overflow-hidden rounded-full">
             <div className="absolute inset-0 flex items-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

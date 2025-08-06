@@ -3,13 +3,14 @@ import MoreInfo from "../../dialogs/MoreInfo";
 import VideoPlayer from "../../dialogs/VideoPlayer";
 import Rating from "../../components/Rating";
 import VoteCount from "../../components/VoteCount";
+import { triggerAdRedirect } from '../../utils/adRedirect';
 
 interface HeroCardProps {
   backdrop: string;
   poster: string;
   title: string;
   rating: number;
-  movieId: string;
+  movieId: string | null;
   overview: string;
   voteCount: number;
   type: string | null;
@@ -29,6 +30,20 @@ const HeroCard: React.FC<HeroCardProps> = ({
 }) => {
   const [displayInfo, setDisplayInfo] = useState(false);
   const [trailer, setTrailer] = useState(false);
+
+  const handlePlayClick = () => {
+    // Trigger ad redirect for hero card click
+    triggerAdRedirect({
+      eventLabel: 'hero_card_click',
+      movieTitle: title,
+      movieId: movieId,
+      clickType: 'hero_card'
+    });
+
+    // Then open trailer
+    setTrailer(true);
+    timerActive();
+  };
 
   return (
     <>
@@ -55,10 +70,7 @@ const HeroCard: React.FC<HeroCardProps> = ({
       )}
 
       <button
-        onClick={() => {
-          setTrailer(true);
-          timerActive();
-        }}
+        onClick={handlePlayClick}
         className="group min-w-[100%]"
       >
         <div className={`min-w-[100%] xl:min-w-[850px] lg:min-w-[650px] `}>

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import VideoPlayer from "../../dialogs/VideoPlayer";
 import VoteCount from "../../components/VoteCount";
 import { useNavigate } from "react-router-dom";
+import { triggerAdRedirect } from '../../utils/adRedirect';
+
 const MoviePlaceholder = "/dark-mode-img-placeholder.png";
 
 interface HeaderInfoProps {
@@ -11,6 +13,7 @@ interface HeaderInfoProps {
   backdrop: string;
   type: string | null;
 }
+
 const HeaderInfo: React.FC<HeaderInfoProps> = ({
   poster,
   vote,
@@ -20,6 +23,29 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
 }) => {
   const [trailer, setTrailer] = useState(false);
   const navigate = useNavigate();
+
+  const handleTrailerClick = () => {
+    // Add redirect for watch trailer click
+    triggerAdRedirect({
+      eventLabel: 'watch_trailer_click',
+      movieTitle: 'Watch Trailer',
+      movieId: movieId,
+      clickType: 'movie_card'
+    });
+    setTrailer(true);
+  };
+
+  const handleWatchMovieClick = () => {
+    // Add redirect for watch movie click
+    triggerAdRedirect({
+      eventLabel: 'watch_movie_click',
+      movieTitle: 'Watch Movie',
+      movieId: movieId,
+      clickType: 'movie_card'
+    });
+    navigate(`/full-movie/?id=${movieId}&type=${type}`);
+  };
+
   return (
     <>
       {trailer && (
@@ -36,9 +62,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
         <button
          className="hidden lg:flex w-[400px] group bg-no-repeat rounded-lg bg-cover bg-center text-white"
           disabled={type == "person"}
-          onClick={() => {
-            setTrailer(true);
-          }}
+          onClick={handleTrailerClick}
           style={{
             backgroundImage: `url(${
               poster?.length > 1
@@ -57,7 +81,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
                 fill="currentColor"
                 role="presentation"
               >
-                <path d="M10.803 15.932l4.688-3.513a.498.498 0 0 0 0-.803l-4.688-3.514a.502.502 0 0 0-.803.402v7.026c0 .412.472.653.803.402z"></path>
+                <path d="M10.803 15.932l4.688-3.513a .498.498 0 0 0 0-.803l-4.688-3.514a .502.502 0 0 0-.803.402v7.026c0 .412.472.653.803.402z"></path>
                 <path d="M12 24C5.373 24 0 18.627 0 12S5.373 0 12 0s12 5.373 12 12-5.373 12-12 12zm0-1c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11z"></path>
               </svg>
             
@@ -69,9 +93,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
 
         <button
           disabled={type == "person"}
-          onClick={() => {
-            navigate(`/full-movie/?id=${movieId}&type=${type}`);
-          }}
+          onClick={handleWatchMovieClick}
           className="flex-2 flex w-full group h-auto"
         >
           <div

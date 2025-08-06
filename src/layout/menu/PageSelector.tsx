@@ -2,13 +2,14 @@ import React, { useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { useNavigate } from "react-router-dom";
 import CrossBlack from "../../assets/crossBlack.png";
+import { redirectForNavigation } from '../../utils/adRedirect';
+
 interface PageSelectorProps {
   onCancel: () => void;
 }
 
 const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
   const navigate = useNavigate();
-
   const Container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
           <div className="flex w-full justify-between items-center">
             <button
               onClick={() => {
+                redirectForNavigation('home', 'navigation');
                 navigate("/");
                 handleClose();
               }}
@@ -113,6 +115,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <a
                     href="/list-items?type=movie&search=top_rated&title=top-rated-movies"
                     onClick={() => {
+                      redirectForNavigation('top_rated_movies', 'menu_link');
                       onCancel();
                     }}
                     className="hover:underline"
@@ -122,6 +125,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <a
                     href="/list-items?type=movie&search=popular&title=most-popular-movies"
                     onClick={() => {
+                      redirectForNavigation('popular_movies', 'menu_link');
                       onCancel();
                     }}
                     className="hover:underline"
@@ -131,6 +135,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <a
                     href="/list-items?type=movie&search=now_playing&title=now-playing-movies"
                     onClick={() => {
+                      redirectForNavigation('now_playing', 'menu_link');
                       onCancel();
                     }}
                     className="hover:underline"
@@ -140,6 +145,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <a
                     href="/list-items?type=movie&search=upcoming&title=upcoming-movies"
                     onClick={() => {
+                      redirectForNavigation('upcoming', 'menu_link');
                       onCancel();
                     }}
                     className="hover:underline"
@@ -149,6 +155,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <a
                     href="/list-items?type=movie&search=discover&title=browse-movies-by-genre"
                     onClick={() => {
+                      redirectForNavigation('browse_by_genre', 'menu_link');
                       onCancel();
                     }}
                     className="hover:underline"
@@ -178,6 +185,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <a
                     href="/list-items?type=tv&search=top_rated&title=top-rated-shows"
                     onClick={() => {
+                      redirectForNavigation('top_rated_tv', 'menu_link');
                       onCancel();
                     }}
                     className="hover:underline"
@@ -187,6 +195,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <a
                     href="/list-items?type=tv&search=popular&title=most-popular-shows"
                     onClick={() => {
+                      redirectForNavigation('popular_tv', 'menu_link');
                       onCancel();
                     }}
                     className="hover:underline"
@@ -196,6 +205,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <a
                     href="/list-items?type=tv&search=airing_today&title=airing-today-shows"
                     onClick={() => {
+                      redirectForNavigation('airing_today', 'menu_link');
                       onCancel();
                     }}
                     className="hover:underline"
@@ -205,6 +215,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <a
                     href="/list-items?type=tv&search=on_the_air&title=on-the-air"
                     onClick={() => {
+                      redirectForNavigation('on_air', 'menu_link');
                       onCancel();
                     }}
                     className="hover:underline"
@@ -214,6 +225,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <a
                     href="/list-items?type=tv&search=discover&title=browse-shows-by-genre"
                     onClick={() => {
+                      redirectForNavigation('browse_tv_genre', 'menu_link');
                       onCancel();
                     }}
                     className="hover:underline"
@@ -243,6 +255,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <a
                     href="/list-items?type=person&search=popular&title=most-popular-actors"
                     onClick={() => {
+                      redirectForNavigation('popular_actors', 'menu_link');
                       onCancel();
                     }}
                     className="hover:underline"

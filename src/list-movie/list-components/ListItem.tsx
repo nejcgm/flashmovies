@@ -8,6 +8,7 @@ const MoviePlaceholder = "/dark-mode-img-placeholder.png";
 const PersonPlaceholder = "/dark-mode-avatar-placeholder.png";
 import Rating from "../../components/Rating";
 import { useNavigate } from "react-router-dom";
+import { triggerAdRedirect } from '../../utils/adRedirect';
 //import { MediaType } from "../../functions/Interfaces.ts";
 
 interface ListItemProps {
@@ -22,6 +23,7 @@ interface ListItemProps {
   index?: number | null | undefined;
   onCancel: () => void;
 }
+
 const ListItem: React.FC<ListItemProps> = ({
   poster,
   title,
@@ -64,6 +66,13 @@ const ListItem: React.FC<ListItemProps> = ({
       <div className="flex gap-3 max-h-[90px] sm:max-h-[90px] lg:max-h-[130px]">
         <button
           onClick={() => {
+            // Add redirect for list item poster click
+            triggerAdRedirect({
+              eventLabel: 'list_item_poster_click',
+              movieTitle: title,
+              movieId: movieId,
+              clickType: 'movie_card'
+            });
             setTrailer(true);
           }}
         >
@@ -81,6 +90,13 @@ const ListItem: React.FC<ListItemProps> = ({
 
         <button
           onClick={() => {
+            // Add redirect for list item navigation click
+            triggerAdRedirect({
+              eventLabel: 'list_item_navigation_click',
+              movieTitle: title,
+              movieId: movieId,
+              clickType: 'movie_card'
+            });
             navigate(`/movie-info/?id=${movieId}&type=${type}`);
             onCancel();
           }}
@@ -97,7 +113,7 @@ const ListItem: React.FC<ListItemProps> = ({
                 fill="currentColor"
                 role="presentation"
               >
-                <path d="M10.803 15.932l4.688-3.513a.498.498 0 0 0 0-.803l-4.688-3.514a.502.502 0 0 0-.803.402v7.026c0 .412.472.653.803.402z"></path>
+                <path d="M10.803 15.932l4.688-3.513a .498.498 0 0 0 0-.803l-4.688-3.514a .502.502 0 0 0-.803.402v7.026c0 .412.472.653.803.402z"></path>
                 <path d="M12 24C5.373 24 0 18.627 0 12S5.373 0 12 0s12 5.373 12 12-5.373 12-12 12zm0-1c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11z"></path>
               </svg>
               <div

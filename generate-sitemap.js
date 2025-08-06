@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 
 async function generateSitemap() {
   console.log('🚀 Starting sitemap generation...');
-  
+
   const writeStream = createWriteStream(path.resolve(__dirname, 'public', 'sitemap.xml'));
   
   // Add stats counter

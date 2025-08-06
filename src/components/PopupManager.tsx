@@ -126,7 +126,7 @@ const PopupManager: React.FC<PopupManagerProps> = ({
               window.open(
                 popupUrl,
                 '_blank',
-                'noopener,noreferrer'
+                'noopener'
               );
               
               setHasShownPopup(true);

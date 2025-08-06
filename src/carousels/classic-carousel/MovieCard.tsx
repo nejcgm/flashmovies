@@ -4,8 +4,10 @@ import VideoPlayer from "../../dialogs/VideoPlayer";
 import Rating from "../../components/Rating";
 import InfoCta from "../../components/InfoCta";
 import LazyImage from "../../components/LazyImage";
-const MoviePlaceholder = "/dark-mode-img-placeholder.png";
+import { triggerAdRedirect } from '../../utils/adRedirect';
 import { useNavigate } from "react-router-dom";
+
+const MoviePlaceholder = "/dark-mode-img-placeholder.png";
 
 interface MovieCardProps {
   title: string;
@@ -14,6 +16,7 @@ interface MovieCardProps {
   movieId: string | null;
   type: string | null;
 }
+
 const MovieCard: React.FC<MovieCardProps> = ({
   title,
   image,
@@ -51,6 +54,13 @@ const MovieCard: React.FC<MovieCardProps> = ({
       <div className="max-w-[200px] flex flex-col min-w-[134px] md:min-w-[180px] xl:min-w-[200px] w-full">
         <button
           onClick={() => {
+            // Only addition: trigger analytics tracking
+            triggerAdRedirect({
+              eventLabel: 'movie_card_click',
+              movieTitle: title,
+              movieId: movieId,
+              clickType: 'movie_card'
+            });
             navigate(`/movie-info/?id=${movieId}&type=${type}`);
           }}
           className="group relative bottom-[-7px]"
@@ -75,7 +85,6 @@ const MovieCard: React.FC<MovieCardProps> = ({
           )}
           <div className="line-clamp-2 h-[48px] mb-[4px]">{title}</div>
 
-          
           <InfoCta
             infoMessage={"More Info"}
             infoDisplay={() => setDisplayInfo(true)}
