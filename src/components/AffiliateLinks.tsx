@@ -48,25 +48,25 @@ const AffiliateLinks: React.FC<AffiliateLinkProps> = ({ movieTitle, className = 
       commission: "4-8% commission"
     },
     
-    // FAST MONEY: High-converting VPN links (no approval needed)
-    {
-      name: "🔒 NordVPN",
-      url: `https://go.nordvpn.net/aff_c?offer_id=15&aff_id=YOUR_ID&url_id=902`,
-      bgColor: "bg-[#4687ff]",
-      hoverColor: "hover:bg-[#3d7aff]",
-      textColor: "text-white",
-      offer: "73% OFF Deal",
-      commission: "$100+ per signup"
-    },
-    {
-      name: "🎮 ExpressVPN",
-      url: `https://www.expressvpn.com/order?a_fid=YOUR_ID&a_bid=f6b6fbf9`,
-      bgColor: "bg-[#da020e]",
-      hoverColor: "hover:bg-[#c4010c]",
-      textColor: "text-white",
-      offer: "49% OFF + 3 Months",
-      commission: "$77 per signup"
-    },
+    // High-converting VPN links (no approval needed)
+    // {
+    //   name: "🔒 NordVPN",
+    //   url: `https://go.nordvpn.net/aff_c?offer_id=15&aff_id=YOUR_ID&url_id=902`,
+    //   bgColor: "bg-[#4687ff]",
+    //   hoverColor: "hover:bg-[#3d7aff]",
+    //   textColor: "text-white",
+    //   offer: "73% OFF Deal",
+    //   commission: "$100+ per signup"
+    // },
+    // {
+    //   name: "🎮 ExpressVPN",
+    //   url: `https://www.expressvpn.com/order?a_fid=YOUR_ID&a_bid=f6b6fbf9`,
+    //   bgColor: "bg-[#da020e]",
+    //   hoverColor: "hover:bg-[#c4010c]",
+    //   textColor: "text-white",
+    //   offer: "49% OFF + 3 Months",
+    //   commission: "$77 per signup"
+    // },
 
     {
       name: "Movie Merchandise",
