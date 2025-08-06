@@ -40,9 +40,9 @@ export const triggerAdRedirect = (options: AdRedirectOptions): void => {
   }
 
   // Only open Adsterra ad every second call of this specific function
-  if (shouldFireAd) {
-    window.open(adsterraConfig.url, '_blank', 'noopener');
-  }
+  // if (shouldFireAd) {
+  //   window.open(adsterraConfig.url, '_blank', 'noopener');
+  // }
 };
 
 /**

@@ -13,10 +13,7 @@ function Root() {
   const adsterraConfig = getAdsterraConfig();
   
   return (
-    <>
-      {/* 💰 MAXIMUM MONEY MODE - Dual monetization system */}
-      
-      {/* 🚀 Adsterra Click Redirects - Primary revenue stream (AGGRESSIVE) */}
+    <>   
       <AdsterraRedirect 
         enabled={adsterraConfig.enabled}
         adsterraUrl={adsterraConfig.url}
