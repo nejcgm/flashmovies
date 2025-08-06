@@ -38,30 +38,30 @@ const ActorCard: React.FC<ActorCardProps> = ({
 
   return (
     <>
-      <div className="max-w-[200px] min-w-[150px] md:min-w-[180px] xl:min-w-[200px] w-full text-white font-roboto flex flex-col items-center">
-        <button
-          className="group relative"
-          onClick={handleActorClick}
-        >
+      <button 
+        className="max-w-[200px] min-w-[150px] md:min-w-[180px] xl:min-w-[200px] w-full text-white font-roboto flex flex-col items-center group transition-colors duration-300"
+        onClick={handleActorClick}
+      >
+        <div className="relative">
           <div className="aspect-square overflow-hidden rounded-full">
-            <div className="absolute inset-0 flex items-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <LazyImage
               className="object-cover w-[120px] sm:w-full sm:h-full"
               src={image ? `https://image.tmdb.org/t/p/w500/${image}` : PersonPlaceholder}
               alt={`${name || 'Actor'} photo`}
               placeholder={PersonPlaceholder}
             />
+            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-full"></div>
           </div>
-        </button>
+        </div>
         <div className="mt-[8px] flex w-full items-center">
           <div className="justify-end flex w-[54%] text-[12px] sm:text-[16px]">
             {popularity && popularity.toFixed(0)}
           </div>
           <img className="w-[24px] sm:w-[32px]" src={ChartIcon} alt="" />
         </div>
-        <div className="text-[14px] sm:text-[16px]">{name}</div>
-        <div className="text-[#BBBBBB] text-[12px] sm:text-[16px]">{job}</div>
-      </div>
+        <div className="text-[14px] sm:text-[16px] group-hover:text-[#f5c518] transition-colors duration-300 font-medium">{name}</div>
+        <div className="text-[#BBBBBB] text-[12px] sm:text-[16px] group-hover:text-white transition-colors duration-300">{job}</div>
+      </button>
     </>
   );
 };

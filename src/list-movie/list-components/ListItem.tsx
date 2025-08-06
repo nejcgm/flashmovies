@@ -119,7 +119,7 @@ const ListItem: React.FC<ListItemProps> = ({
               <div
                 className={`text-white text-[11px] sm:text-[14px] ${
                   largeScreen && "lg:text-[16px]"
-                } flex gap-1`}
+                } flex gap-1 font-medium`}
               >
                 {index !== null && index !== undefined && (
                   <div>{index + 1}.</div>

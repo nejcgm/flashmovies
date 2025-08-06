@@ -7,14 +7,25 @@ interface AdRedirectOptions {
   clickType: 'hero_card' | 'movie_card' | 'upnext_card' | 'menu_link' | 'navigation';
 }
 
-/**
- * Reusable ad redirect function with CTR tracking
- * Opens Adsterra ad with proper analytics tracking
- */
+// Track call counts for each unique function call
+const functionCallCounts = new Map<string, number>();
+
+
 export const triggerAdRedirect = (options: AdRedirectOptions): void => {
   const adsterraConfig = getAdsterraConfig();
   
-  // Track the click for CTR analysis
+  
+  const functionKey = options.eventLabel;
+  
+  const currentCount = functionCallCounts.get(functionKey) || 0;
+  const newCount = currentCount + 1;
+  
+  functionCallCounts.set(functionKey, newCount);
+  
+  // Only fire ad on even calls (every second call) for this specific function
+  const shouldFireAd = newCount % 2 === 0;
+  
+  // Always track the click for CTR analysis
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', 'ad_redirect_click', {
       event_category: 'monetization',
@@ -22,12 +33,16 @@ export const triggerAdRedirect = (options: AdRedirectOptions): void => {
       click_type: options.clickType,
       movie_title: options.movieTitle || 'N/A',
       movie_id: options.movieId || 'N/A',
-      ad_url: adsterraConfig.url
+      ad_url: adsterraConfig.url,
+      function_call_count: newCount,
+      ad_fired: shouldFireAd
     });
   }
 
-  // Open Adsterra ad in new tab
-  window.open(adsterraConfig.url, '_blank', 'noopener');
+  // Only open Adsterra ad every second call of this specific function
+  if (shouldFireAd) {
+    window.open(adsterraConfig.url, '_blank', 'noopener');
+  }
 };
 
 /**

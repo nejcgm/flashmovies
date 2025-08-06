@@ -30,7 +30,7 @@ export const ADSTERRA_CONFIG = {
     money_focused: {
       clicksBeforeRedirect: 2,        // Every second for max revenue
       minTimeBeforeFirstRedirect: 15, // 15 seconds (better SEO protection)
-      redirectCooldownMinutes: 0.75,  // 45 seconds (more SEO-friendly)
+      redirectCooldownMinutes: 1,  // 60 seconds (more SEO-friendly)
       maxRedirectsPerSession: 12,     // 12 per session (adjusted for longer cooldown)
       description: "70% revenue focus, 30% SEO protection - SEO-optimized timing"
     },

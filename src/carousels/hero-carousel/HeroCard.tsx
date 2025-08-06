@@ -114,7 +114,7 @@ const HeroCard: React.FC<HeroCardProps> = ({
                     </svg>
                   </div>
                   <div className="max-w-[75%] sm:max-w-[70%] text-left">
-                    <div className="text-[18px] sm:text-[24px] font-roboto text-white">
+                    <div className="text-[18px] sm:text-[24px] font-roboto text-white font-medium">
                       {title}
                     </div>
                     <div className="text-[#b3b3b3] text-[11px] leading-[14px] sm:leading-[16px] sm:text-[12px] md:text-[16px]">
