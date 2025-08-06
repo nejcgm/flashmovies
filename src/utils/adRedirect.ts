@@ -1,3 +1,5 @@
+import { getAdsterraConfig } from '../config/adsterraConfig';
+
 interface AdRedirectOptions {
   eventLabel: string;
   movieTitle?: string;
@@ -6,24 +8,26 @@ interface AdRedirectOptions {
 }
 
 /**
- * Analytics tracking for clicks - works with official Adsterra popunder script
- * The popunder script handles the actual ads automatically
+ * Reusable ad redirect function with CTR tracking
+ * Opens Adsterra ad with proper analytics tracking
  */
 export const triggerAdRedirect = (options: AdRedirectOptions): void => {
+  const adsterraConfig = getAdsterraConfig();
+  
   // Track the click for CTR analysis
   if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', 'click_with_popunder', {
+    window.gtag('event', 'ad_redirect_click', {
       event_category: 'monetization',
       event_label: options.eventLabel,
       click_type: options.clickType,
       movie_title: options.movieTitle || 'N/A',
       movie_id: options.movieId || 'N/A',
-      ad_type: 'official_adsterra_popunder'
+      ad_url: adsterraConfig.url
     });
   }
 
-  // Note: No manual redirect needed - official Adsterra script handles popunders automatically
-  // This function now only tracks user interactions for analytics
+  // Open Adsterra ad in new tab
+  window.open(adsterraConfig.url, '_blank', 'noopener');
 };
 
 /**

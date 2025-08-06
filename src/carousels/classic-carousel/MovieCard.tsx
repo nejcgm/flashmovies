@@ -4,8 +4,8 @@ import VideoPlayer from "../../dialogs/VideoPlayer";
 import Rating from "../../components/Rating";
 import InfoCta from "../../components/InfoCta";
 import LazyImage from "../../components/LazyImage";
-import { triggerAdRedirect } from '../../utils/adRedirect';
 import { useNavigate } from "react-router-dom";
+import { triggerAdRedirect } from '../../utils/adRedirect';
 
 const MoviePlaceholder = "/dark-mode-img-placeholder.png";
 
@@ -54,7 +54,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
       <div className="max-w-[200px] flex flex-col min-w-[134px] md:min-w-[180px] xl:min-w-[200px] w-full">
         <button
           onClick={() => {
-            // Only addition: trigger analytics tracking
+            // Add redirect function to original onClick
             triggerAdRedirect({
               eventLabel: 'movie_card_click',
               movieTitle: title,

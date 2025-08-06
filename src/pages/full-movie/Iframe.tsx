@@ -39,7 +39,7 @@ const Iframe = () => {
               ? `https://image.tmdb.org/t/p/w500${info.poster_path}` 
               : "https://flashmovies.xyz/flash-movies-logo.png"
         }
-        url={window.location.href}
+      url={window.location.href}
         keywords={[
           info?.title || info?.name || '',
           ...(info?.genres?.map((genre: { name: string }) => genre.name) || []),
