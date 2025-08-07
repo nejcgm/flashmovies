@@ -51,7 +51,7 @@ const WatchMoviePage = () => {
       <div className="flex font-roboto items-center mb-[14px] content-center text-white justify-between">
         <div className="flex gap-4 content-center">
           <BackButton />
-          <div className="text-[24px] md:text-[32px] lg:text-[48px]">
+          <div className="text-[24px] md:text-[32px] lg:text-[48px] font-medium">
             {info?.title || info?.name}
           </div>
           <ShareButton />

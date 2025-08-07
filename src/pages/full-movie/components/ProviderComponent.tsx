@@ -65,8 +65,8 @@ const ProviderComponent = ({
   return (
     <>
       <div className={className}>
-        <div className="font-bold text-[24px] text-yellow-500">{title}</div>
-        <div className="flex flex-wrap gap-2 mt-4">
+        <div className="font-semibold text-lg sm:text-[24px] text-yellow-500">{title}</div>
+        <div className="flex flex-wrap gap-x-2 gap-y-2 sm:gap-x-3 sm:gap-y-3 mt-4">
           {providers.map((provider) => (
             <ProviderButton
               key={provider.name}
