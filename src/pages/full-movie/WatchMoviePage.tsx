@@ -10,7 +10,7 @@ import ProviderComponent from "./components/ProviderComponent.js";
 import Meta from "../../SEO/meta.tsx";
 import AffiliateLinks from '../../components/AffiliateLinks';
 
-const Iframe = () => {
+const WatchMoviePage = () => {
   const [info, setInfo] = useState<FetchSpecificResponse>();
   const [searchParams] = useSearchParams();
   const [currentProviderUrl, setCurrentProviderUrl] = useState("");
@@ -73,7 +73,6 @@ const Iframe = () => {
           className="mt-[8px]"
         />
 
-        {/* FAST MONEY: High-converting placement on watch page */}
         <div className="mt-6">
           <AffiliateLinks 
             movieTitle={info?.title || info?.name || 'This Movie'}
@@ -85,4 +84,4 @@ const Iframe = () => {
   );
 };
 
-export default Iframe;
+export default WatchMoviePage; 

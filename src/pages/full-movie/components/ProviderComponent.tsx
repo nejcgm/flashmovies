@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ProviderButton from "./ProviderButton";
+import { STREAMING_PROVIDERS } from "../../../config/streamingProviders";
 
 interface ProviderComponentProps {
   newProvider: (providerUrl: string) => void;
@@ -16,10 +17,18 @@ const ProviderComponent = ({
   type,
   className,  
 }: ProviderComponentProps) => {
-  const [providerUrl, setProviderUrl] = useState(
-    `https://vidsrc.pm/embed/${type}/${movieId}`
-  );
-  const [selectedProvider, setSelectedProvider] = useState("VidSrc");
+  const providers = STREAMING_PROVIDERS.map(provider => ({
+    name: provider.name,
+    url: provider.url(type, movieId),
+    description: provider.description,
+    priority: provider.priority
+  }));
+
+  const [providerUrl, setProviderUrl] = useState(providers[0].url);
+  const [selectedProvider, setSelectedProvider] = useState(providers[0].name);
+  const [currentProviderIndex, setCurrentProviderIndex] = useState(0);
+  const [iframeKey, setIframeKey] = useState(0);
+  const [failedProviders, setFailedProviders] = useState<string[]>([]);
 
   useEffect(() => {
     newProvider(providerUrl);
@@ -28,45 +37,66 @@ const ProviderComponent = ({
   const handleProviderSelection = (provider: string, url: string) => {
     setSelectedProvider(provider);
     setProviderUrl(url);
+    const index = providers.findIndex(p => p.name === provider);
+    setCurrentProviderIndex(index);
+    setIframeKey(prev => prev + 1);
+  };
+
+  const handleProviderError = () => {
+    if (!failedProviders.includes(selectedProvider)) {
+      setFailedProviders(prev => [...prev, selectedProvider]);
+    }
+
+    if (currentProviderIndex < providers.length - 1) {
+      const nextProvider = providers[currentProviderIndex + 1];
+      handleProviderSelection(nextProvider.name, nextProvider.url);
+    }
+  };
+
+  const handleIframeError = () => {
+    handleProviderError();
+  };
+
+  const getCurrentProviderDescription = () => {
+    const currentProvider = providers.find(p => p.name === selectedProvider);
+    return currentProvider?.description || "";
   };
 
   return (
     <>
-      <div className={`${className}`}>
-        <div className="font-bold text-[24px] text-blue-400">{title}</div>
+      <div className={className}>
+        <div className="font-bold text-[24px] text-yellow-500">{title}</div>
         <div className="flex flex-wrap gap-2 mt-4">
-          <ProviderButton
-            provider="VidSrc"
-            url={`https://vidsrc.pm/embed/${type}/${movieId}`}
-            updateProvider={(url) => {
-              handleProviderSelection("VidSrc", url);
-            }}
-            className={
-              selectedProvider === "VidSrc" ? "bg-yellow-500" : "bg-gray-500"
-            }
-          />
-          <ProviderButton
-            provider="MoviesAPI Club"
-            url={`https://moviesapi.club/${type}/${movieId}`}
-            updateProvider={(url) =>
-              handleProviderSelection("MoviesAPI Club", url)
-            }
-            className={
-              selectedProvider === "MoviesAPI Club"
-                ? "bg-yellow-500"
-                : "bg-gray-500"
-            }
-          />
-          <ProviderButton
-            provider="Embed.su"
-            url={`https://embed.su/embed/${type}/${movieId}`}
-            updateProvider={(url) => handleProviderSelection("Embed.su", url)}
-            className={
-              selectedProvider === "Embed.su" ? "bg-yellow-500" : "bg-gray-500"
-            }
-          />
+          {providers.map((provider) => (
+            <ProviderButton
+              key={provider.name}
+              provider={provider.name}
+              url={provider.url}
+              updateProvider={(url) => {
+                handleProviderSelection(provider.name, url);
+              }}
+              className={
+                selectedProvider === provider.name 
+                  ? "bg-yellow-500" 
+                  : failedProviders.includes(provider.name)
+                    ? "bg-red-500 opacity-50"
+                    : "bg-gray-500"
+              }
+            />
+          ))}
+        </div>
+        
+        <div className="mt-2 text-sm text-gray-400">
+          {getCurrentProviderDescription()}
         </div>
       </div>
+
+      <iframe
+        key={iframeKey}
+        src={providerUrl}
+        style={{ display: 'none' }}
+        onError={handleIframeError}
+      />
     </>
   );
 };

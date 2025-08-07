@@ -125,6 +125,7 @@ const MovieInfoPage = () => {
                 <MediaComponent
                   movieId={info.id}
                   poster={info.poster_path || info.profile_path}
+                  title={info.title || info.name}
                   backdrop={
                     info.backdrop_path || credits?.[1]?.file_path || " "
                   }
@@ -140,7 +141,6 @@ const MovieInfoPage = () => {
                   genres={info.genres}
                 />
 
-                {/* Use the new AffiliateLinks component */}
                 <AffiliateLinks movieTitle={info.title || info.name || ''} />
               </>
             )}

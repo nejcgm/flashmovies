@@ -12,6 +12,7 @@ interface HeaderInfoProps {
   movieId: string | null;
   backdrop: string;
   type: string | null;
+  title: string | undefined;
 }
 
 const HeaderInfo: React.FC<HeaderInfoProps> = ({
@@ -20,6 +21,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
   movieId,
   backdrop,
   type,
+  title,
 }) => {
   const [trailer, setTrailer] = useState(false);
   const navigate = useNavigate();
@@ -52,6 +54,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
         <VideoPlayer
           movieId={movieId}
           type={type}
+          title={title}
           onCancel={() => {
             setTrailer(false);
           }}
