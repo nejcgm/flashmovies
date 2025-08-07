@@ -125,6 +125,7 @@ const Meta = ({
           "@context": "https://schema.org",
           "@type": "WebSite",
           "name": siteName,
+          "alternateName": ["FlashMovies", "Flash Movies", "flashmovies.xyz"],
           "url": url,
           "description": description,
           "potentialAction": {
@@ -139,7 +140,14 @@ const Meta = ({
             // Add your social media URLs here when available
             // "https://twitter.com/flashmovies",
             // "https://facebook.com/flashmovies"
-          ]
+          ],
+          "mainEntity": {
+            "@type": "Organization",
+            "name": siteName,
+            "url": url,
+            "logo": `${url}/flash-movies-logo.png`,
+            "description": "Free movie and TV show streaming platform"
+          }
         })}
       </script>
     </Helmet>

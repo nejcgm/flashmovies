@@ -49,12 +49,13 @@ const Home = () => {
   return (
     <>
       <Meta 
-        title="Flash Movies - Free Movie & TV Show Streaming"
-        description="Watch free movies and TV shows online in HD. Stream the latest movies, popular TV series, and discover new content on Flash Movies - your free entertainment destination."
+        title="Flash Movies - Free Movie & TV Show Streaming | Watch HD Movies Online"
+        description="Flash Movies - Your ultimate destination for free movie and TV show streaming. Watch the latest blockbusters, popular TV series, and discover new content in HD quality. Stream thousands of movies and shows for free on Flash Movies."
         keywords={[
+          "flash movies", "flashmovies", "flash movies website", "flashmovies.xyz",
           "free movies", "movie streaming", "watch movies online", "free tv shows", 
           "stream movies", "HD movies", "TV series", "popular movies", "latest movies",
-          "flash movies", "free streaming", "online movies", "watch tv shows"
+          "free streaming", "online movies", "watch tv shows", "movie site", "streaming site"
         ]}
         type="website"
       />
@@ -66,6 +67,21 @@ const Home = () => {
 
       {!loading && (
         <>
+          {/* SEO Content for Brand Authority - Hidden but crawlable */}
+          <div className="sr-only">
+            <h1>Flash Movies - Free Movie Streaming Platform</h1>
+            <p>Welcome to Flash Movies (flashmovies.xyz), your premier destination for free movie and TV show streaming. 
+            Flash Movies offers thousands of movies and TV series in HD quality. Stream popular movies, latest releases, 
+            and trending TV shows on Flash Movies platform completely free.</p>
+            <h2>What you can watch on Flash Movies:</h2>
+            <ul>
+              <li>Latest blockbuster movies on Flash Movies</li>
+              <li>Popular TV series and shows</li>
+              <li>Classic movies and timeless favorites</li>
+              <li>Trending content updated daily</li>
+            </ul>
+          </div>
+
           <HeroCarousel
             moviesHero={heroCarousel}
             cardCount={20}
