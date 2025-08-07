@@ -43,6 +43,7 @@ const UpNextCard: React.FC<UpNextCardProps> = ({
         <VideoPlayer
           movieId={movieId}
           type={type}
+          title={title}
           onCancel={() => {
             setTrailer(false);
           }}

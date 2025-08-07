@@ -2,20 +2,25 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import Cross from "../assets/gridicons_cross.png";
 import { fetchSpecific } from "../functions/Fetching.js";
+import CustomButton from "../components/CustomButton.js";
+import { useNavigate } from "react-router-dom";
+import { triggerAdRedirect } from "../utils/adRedirect.js";
 interface VideoPlayerProps {
   movieId: string | null;
   onCancel: () => void;
   type: string | null;
+  title: string | undefined;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
   movieId,
   onCancel,
   type,
+  title,
 }) => {
   const [video, setVideo] = useState<[]>([]);
   const [trailer, setTrailer] = useState<{ key: string | null | undefined }>();
-
+  const navigate = useNavigate();
   useEffect(() => {
     const loadVideo = async () => {
       const data = await fetchSpecific(type, movieId, "/videos", null, "");
@@ -53,6 +58,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             ></iframe>
+            <CustomButton
+              className="mt-4 font-semibold text-[14px] sm:text-[18px] py-2 px-8"
+              onClick={() => {
+                triggerAdRedirect({
+                  eventLabel: "movie_card_click",
+                  movieTitle: title,
+                  movieId: movieId,
+                  clickType: "movie_card",
+                });
+                onCancel();
+                navigate(`movie-info/?id=${movieId}&type=${type}`);
+              }}
+            >
+              Watch Now
+            </CustomButton>
           </div>
         </div>
       </div>
