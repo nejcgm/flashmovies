@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import ListItem from "./list-components/ListItem";
 import Spiner from "../components/Spinner";
 import GenreListComponent from "./list-components/GenreListComponent";
@@ -13,6 +13,7 @@ import AffiliateLinks from '../components/AffiliateLinks';
 const List: React.FC = () => {
   const [listItems, setListItems] = useState<DataInfoProps[]>([]);
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const search = searchParams.get("search");
   const type = searchParams.get("type") as MediaType;
   const title: string | null = searchParams.get("title");
@@ -22,6 +23,13 @@ const List: React.FC = () => {
   const lastItemRef = useRef<HTMLDivElement | null>(null);
   const [genreList, setGenreList] = useState<number[]>([]);
   const [endOfList, setEndOfList] = useState(false);
+
+  useEffect(() => {
+    if (!type || !search) {
+      navigate('/', { replace: true });
+      return;
+    }
+  }, [type, search, navigate]);
 
   useEffect(() => {
     setCounter(1);
