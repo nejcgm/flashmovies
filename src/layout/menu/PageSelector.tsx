@@ -95,7 +95,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
           </div>
 
           {/*movies list  */}
-          <div className="flex justify-between mt-[48px] text-[12px] sm:text-[16px] leading-[14px] sm:leading-[18px]">
+          <div className="flex justify-between mt-[48px] text-[13px] sm:text-[16px] leading-[15px] sm:leading-[18px]">
             <div className="text-white font-roboto flex flex-col">
               <div className="flex gap-2 sm:gap-3">
                 <svg
@@ -251,7 +251,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                   <path d="M18 4v1h-2V4c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v1H6V4c0-.55-.45-1-1-1s-1 .45-1 1v16c0 .55.45 1 1 1s1-.45 1-1v-1h2v1c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-1h2v1c0 .55.45 1 1 1s1-.45 1-1V4c0-.55-.45-1-1-1s-1 .45-1 1zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"></path>
                 </svg>
                 <div className="flex flex-col items-start gap-3">
-                  <div className="text-[18px] sm:text-[24px] leading-[20px] sm:leading-[28px] font-semibold">Celebs</div>
+                  <div className="text-[20px] sm:text-[24px] leading-[20px] sm:leading-[28px] font-semibold">Celebs</div>
                   <a
                     href="/list-items?type=person&search=popular&title=most-popular-actors"
                     onClick={() => {

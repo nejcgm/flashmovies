@@ -113,7 +113,7 @@ const List: React.FC = () => {
       />
       <div className="w-full flex flex-col">
         <div className="flex flex-col w-[100%] sm:w-[70%] self-center gap-2 sm:gap-4 p-4 bg-[#101010] rounded-lg">
-          <div className="font-roboto text-[#f5c518] text-[24px] sm:text-[32px] mb-[16px] flex gap-1 sm:gap-3 font-semibold">
+          <div className="font-roboto text-[#f5c518] text-[24px] sm:text-[32px] mb-[18px] sm:mb-[16px] flex gap-1 sm:gap-3 font-semibold">
             <BackButton />
             {formatTitle(title)}
           </div>
@@ -122,11 +122,10 @@ const List: React.FC = () => {
             <GenreListComponent type={type} genreList={setGenreList} />
           )}
 
-          {/* FAST MONEY: Affiliate links on list pages */}
-          <div className="mt-4 mb-6">
+          <div className="mb-3">
             <AffiliateLinks 
               movieTitle={`${type === 'movie' ? 'Movies' : type === 'tv' ? 'TV Shows' : 'Content'}`}
-              className="bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]"
+              className="bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] mx-0 px-0"
             />
           </div>
 

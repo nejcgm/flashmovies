@@ -58,6 +58,7 @@ const ListItem: React.FC<ListItemProps> = ({
         <VideoPlayer
           movieId={movieId}
           type={type}
+          title={title}
           onCancel={() => {
             setTrailer(false);
           }}
@@ -117,17 +118,20 @@ const ListItem: React.FC<ListItemProps> = ({
                 <path d="M12 24C5.373 24 0 18.627 0 12S5.373 0 12 0s12 5.373 12 12-5.373 12-12 12zm0-1c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11z"></path>
               </svg>
               <div
-                className={`text-white text-[11px] sm:text-[14px] ${
+                className={`text-white text-[12px] sm:text-[14px] ${
                   largeScreen && "lg:text-[16px]"
                 } flex gap-1 font-medium`}
               >
                 {index !== null && index !== undefined && (
                   <div>{index + 1}.</div>
                 )}
-                <div>{title}</div>
+                <div className="sm:hidden">
+                  {title.length > 30 ? `${title.substring(0, 30)}...` : title}
+                </div>
+                <div className="hidden sm:block">{title}</div>
               </div>
             </div>
-            <div className="text-[#C0C0C0] text-[10px] sm:text-[14px] flex gap-2">
+            <div className="text-[#C0C0C0] text-[11px] sm:text-[14px] flex gap-2">
               <div>{year?.substring(0, 4)}</div>
               <div className="text-white">
                 {rating && <Rating rating={rating} />}

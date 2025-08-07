@@ -87,7 +87,7 @@ const Home = () => {
             showTitle={"explore Trailers"}
           />
 
-          <div className="mt-[42px] sm:mt-[100px]">
+          <div className="mt-[42px] sm:mt-[64px]">
             <Carousel
               movies={classicCarousel}
               cardCount={20}
@@ -103,7 +103,7 @@ const Home = () => {
             />
           </div>
 
-          <div className="mt-[42px] sm:mt-[100px]">
+          <div className="mt-[24px] sm:mt-[64px]">
             <Carousel
               movies={tv}
               cardCount={20}
@@ -119,7 +119,7 @@ const Home = () => {
               actors={actors}
             />
           </div>
-          <div className="h-[150px]"> </div>
+          <div className="h-[64px] sm:h-[100px]"> </div>
         </>
       )}
     </>

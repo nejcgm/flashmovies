@@ -57,6 +57,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
         <VideoPlayer
           movieId={movieId}
           type={type}
+          title={title}
           onCancel={() => {
             setTrailer(false);
           }}
@@ -80,7 +81,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
 
         <button
           onClick={handleCardClick}
-          className="group flex flex-col flex-1 rounded-b-lg bg-[#1A1A1A] text-white text-[12px] sm:text-[16px] font-roboto px-2 py-5 hover:bg-[#2A2A2A] transition-colors duration-300"
+          className="group flex flex-col flex-1 rounded-b-lg bg-[#1A1A1A] text-white text-[13px] sm:text-[16px] font-roboto px-2 py-5 hover:bg-[#2A2A2A] transition-colors duration-300"
         >
           {/*bottom section*/}
           {rating > 0 ? (

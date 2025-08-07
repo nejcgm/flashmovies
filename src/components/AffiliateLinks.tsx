@@ -32,7 +32,7 @@ const AffiliateLinks: React.FC<AffiliateLinkProps> = ({ movieTitle, className = 
   const affiliateLinks = getAffiliateLinks(movieTitle);
 
   return (
-    <div className={`bg-gradient-to-r from-[#1a1a1a] to-[#2a2a2a] rounded-lg p-3 sm:p-4 my-4 sm:my-6 border border-[#333] mx-2 sm:mx-0 ${className}`}>
+    <div className={`bg-gradient-to-r from-[#1a1a1a] to-[#2a2a2a] rounded-lg p-3 sm:p-4 my-4 sm:my-6 border border-[#333] mx-4 sm:mx-0 ${className}`}>
       <h3 className="text-sm sm:text-lg font-semibold text-[#f5c518] mb-2 sm:mb-3 text-center sm:text-left">
         🎬 Watch &ldquo;{movieTitle}&rdquo; on Premium Platforms
       </h3>
