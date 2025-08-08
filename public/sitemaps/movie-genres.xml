@@ -1,109 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=28&title=action-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=28&amp;title=action-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=12&title=adventure-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=12&amp;title=adventure-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=16&title=animation-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=16&amp;title=animation-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=35&title=comedy-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=35&amp;title=comedy-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=80&title=crime-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=80&amp;title=crime-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=99&title=documentary-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=99&amp;title=documentary-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=18&title=drama-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=18&amp;title=drama-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=10751&title=family-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=10751&amp;title=family-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=14&title=fantasy-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=14&amp;title=fantasy-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=36&title=history-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=36&amp;title=history-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=27&title=horror-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=27&amp;title=horror-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=10402&title=music-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=10402&amp;title=music-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=9648&title=mystery-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=9648&amp;title=mystery-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=10749&title=romance-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=10749&amp;title=romance-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=878&title=science-fiction-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=878&amp;title=science-fiction-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=53&title=thriller-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=53&amp;title=thriller-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=10752&title=war-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=10752&amp;title=war-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=37&title=western-movies</loc>
+    <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;with_genres=37&amp;title=western-movies</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

@@ -28,8 +28,10 @@ async function generateSitemapIndex() {
       writeStream.write('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n');
 
       urls.forEach(url => {
+        // Properly encode XML entities
+        const encodedUrl = `${baseUrl}${url.path}`.replace(/&/g, '&amp;');
         writeStream.write(`  <url>\n`);
-        writeStream.write(`    <loc>${baseUrl}${url.path}</loc>\n`);
+        writeStream.write(`    <loc>${encodedUrl}</loc>\n`);
         writeStream.write(`    <lastmod>${url.lastmod || today}</lastmod>\n`);
         writeStream.write(`    <changefreq>${url.changefreq || changefreq}</changefreq>\n`);
         writeStream.write(`    <priority>${url.priority || priority}</priority>\n`);

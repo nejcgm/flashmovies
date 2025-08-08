@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=tv&search=top_rated&title=top-rated-shows</loc>
+    <loc>https://flashmovies.xyz/list-items?type=tv&amp;search=top_rated&amp;title=top-rated-shows</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=tv&search=popular&title=most-popular-shows</loc>
+    <loc>https://flashmovies.xyz/list-items?type=tv&amp;search=popular&amp;title=most-popular-shows</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=tv&search=airing_today&title=airing-today-shows</loc>
+    <loc>https://flashmovies.xyz/list-items?type=tv&amp;search=airing_today&amp;title=airing-today-shows</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=tv&search=on_the_air&title=on-the-air</loc>
+    <loc>https://flashmovies.xyz/list-items?type=tv&amp;search=on_the_air&amp;title=on-the-air</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://flashmovies.xyz/list-items?type=tv&search=discover&title=browse-shows-by-genre</loc>
+    <loc>https://flashmovies.xyz/list-items?type=tv&amp;search=discover&amp;title=browse-shows-by-genre</loc>
     <lastmod>2025-08-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
