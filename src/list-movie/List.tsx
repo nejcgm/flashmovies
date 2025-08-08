@@ -8,6 +8,8 @@ import { fetchSpecific } from "../functions/Fetching.ts";
 import { formatTitle } from "../functions/Functions.ts";
 import { DataInfoProps, MediaType } from "../functions/Interfaces.ts";
 import Meta from "../SEO/meta.tsx";
+import ItemListSchema from '../SEO/ItemListSchema.tsx';
+import BreadcrumbSchema from '../SEO/BreadcrumbSchema.tsx';
 import AffiliateLinks from '../components/AffiliateLinks';
 
 const List: React.FC = () => {
@@ -111,6 +113,33 @@ const List: React.FC = () => {
         ]}
         type="website"
       />
+
+      <BreadcrumbSchema 
+        items={[
+          { name: "Home", url: "https://flashmovies.xyz/" },
+          { 
+            name: type === 'movie' ? 'Movies' : type === 'tv' ? 'TV Shows' : 'People', 
+            url: `https://flashmovies.xyz/list-items?type=${type}&search=popular&title=popular-${type}s` 
+          },
+          { 
+            name: formatTitle(title) || 'Browse', 
+            url: window.location.href 
+          }
+        ]}
+      />
+
+      <ItemListSchema 
+        listName={formatTitle(title) || `${type === 'movie' ? 'Movies' : 'TV Shows'}`}
+        description={`Browse and watch ${formatTitle(title)} on Flash Movies. Stream ${type === 'movie' ? 'movies' : 'TV shows'} in HD for free.`}
+        url={window.location.href}
+        items={listItems.slice(0, 20).map((item: DataInfoProps) => ({
+          name: item.title || item.name || '',
+          url: `https://flashmovies.xyz/movie-info?type=${type}&id=${item.id}`,
+          image: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : undefined,
+          description: item.overview?.slice(0, 150) || ''
+        }))}
+      />
+
       <div className="w-full flex flex-col">
         <div className="flex flex-col w-[100%] sm:w-[70%] self-center gap-2 sm:gap-4 p-4 bg-[#101010] rounded-lg">
           <div className="font-roboto text-[#f5c518] text-[24px] sm:text-[32px] mb-[18px] sm:mb-[16px] flex gap-1 sm:gap-3 font-semibold">

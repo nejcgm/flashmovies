@@ -63,6 +63,7 @@ const HeroCard: React.FC<HeroCardProps> = ({
         <VideoPlayer
           movieId={movieId}
           type={type}
+          title={title}
           onCancel={() => {
             setTrailer(false);
           }}
@@ -118,7 +119,8 @@ const HeroCard: React.FC<HeroCardProps> = ({
                       {title}
                     </div>
                     <div className="text-[#b3b3b3] text-[11px] leading-[14px] sm:leading-[16px] sm:text-[12px] md:text-[16px]">
-                      {`${overview?.slice(0, 120)}...`}
+                      <span className="sm:hidden">{`${overview?.slice(0, 80)}...`}</span>
+                      <span className="hidden sm:block">{`${overview?.slice(0, 120)}...`}</span>
                     </div>
                     <div className="flex items-center text-[#BBBBBB] text-[12px] sm:text-[16px] gap-3">
                       <Rating rating={rating} />

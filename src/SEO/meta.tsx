@@ -144,9 +144,24 @@ const Meta = ({
           "mainEntity": {
             "@type": "Organization",
             "name": siteName,
+            "alternateName": ["FlashMovies", "Flash Movies"],
             "url": url,
-            "logo": `${url}/flash-movies-logo.png`,
-            "description": "Free movie and TV show streaming platform"
+            "logo": {
+              "@type": "ImageObject",
+              "url": `${url}/flash-movies-logo.png`,
+              "width": "400",
+              "height": "400"
+            },
+            "description": "Free movie and TV show streaming platform offering HD streaming of popular movies and TV series",
+            "foundingDate": "2024",
+            "serviceType": ["Movie Streaming", "TV Show Streaming", "Entertainment"],
+            "areaServed": "Worldwide",
+            "knowsAbout": ["Movies", "TV Shows", "Entertainment", "Streaming"],
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "Customer Service",
+              "availableLanguage": "English"
+            }
           }
         })}
       </script>

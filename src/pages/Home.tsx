@@ -10,31 +10,41 @@ import AffiliateLinks from '../components/AffiliateLinks';
 const Home = () => {
   const [classicCarousel, setClassicCarousel] = useState<[]>([]);
   const [tv, setTv] = useState<[]>([]);
+  const [topRatedMovies, setTopRatedMovies] = useState<[]>([]);
+  const [upcomingMovies, setUpcomingMovies] = useState<[]>([]);
+  const [topRatedTvShows, setTopRatedTvShows] = useState<[]>([]);
+  const [onTheAirTvShows, setOnTheAirTvShows] = useState<[]>([]);
   const [heroCarousel, setHeroCarousel] = useState<[]>([]);
   const [actors, setActors] = useState<[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const cardCount = 20;
   const heroPage = 2;
   const classicPage = 1;
 
-  //type,movieId,search,page)
 
   useEffect(() => {
     setLoading(true);
     const loadHomeData = async () => {
       try {
-        const [data, tv, hero, actors] = await Promise.all([
+        const [data, tv, hero, actors, topRatedMovies, upcomingMovies, topRatedTv, onTheAirTv] = await Promise.all([
           fetchSpecific("movie", "", "/popular", null, classicPage),
           fetchSpecific("tv", "", "/popular", null, classicPage),
           fetchSpecific("movie", "", "/popular", null, heroPage),
           fetchSpecific("person", "", "/popular", null, 1),
+          fetchSpecific("movie", "", "/top_rated", null, classicPage),
+          fetchSpecific("movie", "", "/upcoming", null, classicPage),
+          fetchSpecific("tv", "", "/top_rated", null, classicPage),
+          fetchSpecific("tv", "", "/on_the_air", null, classicPage),
         ]);
-        if (hero && data && tv && actors) {
+        if (hero && data && tv && actors && topRatedMovies && upcomingMovies && topRatedTv && onTheAirTv) {
           setHeroCarousel(hero.results);
           setClassicCarousel(data.results);
           setTv(tv.results);
           setActors(actors.results);
+          setTopRatedMovies(topRatedMovies.results);
+          setUpcomingMovies(upcomingMovies.results);
+          setTopRatedTvShows(topRatedTv.results);
+          setOnTheAirTvShows(onTheAirTv.results);
         }
       } catch (error) {
         console.error("Failed to fetch data", error);
@@ -91,7 +101,25 @@ const Home = () => {
             <Carousel
               movies={classicCarousel}
               cardCount={20}
-              showTitle={`most Popular ${cardCount} Movies`}
+              showTitle={`most Popular Movies`}
+              type={"movie"}
+            />
+          </div>
+
+          <div className="mt-[24px] sm:mt-[64px]">
+            <Carousel
+              movies={topRatedMovies}
+              cardCount={20}
+              showTitle={`Top Rated Movies`}
+              type={"movie"}
+            />
+          </div>
+
+          <div className="mt-[24px] sm:mt-[64px]">
+            <Carousel
+              movies={upcomingMovies}
+              cardCount={20}
+              showTitle={`Upcoming Movies`}
               type={"movie"}
             />
           </div>
@@ -107,7 +135,25 @@ const Home = () => {
             <Carousel
               movies={tv}
               cardCount={20}
-              showTitle={`most Popular ${cardCount} Shows`}
+              showTitle={`most Popular TV Shows`}
+              type={"tv"}
+            />
+          </div>
+
+          <div className="mt-[24px] sm:mt-[64px]">
+            <Carousel
+              movies={topRatedTvShows}
+              cardCount={20}
+              showTitle={`Top Rated TV Shows`}
+              type={"tv"}
+            />
+          </div>
+
+          <div className="mt-[24px] sm:mt-[64px]">
+            <Carousel
+              movies={onTheAirTvShows}
+              cardCount={20}
+              showTitle={`On The Air TV Shows`}
               type={"tv"}
             />
           </div>

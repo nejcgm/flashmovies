@@ -1,68 +1,73 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import Meta from "../SEO/meta.tsx";
-const NotFound: React.FC = () => {
-  const navigate = useNavigate();
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Meta from '../SEO/meta';
 
+const NotFound: React.FC = () => {
   return (
     <>
       <Meta 
-        title="Page Not Found - Flash Movies"
-        description="The page you are looking for does not exist. Discover free movies and TV shows on Flash Movies."
-        robots="noindex, follow"
+        title="404 - Page Not Found | Flash Movies"
+        description="Sorry, the page you're looking for doesn't exist. Browse our collection of free movies and TV shows on Flash Movies."
+        robots="noindex, nofollow"
         url={window.location.href}
-        keywords={["404", "page not found", "flash movies", "free movies", "streaming"]}
+        keywords={['404', 'page not found', 'flash movies', 'movies', 'tv shows']}
       />
-      <div className="flex flex-col items-center justify-center min-h-screen text-white font-roboto bg-[#0a0a0a] px-4">
+      
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4">
         <div className="text-center max-w-md">
-          <h1 className="text-6xl font-bold text-[#f5c518] mb-4">404</h1>
-          <h2 className="text-2xl font-semibold mb-4">Page Not Found</h2>
-          <p className="text-gray-400 mb-8">
-            The page you are looking for does not exist. It might have been moved, deleted, or you entered the wrong URL.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => navigate("/")}
-              className="bg-[#f5c518] text-black px-6 py-3 rounded-lg font-semibold hover:bg-[#e6b800] transition-colors"
-            >
-              Go to Homepage
-            </button>
-            <button
-              onClick={() => navigate(-1)}
-              className="border border-[#f5c518] text-[#f5c518] px-6 py-3 rounded-lg font-semibold hover:bg-[#f5c518] hover:text-black transition-colors"
-            >
-              Go Back
-            </button>
+          <div className="text-[120px] sm:text-[180px] font-bold text-[#f5c518] leading-none">
+            404
           </div>
           
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-4">Popular Sections:</h3>
-            <div className="flex flex-wrap gap-2 justify-center">
-              <button
-                onClick={() => navigate("/list-items?type=movie&search=popular&title=most-popular-movies")}
-                className="text-[#f5c518] hover:underline"
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            Page Not Found
+          </h1>
+          
+          <p className="text-gray-400 mb-8 text-sm sm:text-base">
+            Sorry, the page you&apos;re looking for doesn&apos;t exist. It might have been moved, deleted, or you entered the wrong URL.
+          </p>
+          
+          <div className="space-y-4">
+            <Link 
+              to="/" 
+              className="inline-block bg-[#f5c518] text-black px-6 py-3 rounded-lg font-semibold hover:bg-[#e6b800] transition-colors"
+            >
+              Go to Homepage
+            </Link>
+            
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center">
+              <Link 
+                to="/list-items?type=movie&search=popular&title=popular-movies" 
+                className="text-[#f5c518] hover:text-[#e6b800] underline"
               >
-                Popular Movies
-              </button>
-              <span className="text-gray-600">•</span>
-              <button
-                onClick={() => navigate("/list-items?type=tv&search=popular&title=most-popular-shows")}
-                className="text-[#f5c518] hover:underline"
+                Browse Movies
+              </Link>
+              <Link 
+                to="/list-items?type=tv&search=popular&title=popular-tv-shows" 
+                className="text-[#f5c518] hover:text-[#e6b800] underline"
               >
-                Popular TV Shows
-              </button>
-              <span className="text-gray-600">•</span>
-              <button
-                onClick={() => navigate("/list-items?type=movie&search=top_rated&title=top-rated-movies")}
-                className="text-[#f5c518] hover:underline"
-              >
-                Top Rated
-              </button>
+                Browse TV Shows
+              </Link>
             </div>
           </div>
         </div>
       </div>
+
+      {/* 404 Error Schema */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "404 Error - Page Not Found",
+          "description": "The requested page could not be found on Flash Movies.",
+          "url": window.location.href,
+          "mainEntity": {
+            "@type": "Thing",
+            "name": "404 Error",
+            "description": "Page not found error"
+          }
+        })}
+      </script>
     </>
   );
 };

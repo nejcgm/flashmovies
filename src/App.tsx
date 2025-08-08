@@ -6,10 +6,12 @@ import WatchMoviePage from "./pages/full-movie/WatchMoviePage";
 import List from "./list-movie/List";
 import NotFound from "./pages/NotFound";
 import MainLayout from "./layout/MainLayout";
+import Analytics from "./SEO/Analytics";
 
 const App: React.FC = () => {
   return (
     <>
+      <Analytics />
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route path="/" element={<Home />} />

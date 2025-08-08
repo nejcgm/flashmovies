@@ -76,7 +76,7 @@ const Carousel: React.FC<CarouserProps> = ({
   return (
     <>
       <div className="max-w-[1250px] relative">
-        <div className="text-[#F5C518] font-roboto font-bold text-[24px] sm:text-[32px] first-letter:uppercase mb-[16px]">
+        <div className="text-[#F5C518] font-roboto font-bold text-[24px] sm:text-[32px] first-letter:uppercase mb-[16px] ml-2 sm:ml-0">
           {showTitle}
         </div>
 

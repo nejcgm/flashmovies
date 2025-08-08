@@ -12,6 +12,7 @@ import AffiliateLinks from "../components/AffiliateLinks";
 
 import Meta from "../SEO/meta.tsx";
 import MovieSchema from "../SEO/MovieSchema.tsx";
+import BreadcrumbSchema from "../SEO/BreadcrumbSchema.tsx";
 import { DataInfoProps } from "../functions/Interfaces.ts";
 
 const MovieInfoPage = () => {
@@ -84,6 +85,20 @@ const MovieInfoPage = () => {
         ].filter(Boolean)}
         type={type === 'movie' ? 'video.movie' : type === 'tv' ? 'video.tv_show' : 'article'}
         publishedTime={info?.release_date || info?.first_air_date}
+      />
+      
+      <BreadcrumbSchema 
+        items={[
+          { name: "Home", url: "https://flashmovies.xyz/" },
+          { 
+            name: type === 'movie' ? 'Movies' : type === 'tv' ? 'TV Shows' : 'People', 
+            url: `https://flashmovies.xyz/list-items?type=${type}&search=popular&title=popular-${type}s` 
+          },
+          { 
+            name: info?.title || info?.name || 'Content', 
+            url: window.location.href 
+          }
+        ]}
       />
       {info && type !== 'person' && (
         <MovieSchema

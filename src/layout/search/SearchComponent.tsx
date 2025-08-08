@@ -34,9 +34,9 @@ const Search = () => {
           className="fixed w-screen h-screen z-10"
         ></div>
       )}
-      <div className=" w-full items-center justify-center flex mt-[32px] mb-[32px] gap-4">
+      <div className=" w-full items-center justify-center flex mt-[32px] mb-[32px]">
         <button
-          className="hidden sm:flex w-[48px] h-[48px]"
+          className="flex w-[32px] h-[32px] sm:w-[48px] sm:h-[48px] mr-2 sm:mr-4"
           onClick={() => {
             navigate("/");
           }}
@@ -73,7 +73,7 @@ const Search = () => {
           </svg>
         </button>
 
-        <div className=" w-[70%] sm:w-[40%] flex-col">
+        <div className=" w-[65%] sm:w-[40%] flex-col">
           <input
             className="relative  z-20 font-roboto py-1 px-3 sm:py-2 sm:px-6 rounded-lg w-full focus-none outline-offset-[-2px] outline-[#F5C518] "
             type="text"
@@ -122,7 +122,9 @@ const Search = () => {
             </div>
           )}
         </div>
-        <MenuButton />
+        <div className="ml-1 sm:ml-4">
+          <MenuButton />
+        </div>
       </div>
     </>
   );

@@ -79,7 +79,7 @@ const HeroCarousel: React.FC<HeroCarouselProps> = ({
   }, []);
 
   useEffect(() => {
-    let timer: number | undefined;
+    let timer: NodeJS.Timeout | undefined;
 
     if (isVisible && timerActive) {
       timer = setInterval(() => {
@@ -105,7 +105,7 @@ const { handleTouchStart, handleTouchEnd } = useSwipe({
 
   return (
     <>
-      <div className="text-[#F5C518] font-popins font-bold text-[24px] sm:text-[32px] first-letter:uppercase mb-[16px]">
+      <div className="text-[#F5C518] font-roboto font-bold text-[24px] sm:text-[32px] first-letter:uppercase mb-[16px] ml-2 sm:ml-0">
         {showTitle}
       </div>
 

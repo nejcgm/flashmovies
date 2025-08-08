@@ -14,8 +14,9 @@ Allow: /*.svg$
 # Disallow: /admin/
 # Disallow: /api/keys/
 
-# Sitemap location
+# Sitemap locations
 Sitemap: https://flashmovies.xyz/sitemap.xml
+# Individual sitemaps are automatically discovered via sitemap index
 
 # Crawl delay (optional - helps prevent overwhelming your server)
 Crawl-delay: 1
