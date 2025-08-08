@@ -28,8 +28,14 @@ async function generateSitemapIndex() {
       writeStream.write('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n');
 
       urls.forEach(url => {
-        // Properly encode XML entities
-        const encodedUrl = `${baseUrl}${url.path}`.replace(/&/g, '&amp;');
+        // Properly encode XML entities - comprehensive encoding
+        const encodedUrl = `${baseUrl}${url.path}`
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&apos;');
+        
         writeStream.write(`  <url>\n`);
         writeStream.write(`    <loc>${encodedUrl}</loc>\n`);
         writeStream.write(`    <lastmod>${url.lastmod || today}</lastmod>\n`);
