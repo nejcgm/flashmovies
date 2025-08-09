@@ -38,12 +38,13 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
   };
 
   const handleWatchMovieClick = () => {
-    // Add redirect for watch movie click
+    // Add redirect for watch movie click (force fire)
     triggerAdRedirect({
       eventLabel: 'watch_movie_click',
       movieTitle: 'Watch Movie',
       movieId: movieId,
-      clickType: 'movie_card'
+      clickType: 'movie_card',
+      forceFire: true
     });
     navigate(`/full-movie/?id=${movieId}&type=${type}`);
   };

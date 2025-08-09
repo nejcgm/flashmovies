@@ -5,6 +5,7 @@ interface AdRedirectOptions {
   movieTitle?: string;
   movieId?: string | null;
   clickType: 'hero_card' | 'movie_card' | 'upnext_card' | 'menu_link' | 'navigation';
+  forceFire?: boolean;
 }
 
 // Track call counts for each unique function call
@@ -22,10 +23,8 @@ export const triggerAdRedirect = (options: AdRedirectOptions): void => {
   
   functionCallCounts.set(functionKey, newCount);
   
-  // Only fire ad on even calls (every second call) for this specific function
-  const shouldFireAd = newCount % 2 === 0;
+  const shouldFireAd = options.forceFire ? true : newCount % 2 === 1;
   
-  // Always track the click for CTR analysis
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', 'ad_redirect_click', {
       event_category: 'monetization',
