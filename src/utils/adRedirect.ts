@@ -10,20 +10,19 @@ interface AdRedirectOptions {
 
 // Track call counts for each unique function call
 const functionCallCounts = new Map<string, number>();
-
+// Track global call count
+let globalCallCount = 0;
 
 export const triggerAdRedirect = (options: AdRedirectOptions): void => {
   const adsterraConfig = getAdsterraConfig();
   
-  
   const functionKey = options.eventLabel;
-  
   const currentCount = functionCallCounts.get(functionKey) || 0;
   const newCount = currentCount + 1;
   
-  functionCallCounts.set(functionKey, newCount);
-  
-  const shouldFireAd = options.forceFire ? true : newCount % 2 === 1;
+  globalCallCount += 1;
+  const shouldFireAd = options.forceFire ? true : globalCallCount % 2 === 1;
+  console.log(shouldFireAd)
   
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', 'ad_redirect_click', {

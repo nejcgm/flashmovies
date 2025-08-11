@@ -10,9 +10,11 @@ interface VideoPlayerProps {
   onCancel: () => void;
   type: string | null;
   title: string | undefined;
+  baseUrl?: string;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  baseUrl ="movie-info",
   movieId,
   onCancel,
   type,
@@ -68,7 +70,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   clickType: "movie_card",
                 });
                 onCancel();
-                navigate(`movie-info/?id=${movieId}&type=${type}`);
+                navigate(`/${baseUrl}/?id=${movieId}&type=${type}`);
               }}
             >
               Watch Now

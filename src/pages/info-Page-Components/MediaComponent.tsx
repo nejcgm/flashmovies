@@ -59,6 +59,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
           onCancel={() => {
             setTrailer(false);
           }}
+          baseUrl="full-movie"
         />
       )}
 
