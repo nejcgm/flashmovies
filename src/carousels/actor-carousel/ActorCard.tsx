@@ -3,6 +3,7 @@ import LazyImage from "../../components/LazyImage";
 import ChartIcon from "../../assets/chart.png";
 import { useNavigate } from "react-router-dom";
 import { triggerAdRedirect } from '../../utils/adRedirect';
+import { ClickTypeEnum } from '../../utils/types';
 
 const PersonPlaceholder = "/dark-mode-avatar-placeholder.png";
 
@@ -31,7 +32,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
       eventLabel: 'actor_card_click',
       movieTitle: name,
       movieId: actorId,
-      clickType: 'movie_card'
+      clickType: ClickTypeEnum.MOVIE_CARD
     });
     navigate(`/movie-info/?id=${actorId}&type=${media}`);
   };

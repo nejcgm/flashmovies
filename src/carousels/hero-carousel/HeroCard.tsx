@@ -4,6 +4,7 @@ import VideoPlayer from "../../dialogs/VideoPlayer";
 import Rating from "../../components/Rating";
 import VoteCount from "../../components/VoteCount";
 import { triggerAdRedirect } from '../../utils/adRedirect';
+import { ClickTypeEnum } from '../../utils/types';
 
 interface HeroCardProps {
   backdrop: string;
@@ -37,7 +38,7 @@ const HeroCard: React.FC<HeroCardProps> = ({
       eventLabel: 'hero_card_click',
       movieTitle: title,
       movieId: movieId,
-      clickType: 'hero_card'
+      clickType: ClickTypeEnum.HERO_CARD
     });
 
     // Then open trailer

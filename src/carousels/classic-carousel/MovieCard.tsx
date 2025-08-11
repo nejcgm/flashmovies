@@ -6,6 +6,7 @@ import InfoCta from "../../components/InfoCta";
 import LazyImage from "../../components/LazyImage";
 import { useNavigate } from "react-router-dom";
 import { triggerAdRedirect } from '../../utils/adRedirect';
+import { ClickTypeEnum } from '../../utils/types';
 
 const MoviePlaceholder = "/dark-mode-img-placeholder.png";
 
@@ -34,7 +35,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
       eventLabel: 'movie_card_click',
       movieTitle: title,
       movieId: movieId,
-      clickType: 'movie_card'
+      clickType: ClickTypeEnum.MOVIE_CARD
     });
     navigate(`/movie-info/?id=${movieId}&type=${type}`);
   };

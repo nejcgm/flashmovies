@@ -4,6 +4,7 @@ import VoteCount from "../../components/VoteCount";
 import InfoCta from "../../components/InfoCta";
 import MoreInfo from "../../dialogs/MoreInfo";
 import { triggerAdRedirect } from '../../utils/adRedirect';
+import { ClickTypeEnum } from '../../utils/types';
 
 interface UpNextCardProps {
   poster: string;
@@ -63,7 +64,7 @@ const UpNextCard: React.FC<UpNextCardProps> = ({
               eventLabel: 'upnext_card_click',
               movieTitle: title,
               movieId: movieId,
-              clickType: 'upnext_card'
+              clickType: ClickTypeEnum.UPNEXT_CARD
             });
             setTrailer(true);
             timerActive();

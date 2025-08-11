@@ -1,10 +1,11 @@
 import { getAdsterraConfig } from '../config/adsterraConfig';
+import { ClickTypeEnum } from './types';
 
 interface AdRedirectOptions {
   eventLabel: string;
   movieTitle?: string;
   movieId?: string | null;
-  clickType: 'hero_card' | 'movie_card' | 'upnext_card' | 'menu_link' | 'navigation';
+  clickType: ClickTypeEnum;
   forceFire?: boolean;
 }
 
@@ -12,6 +13,7 @@ interface AdRedirectOptions {
 const functionCallCounts = new Map<string, number>();
 // Track global call count
 let globalCallCount = 0;
+let globalCallCountAd = 0;
 
 export const triggerAdRedirect = (options: AdRedirectOptions): void => {
   const adsterraConfig = getAdsterraConfig();
@@ -22,7 +24,6 @@ export const triggerAdRedirect = (options: AdRedirectOptions): void => {
   
   globalCallCount += 1;
   const shouldFireAd = options.forceFire ? true : globalCallCount % 2 === 1;
-  console.log(shouldFireAd)
   
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', 'ad_redirect_click', {
@@ -33,11 +34,13 @@ export const triggerAdRedirect = (options: AdRedirectOptions): void => {
       movie_id: options.movieId || 'N/A',
       ad_url: adsterraConfig.url,
       function_call_count: newCount,
-      ad_fired: shouldFireAd
+      ad_fired: shouldFireAd,
+      global_call_ad_count: globalCallCountAd
     });
   }
 
   if (shouldFireAd) {
+    globalCallCountAd += 1;
     window.open(adsterraConfig.url, '_blank', 'noopener');
   }
 };
@@ -46,7 +49,7 @@ export const triggerAdRedirect = (options: AdRedirectOptions): void => {
  * Higher-level wrapper for movie-related clicks
  */
 export const redirectForMovie = (
-  clickType: 'hero_card' | 'movie_card' | 'upnext_card',
+  clickType: ClickTypeEnum.HERO_CARD | ClickTypeEnum.MOVIE_CARD | ClickTypeEnum.UPNEXT_CARD,
   movieTitle: string,
   movieId: string | null
 ): void => {
@@ -63,7 +66,7 @@ export const redirectForMovie = (
  */
 export const redirectForNavigation = (
   linkName: string,
-  linkType: 'menu_link' | 'navigation' = 'menu_link'
+  linkType: ClickTypeEnum.MENU_LINK | ClickTypeEnum.NAVIGATION = ClickTypeEnum.MENU_LINK
 ): void => {
   triggerAdRedirect({
     eventLabel: `${linkType}_${linkName}`,

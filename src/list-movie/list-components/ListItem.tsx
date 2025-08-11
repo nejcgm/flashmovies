@@ -9,6 +9,7 @@ const PersonPlaceholder = "/dark-mode-avatar-placeholder.png";
 import Rating from "../../components/Rating";
 import { useNavigate } from "react-router-dom";
 import { triggerAdRedirect } from '../../utils/adRedirect';
+import { ClickTypeEnum } from '../../utils/types';
 //import { MediaType } from "../../functions/Interfaces.ts";
 
 interface ListItemProps {
@@ -72,7 +73,7 @@ const ListItem: React.FC<ListItemProps> = ({
               eventLabel: 'list_item_poster_click',
               movieTitle: title,
               movieId: movieId,
-              clickType: 'movie_card'
+              clickType: ClickTypeEnum.MOVIE_CARD
             });
             setTrailer(true);
           }}
@@ -96,7 +97,7 @@ const ListItem: React.FC<ListItemProps> = ({
               eventLabel: 'list_item_navigation_click',
               movieTitle: title,
               movieId: movieId,
-              clickType: 'movie_card'
+              clickType: ClickTypeEnum.MOVIE_CARD
             });
             navigate(`/movie-info/?id=${movieId}&type=${type}`);
             onCancel();

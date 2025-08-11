@@ -5,6 +5,7 @@ import { fetchSpecific } from "../functions/Fetching.js";
 import CustomButton from "../components/CustomButton.js";
 import { useNavigate } from "react-router-dom";
 import { triggerAdRedirect } from "../utils/adRedirect.js";
+import { ClickTypeEnum } from "../utils/types.js";
 interface VideoPlayerProps {
   movieId: string | null;
   onCancel: () => void;
@@ -67,7 +68,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   eventLabel: "movie_card_click",
                   movieTitle: title,
                   movieId: movieId,
-                  clickType: "movie_card",
+                  clickType: ClickTypeEnum.WATCH_MOVIE,
                 });
                 onCancel();
                 navigate(`/${baseUrl}/?id=${movieId}&type=${type}`);
