@@ -154,6 +154,7 @@ const MovieInfoPage = () => {
                   poster={info.poster_path || info.profile_path}
                   type={type}
                   genres={info.genres}
+                  title={info.title || info.name}
                 />
 
                 <AffiliateLinks movieTitle={info.title || info.name || ''} />

@@ -78,7 +78,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
           }}
         >
           {type != "person" && (
-          <div className=" flex  font-roboto text-white capitalize items-end gap-4 ml-[12px] mb-[12px]">
+          <div className=" flex font-roboto text-white capitalize items-end gap-4 ml-[12px] mb-[12px]">
             <div className="flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +91,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
                 <path d="M12 24C5.373 24 0 18.627 0 12S5.373 0 12 0s12 5.373 12 12-5.373 12-12 12zm0-1c6.075 0 11-4.925 11-11S18.075 1 12 1 1 5.925 1 12s4.925 11 11 11z"></path>
               </svg>
             
-            <div className="text-[16px] sm:text-[20px]">Watch Trailer</div>
+            <div className="text-[16px] sm:text-[20px]">Play Trailer</div>
             </div>
           </div>
           )}
