@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CrossBlack from "../../assets/crossBlack.png";
 import { redirectForNavigation } from '../../utils/adRedirect';
 import { ClickTypeEnum } from "../../utils/types";
@@ -113,8 +113,8 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                 </svg>
                 <div className="flex flex-col items-start gap-3">
                   <div className="text-[18px] sm:text-[24px] leading-[20px] sm:leading-[28px] font-semibold">Movies</div>
-                  <NavLink
-                    to="/list-items?type=movie&search=top_rated&title=top-rated-movies"
+                  <a
+                    href="/list-items?type=movie&search=top_rated&title=top-rated-movies"
                     onClick={() => {
                       redirectForNavigation('top_rated_movies', ClickTypeEnum.MENU_LINK);
                       onCancel();
@@ -122,9 +122,9 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     className="hover:underline"
                   >
                     Top Rated Movies
-                  </NavLink>
-                  <NavLink
-                    to="/list-items?type=movie&search=popular&title=most-popular-movies"
+                  </a>
+                  <a
+                    href="/list-items?type=movie&search=popular&title=most-popular-movies"
                     onClick={() => {
                       redirectForNavigation('popular_movies', ClickTypeEnum.MENU_LINK);
                       onCancel();
@@ -132,9 +132,9 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     className="hover:underline"
                   >
                     Most Popular Movies
-                  </NavLink>
-                  <NavLink
-                    to="/list-items?type=movie&search=now_playing&title=now-playing-movies"
+                  </a>
+                  <a
+                    href="/list-items?type=movie&search=now_playing&title=now-playing-movies"
                     onClick={() => {
                       redirectForNavigation('now_playing', ClickTypeEnum.MENU_LINK);
                       onCancel();
@@ -142,9 +142,9 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     className="hover:underline"
                   >
                     Now Playing
-                  </NavLink>
-                  <NavLink
-                    to="/list-items?type=movie&search=upcoming&title=upcoming-movies"
+                  </a>
+                  <a
+                    href="/list-items?type=movie&search=upcoming&title=upcoming-movies"
                     onClick={() => {
                       redirectForNavigation('upcoming', ClickTypeEnum.MENU_LINK);
                       onCancel();
@@ -152,9 +152,9 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     className="hover:underline"
                   >
                     Upcoming
-                  </NavLink>
-                  <NavLink
-                    to="/list-items?type=movie&search=discover&title=browse-movies-by-genre"
+                  </a>
+                  <a
+                    href="/list-items?type=movie&search=discover&title=browse-movies-by-genre"
                     onClick={() => {
                       redirectForNavigation('browse_by_genre', ClickTypeEnum.MENU_LINK);
                       onCancel();
@@ -162,7 +162,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     className="hover:underline"
                   >
                     Browse Movies By Genre
-                  </NavLink>
+                  </a>
                 </div>
               </div>
             </div>
@@ -183,8 +183,8 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                 </svg>
                 <div className="flex flex-col items-start gap-3">
                   <div className="text-[18px] sm:text-[24px] leading-[20px] sm:leading-[28px] font-semibold">TV Shows</div>
-                  <NavLink
-                    to="/list-items?type=tv&search=top_rated&title=top-rated-shows"
+                  <a
+                    href="/list-items?type=tv&search=top_rated&title=top-rated-shows"
                     onClick={() => {
                       redirectForNavigation('top_rated_tv', ClickTypeEnum.MENU_LINK);
                       onCancel();
@@ -192,9 +192,9 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     className="hover:underline"
                   >
                     Top Rated Shows
-                  </NavLink>
-                  <NavLink
-                    to="/list-items?type=tv&search=popular&title=most-popular-shows"
+                  </a>
+                  <a
+                    href="/list-items?type=tv&search=popular&title=most-popular-shows"
                     onClick={() => {
                       redirectForNavigation('popular_tv', ClickTypeEnum.MENU_LINK);
                       onCancel();
@@ -202,9 +202,9 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     className="hover:underline"
                   >
                     Most Popular Shows
-                  </NavLink>
-                  <NavLink
-                    to="/list-items?type=tv&search=airing_today&title=airing-today-shows"
+                  </a>
+                  <a
+                    href="/list-items?type=tv&search=airing_today&title=airing-today-shows"
                     onClick={() => {
                       redirectForNavigation('airing_today', ClickTypeEnum.MENU_LINK);
                       onCancel();
@@ -212,9 +212,9 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     className="hover:underline"
                   >
                     Airing Today Shows
-                  </NavLink>
-                  <NavLink
-                    to="/list-items?type=tv&search=on_the_air&title=on-the-air"
+                  </a>
+                  <a
+                    href="/list-items?type=tv&search=on_the_air&title=on-the-air"
                     onClick={() => {
                       redirectForNavigation('on_air', ClickTypeEnum.MENU_LINK);
                       onCancel();
@@ -222,9 +222,9 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     className="hover:underline"
                   >
                     On The Air
-                  </NavLink>
-                  <NavLink
-                    to="/list-items?type=tv&search=discover&title=browse-shows-by-genre"
+                  </a>
+                  <a
+                    href="/list-items?type=tv&search=discover&title=browse-shows-by-genre"
                     onClick={() => {
                       redirectForNavigation('browse_tv_genre', ClickTypeEnum.MENU_LINK);
                       onCancel();
@@ -232,7 +232,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     className="hover:underline"
                   >
                     Browse Shows By Genre
-                  </NavLink>
+                  </a>
                 </div>
               </div>
             </div>
@@ -253,8 +253,8 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                 </svg>
                 <div className="flex flex-col items-start gap-3">
                   <div className="text-[20px] sm:text-[24px] leading-[20px] sm:leading-[28px] font-semibold">Celebs</div>
-                  <NavLink
-                    to="/list-items?type=person&search=popular&title=most-popular-actors"
+                  <a
+                    href="/list-items?type=person&search=popular&title=most-popular-actors"
                     onClick={() => {
                       redirectForNavigation('popular_actors', ClickTypeEnum.MENU_LINK);
                       onCancel();
@@ -262,7 +262,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     className="hover:underline"
                   >
                     Most Popular Actors
-                  </NavLink>
+                  </a>
                 </div>
               </div>
             </div>
