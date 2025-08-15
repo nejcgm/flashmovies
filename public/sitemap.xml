@@ -13,15 +13,11 @@
     <lastmod>2025-08-15</lastmod>
   </sitemap>
   <sitemap>
+    <loc>https://flashmovies.xyz/sitemaps/celebrity-categories.xml</loc>
+    <lastmod>2025-08-15</lastmod>
+  </sitemap>
+  <sitemap>
     <loc>https://flashmovies.xyz/sitemaps/celebrities.xml</loc>
-    <lastmod>2025-08-15</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://flashmovies.xyz/sitemaps/movie-genres.xml</loc>
-    <lastmod>2025-08-15</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://flashmovies.xyz/sitemaps/tv-genres.xml</loc>
     <lastmod>2025-08-15</lastmod>
   </sitemap>
   <sitemap>
@@ -38,14 +34,6 @@
   </sitemap>
   <sitemap>
     <loc>https://flashmovies.xyz/sitemaps/tv-watch.xml</loc>
-    <lastmod>2025-08-15</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://flashmovies.xyz/sitemaps/year-based.xml</loc>
-    <lastmod>2025-08-15</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>https://flashmovies.xyz/sitemaps/rating-based.xml</loc>
     <lastmod>2025-08-15</lastmod>
   </sitemap>
 </sitemapindex>
