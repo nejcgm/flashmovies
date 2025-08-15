@@ -15,6 +15,9 @@ Allow: /movie-info*
 Allow: /full-movie*
 Allow: /list-items*
 
+# Allow sitemap directory access
+Allow: /sitemaps/
+
 # Disallow admin or sensitive areas (if any exist)
 # Disallow: /admin/
 # Disallow: /api/keys/
