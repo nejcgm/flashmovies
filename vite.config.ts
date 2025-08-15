@@ -25,4 +25,22 @@ export default defineConfig({
       '@': '/src',
     },
   },
+  // Performance optimizations (better than SSR for this app)
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          utils: ['axios'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
+  // Alternative to React Snap: Vite SSR Plugin
+  // Uncomment and install @vitejs/plugin-react-ssr for better SEO
+  // ssr: {
+  //   noExternal: ['react-helmet']
+  // }
 });
