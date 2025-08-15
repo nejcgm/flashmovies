@@ -28,6 +28,14 @@
     <meta name="twitter:description" content="Watch free movies and TV shows online on Flash Movies. Stream the latest movies and popular TV series in HD for free, anytime and anywhere." />
     <meta name="twitter:image" content="https://flashmovies.xyz/flash-movies-logo.png" />
     
+    <!-- Additional SEO tags for better crawling -->
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/src/main.tsx" as="script" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" as="style" />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://image.tmdb.org">
@@ -39,6 +47,42 @@
     <link rel="apple-touch-icon" href="/flash-movies-logo.png" />
 
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+    
+    <!-- Default structured data for better crawling -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Flash Movies",
+      "alternateName": ["FlashMovies", "Flash Movies", "flashmovies.xyz"],
+      "url": "https://flashmovies.xyz",
+      "description": "Watch free movies and TV shows online on Flash Movies. Stream the latest movies and popular TV series in HD for free, anytime and anywhere.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://flashmovies.xyz/list-items?search={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      },
+      "mainEntity": {
+        "@type": "Organization",
+        "name": "Flash Movies",
+        "alternateName": ["FlashMovies", "Flash Movies"],
+        "url": "https://flashmovies.xyz",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://flashmovies.xyz/flash-movies-logo.png",
+          "width": "400",
+          "height": "400"
+        },
+        "description": "Free movie and TV show streaming platform offering HD streaming of popular movies and TV series",
+        "foundingDate": "2024",
+        "serviceType": ["Movie Streaming", "TV Show Streaming", "Entertainment"],
+        "areaServed": "Worldwide"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

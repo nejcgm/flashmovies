@@ -2,37 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;vote_average.gte=8&amp;vote_average.lte=10&amp;title=highly-rated-movies</loc>
-    <lastmod>2025-08-08</lastmod>
+    <lastmod>2025-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flashmovies.xyz/list-items?type=tv&amp;search=discover&amp;vote_average.gte=8&amp;vote_average.lte=10&amp;title=highly-rated-tv-shows</loc>
-    <lastmod>2025-08-08</lastmod>
+    <lastmod>2025-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;vote_average.gte=7&amp;vote_average.lte=8&amp;title=good-rated-movies</loc>
-    <lastmod>2025-08-08</lastmod>
+    <lastmod>2025-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flashmovies.xyz/list-items?type=tv&amp;search=discover&amp;vote_average.gte=7&amp;vote_average.lte=8&amp;title=good-rated-tv-shows</loc>
-    <lastmod>2025-08-08</lastmod>
+    <lastmod>2025-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flashmovies.xyz/list-items?type=movie&amp;search=discover&amp;vote_average.gte=6&amp;vote_average.lte=7&amp;title=decent-rated-movies</loc>
-    <lastmod>2025-08-08</lastmod>
+    <lastmod>2025-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flashmovies.xyz/list-items?type=tv&amp;search=discover&amp;vote_average.gte=6&amp;vote_average.lte=7&amp;title=decent-rated-tv-shows</loc>
-    <lastmod>2025-08-08</lastmod>
+    <lastmod>2025-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>

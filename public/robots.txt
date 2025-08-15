@@ -10,6 +10,11 @@ Allow: /*.png$
 Allow: /*.jpg$
 Allow: /*.svg$
 
+# Allow all movie and TV show pages
+Allow: /movie-info*
+Allow: /full-movie*
+Allow: /list-items*
+
 # Disallow admin or sensitive areas (if any exist)
 # Disallow: /admin/
 # Disallow: /api/keys/
@@ -18,5 +23,25 @@ Allow: /*.svg$
 Sitemap: https://flashmovies.xyz/sitemap.xml
 # Individual sitemaps are automatically discovered via sitemap index
 
-# Crawl delay (optional - helps prevent overwhelming your server)
-Crawl-delay: 1
+# Crawl delay (reduced for faster indexing)
+Crawl-delay: 0.5
+
+# Additional directives for better crawling
+# Allow Google to crawl all content
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.1
+
+# Allow Googlebot-Image for image crawling
+User-agent: Googlebot-Image
+Allow: /
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.gif$
+Allow: /*.webp$
+
+# Allow Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0.1
