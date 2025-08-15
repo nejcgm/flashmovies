@@ -126,7 +126,7 @@ const Home = () => {
 
           <div className="mt-[32px] sm:mt-[64px]">
             <AffiliateLinks 
-              movieTitle="Popular Movies & TV Shows"
+              movieTitle="Flash Movies"
               className="bg-gradient-to-r from-[#1a1a1a] to-[#2d2d2d] border-2 border-[#f5c518]"
             />
           </div>

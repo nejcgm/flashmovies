@@ -19,12 +19,12 @@ export const getAffiliateLinks = (movieTitle: string): AffiliateLink[] => [
     commission: "4-8% of all Amazon purchases"
   },
   {
-    name: "Watch on Prime Video",
-    url: `https://www.amazon.com/s?k=${encodeURIComponent(movieTitle)}&i=instant-video&tag=flashmovies-20&ref=sr_nr_n_1`,
-    bgColor: "bg-[#0073e6]",
-    hoverColor: "hover:bg-[#005bb5]",
+    name: "Special Deals",
+    url: `https://www.amazon.com/dp/B0DYVMVZSY?ref=t_ac_view_request_product_image&campaignId=amzn1.campaign.1ZTS53JLD0ICW&linkCode=tr1&tag=flashmovies-20&linkId=amzn1.campaign.1ZTS53JLD0ICW_1755281007693`,
+    bgColor: "bg-[#ff1a1a]",
+    hoverColor: "hover:bg-[#cc0000]",
     textColor: "text-white",
-    offer: "Rent/Buy Movie",
+    offer: "Samsung Galaxy S25 - 20%",
     commission: "4-8% commission"
   },
   {
@@ -34,6 +34,15 @@ export const getAffiliateLinks = (movieTitle: string): AffiliateLink[] => [
     hoverColor: "hover:bg-[#e68900]",
     textColor: "text-black",
     offer: "Shop Now",
+    commission: "4-8% commission"
+  },
+  {
+    name: "Watch on Prime Video",
+    url: `https://www.amazon.com/s?k=${encodeURIComponent(movieTitle)}&i=instant-video&tag=flashmovies-20&ref=sr_nr_n_1`,
+    bgColor: "bg-[#0073e6]",
+    hoverColor: "hover:bg-[#005bb5]",
+    textColor: "text-white",
+    offer: "Rent/Buy Movie",
     commission: "4-8% commission"
   },
   {

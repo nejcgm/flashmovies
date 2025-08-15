@@ -4,7 +4,7 @@ export const POPUP_CONFIG = {
   url: 'https://raptripeessentially.com/s950viwd5w?key=22e656243ca5f0a2aef1c31a7cf4a3a7',
   
   // ⚡ Enable/Disable popup system
-  enabled: true,
+  enabled: false,
   
   // 📊 Engagement Requirements (adjust based on analytics)
   engagement: {
