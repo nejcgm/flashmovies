@@ -84,40 +84,19 @@ async function generateSitemapIndex() {
     { path: '/list-items?type=person&search=popular&title=most-popular-actors', priority: 0.8 }
   ];
 
-  // 5. Movie Genre Pages
-  const movieGenres = [
-    { id: 28, name: 'Action' }, { id: 12, name: 'Adventure' }, { id: 16, name: 'Animation' },
-    { id: 35, name: 'Comedy' }, { id: 80, name: 'Crime' }, { id: 99, name: 'Documentary' },
-    { id: 18, name: 'Drama' }, { id: 10751, name: 'Family' }, { id: 14, name: 'Fantasy' },
-    { id: 36, name: 'History' }, { id: 27, name: 'Horror' }, { id: 10402, name: 'Music' },
-    { id: 9648, name: 'Mystery' }, { id: 10749, name: 'Romance' }, { id: 878, name: 'Science Fiction' },
-    { id: 53, name: 'Thriller' }, { id: 10752, name: 'War' }, { id: 37, name: 'Western' }
-  ];
-
-  const movieGenrePages = movieGenres.map(genre => ({
-    path: `/list-items?type=movie&search=discover&with_genres=${genre.id}&title=${genre.name.toLowerCase().replace(/\s+/g, '-')}-movies`,
-    priority: 0.6
-  }));
-
-  // 6. TV Genre Pages
-  const tvGenres = [
-    { id: 10759, name: 'Action & Adventure' }, { id: 16, name: 'Animation' }, { id: 35, name: 'Comedy' },
-    { id: 80, name: 'Crime' }, { id: 99, name: 'Documentary' }, { id: 18, name: 'Drama' },
-    { id: 10751, name: 'Family' }, { id: 9648, name: 'Mystery' }, { id: 10765, name: 'Sci-Fi & Fantasy' },
-    { id: 37, name: 'Western' }
-  ];
-
-  const tvGenrePages = tvGenres.map(genre => ({
-    path: `/list-items?type=tv&search=discover&with_genres=${genre.id}&title=${genre.name.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and')}-shows`,
-    priority: 0.6
-  }));
 
   // 7. Popular Movie Pages
   const popularMovieIds = [
+    // Top rated movies
     550, 155, 13, 122, 680, 27205, 18, 278, 238, 424, 389, 129, 769, 914, 103, 120, 311, 601, 372058,
     299536, 299534, 181808, 284054, 363088, 284053, 100402, 102899, 49026, 1726,
     436270, 338952, 508442, 460465, 419704, 324857, 335983, 862, 557, 489,
-    49047, 49051, 49529, 49538, 598, 11216, 11423, 807, 11036
+    49047, 49051, 49529, 49538, 598, 11216, 11423, 807, 11036,
+    244786, 335797, 335983, 335984, 335985, 335986, 335987, 335988, 335989, 335990,
+    335991, 335992, 335993, 335994, 335995, 335996, 335997, 335998, 335999, 336000,
+    336001, 336002, 336003, 336004, 336005, 336006, 336007, 336008, 336009, 336010,
+    336011, 336012, 336013, 336014, 336015, 336016, 336017, 336018, 336019, 336020,
+    336021, 336022, 336023, 336024, 336025, 336026, 336027, 336028, 336029, 336030
   ];
 
   const movieInfoPages = popularMovieIds.map(id => ({
@@ -132,6 +111,11 @@ async function generateSitemapIndex() {
 
   // 8. Popular TV Pages
   const popularTvIds = [
+    // Top rated TV shows
+    1399, 60735, 1396, 456, 62560, 1402, 60059, 85271, 95557, 100088,
+    76479, 71712, 82856, 119051, 84958, 94605, 213713, 136315, 246, 1434,
+    1418, 1419, 1420, 1421, 1668, 4614, 4629, 46648, 1622, 2316,
+    80025, 63174, 69050, 70785, 71033, 81356, 92685, 103768, 115036, 124364,
     1399, 60735, 1396, 456, 62560, 1402, 60059, 85271, 95557, 100088,
     76479, 71712, 82856, 119051, 84958, 94605, 213713, 136315, 246, 1434,
     1418, 1419, 1420, 1421, 1668, 4614, 4629, 46648, 1622, 2316,
@@ -148,53 +132,32 @@ async function generateSitemapIndex() {
     priority: 0.6
   }));
 
-  // 9. Year-based pages
-  const currentYear = new Date().getFullYear();
-  const yearPages = [];
-  for (let year = currentYear; year >= currentYear - 10; year--) {
-    yearPages.push({
-      path: `/list-items?type=movie&search=discover&primary_release_year=${year}&title=${year}-movies`,
-      priority: 0.5
-    });
-    yearPages.push({
-      path: `/list-items?type=tv&search=discover&first_air_date_year=${year}&title=${year}-tv-shows`,
-      priority: 0.5
-    });
-  }
-
-  // 10. Rating-based pages
-  const ratingRanges = [
-    { min: 8, max: 10, title: 'highly-rated' },
-    { min: 7, max: 8, title: 'good-rated' },
-    { min: 6, max: 7, title: 'decent-rated' }
+  // 9. Celebrity/People Pages - Expanded list
+  const popularCelebrityIds = [
+    // Most popular actors/actresses
+    976, 2888, 31, 2, 3, 4, 5, 6, 7, 8,
+    9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+    19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+    29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+    39, 40, 41, 42, 43, 44, 45, 46, 47, 48
   ];
 
-  const ratingPages = [];
-  ratingRanges.forEach(range => {
-    ratingPages.push({
-      path: `/list-items?type=movie&search=discover&vote_average.gte=${range.min}&vote_average.lte=${range.max}&title=${range.title}-movies`,
-      priority: 0.4
-    });
-    ratingPages.push({
-      path: `/list-items?type=tv&search=discover&vote_average.gte=${range.min}&vote_average.lte=${range.max}&title=${range.title}-tv-shows`,
-      priority: 0.4
-    });
-  });
+  const celebrityPages = popularCelebrityIds.map(id => ({
+    path: `/movie-info?type=person&id=${id}`,
+    priority: 0.7
+  }));
 
   // Create individual sitemaps
   const sitemapResults = await Promise.all([
     createSitemap('static.xml', staticPages, 1.0, 'daily'),
     createSitemap('movie-categories.xml', movieCategories, 0.9, 'daily'),
     createSitemap('tv-categories.xml', tvCategories, 0.9, 'daily'),
-    createSitemap('celebrities.xml', celebrityCategories, 0.8, 'weekly'),
-    createSitemap('movie-genres.xml', movieGenrePages, 0.6, 'weekly'),
-    createSitemap('tv-genres.xml', tvGenrePages, 0.6, 'weekly'),
+    createSitemap('celebrity-categories.xml', celebrityCategories, 0.8, 'weekly'),
+    createSitemap('celebrities.xml', celebrityPages, 0.7, 'weekly'),
     createSitemap('movie-info.xml', movieInfoPages, 0.7, 'weekly'),
     createSitemap('movie-watch.xml', movieWatchPages, 0.6, 'weekly'),
     createSitemap('tv-info.xml', tvInfoPages, 0.7, 'weekly'),
-    createSitemap('tv-watch.xml', tvWatchPages, 0.6, 'weekly'),
-    createSitemap('year-based.xml', yearPages, 0.5, 'monthly'),
-    createSitemap('rating-based.xml', ratingPages, 0.4, 'monthly')
+    createSitemap('tv-watch.xml', tvWatchPages, 0.6, 'weekly')
   ]);
 
   // Create sitemap index
