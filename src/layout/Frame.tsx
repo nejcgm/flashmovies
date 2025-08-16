@@ -7,7 +7,7 @@ interface FrameProps {
 const Frame: React.FC<FrameProps> = ({ children }) => {
   return (
     <>
-      <div className="bg-black overflow-scroll w-screen h-screen flex flex-col">
+      <div className="bg-black overflow-x-hidden w-screen h-screen flex flex-col">
         <div className=" h-full  flex-col self-center pl-[6px] sm:px-[32px]  w-full max-w-[1314px]">
           {children}
         </div>

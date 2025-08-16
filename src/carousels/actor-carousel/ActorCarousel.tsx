@@ -91,7 +91,7 @@ const ActorCarousel: React.FC<ActorCarouselProps> = ({
         </div>
 
         <div
-          className="flex gap-1 sm:gap-4 relative w-full overflow-scroll"
+          className="flex gap-1 sm:gap-4 relative w-full overflow-x-auto"
           ref={scrollContainer}
         >
           {actors
