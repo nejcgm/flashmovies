@@ -19,12 +19,12 @@ export const getAffiliateLinks = (movieTitle: string): AffiliateLink[] => [
     commission: "4-8% of all Amazon purchases"
   },
   {
-    name: "Special Deals",
+    name: "Samsung Galaxy S25 20% Off",
     url: `https://www.amazon.com/dp/B0DYVMVZSY?ref=t_ac_view_request_product_image&campaignId=amzn1.campaign.1ZTS53JLD0ICW&linkCode=tr1&tag=flashmovies-20&linkId=amzn1.campaign.1ZTS53JLD0ICW_1755281007693`,
     bgColor: "bg-[#ff1a1a]",
     hoverColor: "hover:bg-[#cc0000]",
     textColor: "text-white",
-    offer: "Samsung Galaxy S25 - 20%",
+    offer: "special offer",
     commission: "4-8% commission"
   },
   {
