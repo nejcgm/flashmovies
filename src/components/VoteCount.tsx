@@ -2,12 +2,13 @@ import React from "react";
 
 interface VoteCountProps {
   voteCount: number;
+  textColor?: string;
 }
 
-const VoteCount: React.FC<VoteCountProps> = ({ voteCount }) => {
+const VoteCount: React.FC<VoteCountProps> = ({ voteCount, textColor = "[#b3b3b3]" }) => {
   return (
     <>
-      <div className="flex gap-1 items-center text-[11px] sm:text-[12px] text-[#b3b3b3]">
+      <div className={`flex gap-1 items-center text-[11px] sm:text-[12px] text-${textColor}`}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="ipc-icon ipc-icon--thumb-up ipc-reaction-summary__likes-icon w-[12px] sm:w-[16px]"
