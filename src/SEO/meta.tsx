@@ -21,6 +21,11 @@ const Meta = ({
   title = "Flash Movies - Free Movie Streaming",
   description = "Watch free movies and TV shows online on Flash Movies. Stream the latest movies and popular TV series in HD for free, anytime and anywhere.",
   keywords = [
+    "flash movies",
+    "flashmovies",
+    "flashmovies.xyz",
+    "flash movie",
+    "flash",
     "free movies",
     "movie streaming", 
     "watch movies online",
