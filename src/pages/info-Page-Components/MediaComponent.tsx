@@ -78,8 +78,8 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
           }}
         >
           {type != "person" && (
-          <div className=" flex font-roboto text-white capitalize items-end gap-4 ml-[12px] mb-[12px]">
-            <div className="flex items-center gap-2">
+          <div className=" flex font-roboto text-white bg-black/20 w-full">
+            <div className="flex capitalize self-end items-center gap-4 ml-[12px] mb-[12px]">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="group-hover:text-[#f5c518] text-white h-[42px] sm:h-[64px]"
@@ -103,7 +103,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
           className="flex-2 flex w-full group h-auto"
         >
           <div
-            className="w-full h-full min-w-[100%] max-h-[530px] rounded-lg bg-cover bg-center bg-no-repeat aspect-[16/10] content-end p-4"
+            className="w-full h-full min-w-[100%] max-h-[530px] rounded-lg bg-cover bg-center bg-no-repeat aspect-[16/10] content-end"
             style={{
               backgroundImage: `url(${
                 backdrop?.length > 1
@@ -112,13 +112,13 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
               })`,
             }}
           >
-            <div className="flex items-center gap-4 ml-[12px]">
+            <div className="flex items-center text-white bg-black/20 w-full h-full p-4">
               {type != "person" && (
-                <>
+                <div className="flex self-end items-center lg:gap-4 gap-2">
                   <div>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="group-hover:text-[#f5c518] text-white h-[42px] sm:h-[72px]"
+                      className="group-hover:text-[#f5c518] h-[42px] sm:h-[72px]"
                       viewBox="0 0 24 24"
                       fill="currentColor"
                       role="presentation"
@@ -128,14 +128,14 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
                     </svg>
                   </div>
                   <div className="max-w-[70%] text-left">
-                    <div className="text-[18px] sm:text-[24px] font-roboto text-white capitalize">
+                    <div className="text-[18px] sm:text-[24px] font-roboto capitalize">
                       <div className="text-[16px] sm:text-[20px]">Watch {type == "movie" ? "movie" : "series"}</div>
                     </div>
-                    <div className="flex items-center text-[#BBBBBB] gap-3">
-                      <VoteCount voteCount={vote} />
+                    <div>
+                      <VoteCount textColor="white" voteCount={vote} />
                     </div>
                   </div>{" "}
-                </>
+                </div>
               )}
             </div>
           </div>
