@@ -8,7 +8,7 @@ interface GenreSpecificProps {
 const GenreSpecific: React.FC<GenreSpecificProps> = ({ genres }) => {
   return (
     <>
-      <div className="flex overflow-x-auto scrollbar-hide w-[210px] sm:w-[350px] md:w-[550px]  gap-2 text-[11px] sm:text-[14px]">
+      <div className="flex overflow-x-auto carousel scrollbar-hide w-[210px] sm:w-[350px] md:w-[550px]  gap-2 text-[11px] sm:text-[14px]">
         {genres?.map((item: Genre) => (
           <div
             key={item.id}

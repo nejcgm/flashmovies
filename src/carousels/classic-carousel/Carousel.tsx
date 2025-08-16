@@ -93,7 +93,7 @@ const Carousel: React.FC<CarouserProps> = ({
         </div>
 
         <div
-          className="flex gap-4 relative w-full overflow-x-auto scrollbar-hide"
+          className="flex gap-4 relative w-full overflow-x-auto carousel scrollbar-hide"
           ref={scrollContainer}
         >
           {movies
