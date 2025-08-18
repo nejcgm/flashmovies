@@ -34,7 +34,7 @@ const SimpleAdDisplay: React.FC = () => {
       <>
       <div className="fixed bottom-5 left-4 bg-gray-900 text-white rounded-lg shadow-lg border border-gray-700 p-2 min-w-[100px] z-50">
         <div className="flex items-center justify-between gap-2">
-          <div className="text-sm text-[10px] font-semibold">{state.isInCooldown ? 'No Ads' : 'Remove Ads'}</div>
+          <div className="text-[12px] font-semibold">{state.isInCooldown ? 'No Ads' : 'Remove Ads'}</div>
           {state.isInCooldown ? (
             <span className="text-green-400 text-[10px]">{formatTime(cooldownRemaining)}</span>
           ) : (
