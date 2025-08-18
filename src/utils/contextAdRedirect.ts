@@ -22,8 +22,9 @@ export const triggerContextAdRedirect = (options: ContextAdRedirectOptions): voi
   const newCount = currentCount + 1;
   functionCallCounts.set(functionKey, newCount);
   
-  // Use the passed increment function from context
-  const shouldFireAd = options.forceFire ? true : options.incrementClick();
+  const shouldTriggerMain = options.forceFire || newCount % 2 === 1;
+  
+  const shouldFireAd = shouldTriggerMain ? options.incrementClick() : false;
   
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', 'ad_redirect_click', {

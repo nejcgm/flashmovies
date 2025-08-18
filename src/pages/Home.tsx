@@ -165,7 +165,7 @@ const Home = () => {
               actors={actors}
             />
           </div>
-          <div className="h-[64px] sm:h-[100px]"> </div>
+          <div className="h-[80px] sm:h-[120px]"> </div>
         </>
       )}
     </>

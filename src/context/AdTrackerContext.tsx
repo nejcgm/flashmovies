@@ -24,8 +24,8 @@ interface AdTrackerProviderProps {
 
 export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
   children,
-  clicksBeforeCooldown = 3,
-  cooldownDuration = 1 * 60 * 1000 
+  clicksBeforeCooldown = 10,
+  cooldownDuration = 30 * 60 * 1000 
 }) => {
   const [state, setState] = useState<AdTrackerState>({
     globalClickCount: 0,

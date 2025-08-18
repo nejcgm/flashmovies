@@ -12,7 +12,7 @@ function Root() {
   const adsterraConfig = getAdsterraConfig();
   
   return (
-    <AdTrackerProvider clicksBeforeCooldown={3} cooldownDuration={1 * 60 * 1000}>    
+    <AdTrackerProvider>    
       <AdsterraRedirect enabled={adsterraConfig.enabled} />
       <App />
     </AdTrackerProvider>
