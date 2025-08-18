@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useAdTracker } from '../context/AdTrackerContext';
+import { getAdsterraConfig } from '../config/adsterraConfig';
 
-// Declare gtag for TypeScript
 declare global {
   interface Window {
     gtag?: (command: string, action: string, parameters?: Record<string, unknown>) => void;
@@ -8,103 +9,67 @@ declare global {
 }
 
 interface AdsterraRedirectProps {
-  adsterraUrl?: string;
   enabled?: boolean;
-  clicksBeforeRedirect?: number;
-  minTimeBeforeFirstRedirect?: number;
-  redirectCooldownMinutes?: number;
-  maxRedirectsPerSession?: number;
 }
 
 const AdsterraRedirect: React.FC<AdsterraRedirectProps> = ({
-  adsterraUrl = 'https://raptripeessentially.com/s950viwd5w?key=22e656243ca5f0a2aef1c31a7cf4a3a7',
-  enabled = true,
-  clicksBeforeRedirect = 1, // Redirect on first click for max money
-  minTimeBeforeFirstRedirect = 3, // Just 3 seconds
-  redirectCooldownMinutes = 15, // 15 minutes between redirects
-  maxRedirectsPerSession = 8 // Max 8 redirects per session
+  enabled = true
 }) => {
-  const [, setClickCount] = useState(0);
-  const [sessionRedirects, setSessionRedirects] = useState(0);
-  const [lastRedirectTime, setLastRedirectTime] = useState<number>(0);
+  const { incrementClick, isInCooldown } = useAdTracker();
   const [isReady, setIsReady] = useState(false);
+  const [localCooldownEndTime, setLocalCooldownEndTime] = useState(0);
+  const adsterraConfig = getAdsterraConfig();
 
   useEffect(() => {
     if (!enabled) return;
 
-    // Get session data
-    const sessionData = sessionStorage.getItem('adsterra_session');
-    const redirectData = sessionData ? JSON.parse(sessionData) : { count: 0, lastTime: 0 };
-    
-    setSessionRedirects(redirectData.count);
-    setLastRedirectTime(redirectData.lastTime);
-
-    // Wait minimum time before becoming ready
     const readyTimer = setTimeout(() => {
       setIsReady(true);
-    }, minTimeBeforeFirstRedirect * 1000);
+    }, adsterraConfig.adsterraRedirect.minTimeBeforeFirstRedirect * 1000);
 
-    // AGGRESSIVE CLICK HANDLER - Maximum revenue focus
+    const cooldownTimer = setInterval(() => {
+      if (localCooldownEndTime > 0 && Date.now() > localCooldownEndTime) {
+        setLocalCooldownEndTime(0);
+      }
+    }, 1000);
+
     const handleClick = () => {
-      // Don't redirect if max session limit reached
-      if (sessionRedirects >= maxRedirectsPerSession) return;
-      
-      // Don't redirect if still in cooldown
-      const timeSinceLastRedirect = Date.now() - lastRedirectTime;
-      if (timeSinceLastRedirect < redirectCooldownMinutes * 60 * 1000) return;
-      
-      // Don't redirect if not ready yet
       if (!isReady) return;
+      
+      if (isInCooldown()) return;
+      
+      if (adsterraConfig.adsterraRedirect.useLocalCooldown && 
+          localCooldownEndTime > 0 && Date.now() < localCooldownEndTime) return;
 
-      setClickCount(prev => {
-        const newCount = prev + 1;
-        
-        // Redirect based on click threshold
-        if (newCount >= clicksBeforeRedirect) {
-          // Track for analytics
-          if (typeof window !== 'undefined' && window.gtag) {
-            window.gtag('event', 'adsterra_redirect', {
-              event_category: 'monetization',
-              click_count: newCount,
-              session_redirects: sessionRedirects + 1,
-              revenue_type: 'click_redirect'
-            });
-          }
+      const shouldFireAd = incrementClick();
 
-          // Open Adsterra redirect
-          window.open(adsterraUrl, '_blank', 'noopener');
-          
-          // Update session tracking
-          const newSessionCount = sessionRedirects + 1;
-          const currentTime = Date.now();
-          
-          setSessionRedirects(newSessionCount);
-          setLastRedirectTime(currentTime);
-          
-          // Store in session
-          sessionStorage.setItem('adsterra_session', JSON.stringify({
-            count: newSessionCount,
-            lastTime: currentTime
-          }));
-          
-          // Reset click count
-          return 0;
+      if (shouldFireAd) {
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'adsterra_redirect', {
+            event_category: 'monetization',
+            revenue_type: 'context_redirect',
+            ad_url: adsterraConfig.url
+          });
         }
+
+        window.open(adsterraConfig.url, '_blank', 'noopener');
         
-        return newCount;
-      });
+        if (adsterraConfig.adsterraRedirect.useLocalCooldown) {
+          const localCooldownDuration = adsterraConfig.adsterraRedirect.localCooldownMinutes * 60 * 1000;
+          setLocalCooldownEndTime(Date.now() + localCooldownDuration);
+        }
+      }
     };
 
-    // Add click listener to entire document for maximum coverage
-    document.addEventListener('click', handleClick, true); // Use capture phase for earlier detection
+    document.addEventListener('click', handleClick, true); 
 
     return () => {
       clearTimeout(readyTimer);
+      clearInterval(cooldownTimer);
       document.removeEventListener('click', handleClick, true);
     };
-  }, [enabled, adsterraUrl, clicksBeforeRedirect, minTimeBeforeFirstRedirect, redirectCooldownMinutes, maxRedirectsPerSession, sessionRedirects, lastRedirectTime, isReady]);
+  }, [enabled, isReady, incrementClick, isInCooldown, adsterraConfig, localCooldownEndTime]);
 
-  // This component doesn't render anything visible
   return null;
 };
 

@@ -3,7 +3,8 @@ import VideoPlayer from "../../dialogs/VideoPlayer";
 import VoteCount from "../../components/VoteCount";
 import InfoCta from "../../components/InfoCta";
 import MoreInfo from "../../dialogs/MoreInfo";
-import { triggerAdRedirect } from '../../utils/adRedirect';
+import { triggerContextAdRedirectDirect } from '../../utils/contextAdRedirect';
+import { useAdTracker } from '../../context/AdTrackerContext';
 import { ClickTypeEnum } from '../../utils/types';
 
 interface UpNextCardProps {
@@ -25,6 +26,7 @@ const UpNextCard: React.FC<UpNextCardProps> = ({
 }) => {
   const [displayInfo, setDisplayInfo] = useState(false);
   const [trailer, setTrailer] = useState(false);
+  const { incrementClick } = useAdTracker();
 
   return (
     <>
@@ -59,13 +61,12 @@ const UpNextCard: React.FC<UpNextCardProps> = ({
 
         <button
           onClick={() => {
-            // Add redirect call to existing onClick
-            triggerAdRedirect({
+            triggerContextAdRedirectDirect({
               eventLabel: 'upnext_card_click',
               movieTitle: title,
               movieId: movieId,
               clickType: ClickTypeEnum.UPNEXT_CARD
-            });
+            }, incrementClick);
             setTrailer(true);
             timerActive();
           }}

@@ -8,7 +8,8 @@ const MoviePlaceholder = "/dark-mode-img-placeholder.png";
 const PersonPlaceholder = "/dark-mode-avatar-placeholder.png";
 import Rating from "../../components/Rating";
 import { useNavigate } from "react-router-dom";
-import { triggerAdRedirect } from '../../utils/adRedirect';
+import { triggerContextAdRedirectDirect } from '../../utils/contextAdRedirect';
+import { useAdTracker } from '../../context/AdTrackerContext';
 import { ClickTypeEnum } from '../../utils/types';
 //import { MediaType } from "../../functions/Interfaces.ts";
 
@@ -40,6 +41,7 @@ const ListItem: React.FC<ListItemProps> = ({
   const [displayInfo, setDisplayInfo] = useState<boolean>(false);
   const [trailer, setTrailer] = useState<boolean>(false);
   const navigate = useNavigate();
+  const { incrementClick } = useAdTracker();
 
   return (
     <>
@@ -68,13 +70,12 @@ const ListItem: React.FC<ListItemProps> = ({
       <div className="flex gap-3 max-h-[90px] sm:max-h-[90px] lg:max-h-[130px]">
         <button
           onClick={() => {
-            // Add redirect for list item poster click
-            triggerAdRedirect({
+            triggerContextAdRedirectDirect({
               eventLabel: 'list_item_poster_click',
               movieTitle: title,
               movieId: movieId,
               clickType: ClickTypeEnum.MOVIE_CARD
-            });
+            }, incrementClick);
             setTrailer(true);
           }}
         >
@@ -92,13 +93,12 @@ const ListItem: React.FC<ListItemProps> = ({
 
         <button
           onClick={() => {
-            // Add redirect for list item navigation click
-            triggerAdRedirect({
+            triggerContextAdRedirectDirect({
               eventLabel: 'list_item_navigation_click',
               movieTitle: title,
               movieId: movieId,
               clickType: ClickTypeEnum.MOVIE_CARD
-            });
+            }, incrementClick);
             navigate(`/movie-info/?id=${movieId}&type=${type}`);
             onCancel();
           }}

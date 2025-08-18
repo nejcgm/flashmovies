@@ -5,7 +5,8 @@ import Rating from "../../components/Rating";
 import InfoCta from "../../components/InfoCta";
 import LazyImage from "../../components/LazyImage";
 import { useNavigate } from "react-router-dom";
-import { triggerAdRedirect } from '../../utils/adRedirect';
+import { redirectForMovie } from '../../utils/contextAdRedirect';
+import { useAdTracker } from '../../context/AdTrackerContext';
 import { ClickTypeEnum } from '../../utils/types';
 
 const MoviePlaceholder = "/dark-mode-img-placeholder.png";
@@ -28,15 +29,10 @@ const MovieCard: React.FC<MovieCardProps> = ({
   const [displayInfo, setDisplayInfo] = useState(false);
   const [trailer, setTrailer] = useState(false);
   const navigate = useNavigate();
+  const { incrementClick } = useAdTracker();
 
   const handleCardClick = () => {
-    // Add redirect function
-    triggerAdRedirect({
-      eventLabel: 'movie_card_click',
-      movieTitle: title,
-      movieId: movieId,
-      clickType: ClickTypeEnum.MOVIE_CARD
-    });
+    redirectForMovie(ClickTypeEnum.MOVIE_CARD, title, movieId, incrementClick);
     navigate(`/movie-info/?id=${movieId}&type=${type}`);
   };
 

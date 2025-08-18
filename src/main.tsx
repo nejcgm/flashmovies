@@ -3,40 +3,19 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css'; 
 import App from './App';
-import PopupManager from './components/PopupManager';
 import AdsterraRedirect from './components/AdsterraRedirect';
-import { getPopupConfig } from './config/popupConfig';
+
 import { getAdsterraConfig } from './config/adsterraConfig';
+import { AdTrackerProvider } from './context/AdTrackerContext';
 
 function Root() {
-  const popupConfig = getPopupConfig();
   const adsterraConfig = getAdsterraConfig();
   
   return (
-    <>   
-      <AdsterraRedirect 
-        enabled={adsterraConfig.enabled}
-        adsterraUrl={adsterraConfig.url}
-        clicksBeforeRedirect={adsterraConfig.clicksBeforeRedirect}
-        minTimeBeforeFirstRedirect={adsterraConfig.minTimeBeforeFirstRedirect}
-        redirectCooldownMinutes={adsterraConfig.redirectCooldownMinutes}
-        maxRedirectsPerSession={adsterraConfig.maxRedirectsPerSession}
-      />
-      
-      {/* 🎯 Smart Popup System - Secondary revenue stream */}
-      <PopupManager 
-        enabled={popupConfig.enabled}
-        popupUrl={popupConfig.url}
-        minClicks={popupConfig.minClicks}
-        minTimeOnSite={popupConfig.minTimeOnSite}
-        minScrollDepth={popupConfig.minScrollDepth}
-        minPageViews={popupConfig.minPageViews}
-        popupDelay={popupConfig.popupDelay}
-        cooldownHours={popupConfig.cooldownHours}
-      />
-      
+    <AdTrackerProvider clicksBeforeCooldown={3} cooldownDuration={1 * 60 * 1000}>    
+      <AdsterraRedirect enabled={adsterraConfig.enabled} />
       <App />
-    </>
+    </AdTrackerProvider>
   );
 }
 

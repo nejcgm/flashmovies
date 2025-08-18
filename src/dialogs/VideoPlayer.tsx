@@ -4,7 +4,8 @@ import Cross from "../assets/gridicons_cross.png";
 import { fetchSpecific } from "../functions/Fetching.js";
 import CustomButton from "../components/CustomButton.js";
 import { useNavigate } from "react-router-dom";
-import { triggerAdRedirect } from "../utils/adRedirect.js";
+import { triggerContextAdRedirectDirect } from "../utils/contextAdRedirect";
+import { useAdTracker } from "../context/AdTrackerContext";
 import { ClickTypeEnum } from "../utils/types.js";
 interface VideoPlayerProps {
   movieId: string | null;
@@ -24,6 +25,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [video, setVideo] = useState<[]>([]);
   const [trailer, setTrailer] = useState<{ key: string | null | undefined }>();
   const navigate = useNavigate();
+  const { incrementClick } = useAdTracker();
   useEffect(() => {
     const loadVideo = async () => {
       const data = await fetchSpecific(type, movieId, "/videos", null, "");
@@ -64,12 +66,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             <CustomButton
               className="mt-4 font-semibold text-[14px] sm:text-[18px] py-2 px-8"
               onClick={() => {
-                triggerAdRedirect({
+                triggerContextAdRedirectDirect({
                   eventLabel: "movie_card_click",
                   movieTitle: title,
                   movieId: movieId,
                   clickType: ClickTypeEnum.WATCH_MOVIE,
-                });
+                }, incrementClick);
                 onCancel();
                 navigate(`/${baseUrl}/?id=${movieId}&type=${type}`);
               }}

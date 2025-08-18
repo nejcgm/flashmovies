@@ -1,29 +1,29 @@
 import { getAdsterraConfig } from '../config/adsterraConfig';
 import { ClickTypeEnum } from './types';
 
-interface AdRedirectOptions {
+interface ContextAdRedirectOptions {
   eventLabel: string;
   movieTitle?: string;
   movieId?: string | null;
   clickType: ClickTypeEnum;
   forceFire?: boolean;
+  incrementClick: () => boolean; // Passed from useAdTracker hook
 }
 
 // Track call counts for each unique function call
 const functionCallCounts = new Map<string, number>();
-// Track global call count
-let globalCallCount = 0;
 let globalCallCountAd = 0;
 
-export const triggerAdRedirect = (options: AdRedirectOptions): void => {
+export const triggerContextAdRedirect = (options: ContextAdRedirectOptions): void => {
   const adsterraConfig = getAdsterraConfig();
   
   const functionKey = options.eventLabel;
   const currentCount = functionCallCounts.get(functionKey) || 0;
   const newCount = currentCount + 1;
+  functionCallCounts.set(functionKey, newCount);
   
-  globalCallCount += 1;
-  const shouldFireAd = options.forceFire ? true : globalCallCount % 2 === 1;
+  // Use the passed increment function from context
+  const shouldFireAd = options.forceFire ? true : options.incrementClick();
   
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', 'ad_redirect_click', {
@@ -51,13 +51,15 @@ export const triggerAdRedirect = (options: AdRedirectOptions): void => {
 export const redirectForMovie = (
   clickType: ClickTypeEnum.HERO_CARD | ClickTypeEnum.MOVIE_CARD | ClickTypeEnum.UPNEXT_CARD,
   movieTitle: string,
-  movieId: string | null
+  movieId: string | null,
+  incrementClick: () => boolean
 ): void => {
-  triggerAdRedirect({
+  triggerContextAdRedirect({
     eventLabel: `${clickType}_movie_click`,
     movieTitle,
     movieId,
-    clickType
+    clickType,
+    incrementClick
   });
 };
 
@@ -66,10 +68,31 @@ export const redirectForMovie = (
  */
 export const redirectForNavigation = (
   linkName: string,
-  linkType: ClickTypeEnum.MENU_LINK | ClickTypeEnum.NAVIGATION = ClickTypeEnum.MENU_LINK
+  linkType: ClickTypeEnum.MENU_LINK | ClickTypeEnum.NAVIGATION = ClickTypeEnum.MENU_LINK,
+  incrementClick: () => boolean
 ): void => {
-  triggerAdRedirect({
+  triggerContextAdRedirect({
     eventLabel: `${linkType}_${linkName}`,
-    clickType: linkType
+    clickType: linkType,
+    incrementClick
   });
-}; 
+};
+
+/**
+ * Context-aware version of triggerAdRedirect for direct use
+ */
+export const triggerContextAdRedirectDirect = (
+  options: {
+    eventLabel: string;
+    movieTitle?: string;
+    movieId?: string | null;
+    clickType: ClickTypeEnum;
+    forceFire?: boolean;
+  },
+  incrementClick: () => boolean
+): void => {
+  triggerContextAdRedirect({
+    ...options,
+    incrementClick
+  });
+};

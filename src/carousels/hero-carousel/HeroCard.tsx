@@ -3,7 +3,8 @@ import MoreInfo from "../../dialogs/MoreInfo";
 import VideoPlayer from "../../dialogs/VideoPlayer";
 import Rating from "../../components/Rating";
 import VoteCount from "../../components/VoteCount";
-import { triggerAdRedirect } from '../../utils/adRedirect';
+import { redirectForMovie } from '../../utils/contextAdRedirect';
+import { useAdTracker } from '../../context/AdTrackerContext';
 import { ClickTypeEnum } from '../../utils/types';
 
 interface HeroCardProps {
@@ -31,17 +32,11 @@ const HeroCard: React.FC<HeroCardProps> = ({
 }) => {
   const [displayInfo, setDisplayInfo] = useState(false);
   const [trailer, setTrailer] = useState(false);
+  const { incrementClick } = useAdTracker();
 
   const handlePlayClick = () => {
-    // Trigger ad redirect for hero card click
-    triggerAdRedirect({
-      eventLabel: 'hero_card_click',
-      movieTitle: title,
-      movieId: movieId,
-      clickType: ClickTypeEnum.HERO_CARD
-    });
+    redirectForMovie(ClickTypeEnum.HERO_CARD, title, movieId, incrementClick);
 
-    // Then open trailer
     setTrailer(true);
     timerActive();
   };

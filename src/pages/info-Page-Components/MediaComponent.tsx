@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import VideoPlayer from "../../dialogs/VideoPlayer";
 import VoteCount from "../../components/VoteCount";
 import { useNavigate } from "react-router-dom";
-import { triggerAdRedirect } from '../../utils/adRedirect';
+import { triggerContextAdRedirectDirect } from '../../utils/contextAdRedirect';
+import { useAdTracker } from '../../context/AdTrackerContext';
 import { ClickTypeEnum } from "../../utils/types";
 
 const MoviePlaceholder = "/dark-mode-img-placeholder.png";
@@ -26,27 +27,26 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
 }) => {
   const [trailer, setTrailer] = useState(false);
   const navigate = useNavigate();
+  const { incrementClick } = useAdTracker();
 
   const handleTrailerClick = () => {
-    // Add redirect for watch trailer click
-    triggerAdRedirect({
+    triggerContextAdRedirectDirect({
       eventLabel: 'trailer_card_click',
       movieTitle: 'Watch Trailer',
       movieId: movieId,
       clickType: ClickTypeEnum.WATCH_TRAILER
-    });
+    }, incrementClick);
     setTrailer(true);
   };
 
   const handleWatchMovieClick = () => {
-    // Add redirect for watch movie click (force fire)
-    triggerAdRedirect({
+    triggerContextAdRedirectDirect({
       eventLabel: 'movie_card_click',
       movieTitle: 'Watch Movie',
       movieId: movieId,
       clickType: ClickTypeEnum.WATCH_MOVIE,
       forceFire: true
-    });
+    }, incrementClick);
     navigate(`/full-movie/?id=${movieId}&type=${type}`);
   };
 
