@@ -8,46 +8,38 @@ interface IMetaProps {
   url?: string;
   image?: string;
   robots?: string;
-  charset?: string;
-  favicon?: string;
   type?: "website" | "video.movie" | "video.tv_show" | "article";
   siteName?: string;
-  author?: string;
   publishedTime?: string;
   modifiedTime?: string;
 }
 
 const Meta = ({
-  title = "Flash Movies - Free Movie Streaming",
-  description = "Watch free movies and TV shows online on Flash Movies. Stream the latest movies and popular TV series in HD for free, anytime and anywhere.",
-  keywords = [
-    "flash movies",
-    "flashmovies",
-    "flashmovies.xyz",
-    "flash movie",
-    "flash",
-    "free movies",
-    "movie streaming", 
-    "watch movies online",
-    "flash movies",
-    "watch tv shows online",
-    "free tv shows",
-    "stream movies free",
-    "online movie platform",
-    "HD movies",
-    "TV series streaming"
-  ],
-  url = "https://flashmovies.xyz",
-  image = "https://flashmovies.xyz/flash-movies-logo.png",
-  robots = "index, follow",
-  charset = "UTF-8",
-  favicon = "/flash-movies-logo.png",
+  title,
+  description,
+  keywords = [],
+  url,
+  image,
+  robots,
   type = "website",
   siteName = "Flash Movies",
-  author = "Flash Movies",
   publishedTime,
   modifiedTime,
 }: IMetaProps) => {
+  // Default values for dynamic content
+  const defaultTitle = "Flash Movies - Free Movie Streaming";
+  const defaultDescription = "Watch free movies and TV shows online on Flash Movies. Stream the latest movies and popular TV series in HD for free, anytime and anywhere.";
+  const defaultKeywords = [
+    "flash movies", "flashmovies", "flashmovies.xyz", "flash movie", "flash",
+    "free movies", "movie streaming", "watch movies online", "watch tv shows online",
+    "free tv shows", "stream movies free", "online movie platform", "HD movies", "TV series streaming"
+  ];
+
+  // Use provided values or defaults
+  const finalTitle = title || defaultTitle;
+  const finalDescription = description || defaultDescription;
+  const finalKeywords = keywords.length > 0 ? keywords : defaultKeywords;
+
   // Ensure image URL is absolute
   const absoluteImageUrl = image?.startsWith('http') 
     ? image 
@@ -71,52 +63,36 @@ const Meta = ({
 
   return (
     <Helmet>
-      {/* Basic tags */}
-      <meta charSet={charset} />
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <meta name="keywords" content={keywords.join(", ")} />
-      <meta name="robots" content={robots} />
-      <meta name="author" content={author} />
-      <link rel="canonical" href={url} />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-      <meta httpEquiv="Content-Language" content="en" />
-      <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+      {/* Always render title, description and keywords (with defaults if not provided) */}
+      <title>{finalTitle}</title>
+      <meta name="description" content={finalDescription} />
+      <meta name="keywords" content={finalKeywords.join(", ")} />
+      {robots && <meta name="robots" content={robots} />}
+      {url && <link rel="canonical" href={url} />}
 
-      {/* Theme and mobile optimization */}
-      <meta name="theme-color" content="#000000" />
-      <meta name="mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
-      {/* Favicon and icons */}
-      <link rel="icon" href={favicon} />
-      <link rel="apple-touch-icon" href={favicon} />
-      <link rel="shortcut icon" href={favicon} />
-
-      {/* Open Graph / Facebook */}
-      <meta property="og:type" content={type} />
-      <meta property="og:url" content={url} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:image" content={absoluteImageUrl} />
-      <meta property="og:image:width" content={imageDimensions.width} />
-      <meta property="og:image:height" content={imageDimensions.height} />
-      <meta property="og:image:alt" content={title} />
-      <meta property="og:image:type" content="image/png" />
-      <meta property="og:image:secure_url" content={absoluteImageUrl} />
-      <meta property="og:site_name" content={siteName} />
+      {/* Open Graph / Facebook - Always render title and description */}
+      {type && <meta property="og:type" content={type} />}
+      {url && <meta property="og:url" content={url} />}
+      <meta property="og:title" content={finalTitle} />
+      <meta property="og:description" content={finalDescription} />
+      {absoluteImageUrl && <meta property="og:image" content={absoluteImageUrl} />}
+      {absoluteImageUrl && <meta property="og:image:width" content={imageDimensions.width} />}
+      {absoluteImageUrl && <meta property="og:image:height" content={imageDimensions.height} />}
+      <meta property="og:image:alt" content={finalTitle} />
+      {absoluteImageUrl && <meta property="og:image:type" content="image/png" />}
+      {absoluteImageUrl && <meta property="og:image:secure_url" content={absoluteImageUrl} />}
+      {siteName && <meta property="og:site_name" content={siteName} />}
       <meta property="og:locale" content="en_US" />
       {publishedTime && <meta property="article:published_time" content={publishedTime} />}
       {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
 
-      {/* Twitter */}
+      {/* Twitter - Always render title and description */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:url" content={url} />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={absoluteImageUrl} />
-      <meta name="twitter:image:alt" content={title} />
+      {url && <meta name="twitter:url" content={url} />}
+      <meta name="twitter:title" content={finalTitle} />
+      <meta name="twitter:description" content={finalDescription} />
+      {absoluteImageUrl && <meta name="twitter:image" content={absoluteImageUrl} />}
+      <meta name="twitter:image:alt" content={finalTitle} />
       <meta name="twitter:site" content="@flashmovies" />
       <meta name="twitter:creator" content="@flashmovies" />
 

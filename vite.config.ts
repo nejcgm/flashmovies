@@ -36,5 +36,7 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 1000,
+    assetsDir: 'assets',
+    sourcemap: false,
   },
 });

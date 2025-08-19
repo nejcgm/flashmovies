@@ -67,39 +67,43 @@ const MovieInfoPage = () => {
 
   return (
     <>
-      <Meta 
-        title={`${info?.title || info?.name} ${info?.release_date ? `(${new Date(info.release_date).getFullYear()})` : info?.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} - Watch Free on Flash Movies`}
-        description={info?.overview ? `${info.overview.slice(0, 150)}... Watch ${info?.title || info?.name} free on Flash Movies.` : `Watch ${info?.title || info?.name} free on Flash Movies. Stream in HD quality.`}
-        image={
-          info?.poster_path 
-            ? `https://image.tmdb.org/t/p/w500${info.poster_path}` 
-            : info?.backdrop_path 
-              ? `https://image.tmdb.org/t/p/w1280${info.backdrop_path}` 
-              : "https://flashmovies.xyz/flash-movies-logo.png"
-        }
-        url={window.location.href}
-        keywords={[
-          info?.title || info?.name || '',
-          ...(info?.genres?.map((genre: { name: string }) => genre.name) || []),
-          `${type} streaming`, `watch ${type} free`, `${type} online`, 'flash movies'
-        ].filter(Boolean)}
-        type={type === 'movie' ? 'video.movie' : type === 'tv' ? 'video.tv_show' : 'article'}
-        publishedTime={info?.release_date || info?.first_air_date}
-      />
-      
-      <BreadcrumbSchema 
-        items={[
-          { name: "Home", url: "https://flashmovies.xyz/" },
-          { 
-            name: type === 'movie' ? 'Movies' : type === 'tv' ? 'TV Shows' : 'People', 
-            url: `https://flashmovies.xyz/list-items?type=${type}&search=popular&title=popular-${type}s` 
-          },
-          { 
-            name: info?.title || info?.name || 'Content', 
-            url: window.location.href 
+      {info && (
+        <Meta 
+          title={`${info.title || info.name} ${info.release_date ? `(${new Date(info.release_date).getFullYear()})` : info.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} - Watch Free on Flash Movies`}
+          description={info.overview ? `${info.overview.slice(0, 150)}... Watch ${info.title || info.name} free on Flash Movies.` : `Watch ${info.title || info.name} free on Flash Movies. Stream in HD quality.`}
+          image={
+            info.poster_path 
+              ? `https://image.tmdb.org/t/p/w500${info.poster_path}` 
+              : info.backdrop_path 
+                ? `https://image.tmdb.org/t/p/w1280${info.backdrop_path}` 
+                : "https://flashmovies.xyz/flash-movies-logo.png"
           }
-        ]}
-      />
+          url={window.location.href}
+          keywords={[
+            info.title || info.name || '',
+            ...(info.genres?.map((genre: { name: string }) => genre.name) || []),
+            `${type} streaming`, `watch ${type} free`, `${type} online`, 'flash movies'
+          ].filter(Boolean)}
+          type={type === 'movie' ? 'video.movie' : type === 'tv' ? 'video.tv_show' : 'article'}
+          publishedTime={info.release_date || info.first_air_date}
+        />
+      )}
+      
+      {info && (
+        <BreadcrumbSchema 
+          items={[
+            { name: "Home", url: "https://flashmovies.xyz/" },
+            { 
+              name: type === 'movie' ? 'Movies' : type === 'tv' ? 'TV Shows' : 'People', 
+              url: `https://flashmovies.xyz/list-items?type=${type}&search=popular&title=popular-${type}s` 
+            },
+            { 
+              name: info.title || info.name || 'Content', 
+              url: window.location.href 
+            }
+          ]}
+        />
+      )}
       {info && type !== 'person' && (
         <MovieSchema
           title={info?.title || info?.name || ''}
@@ -107,6 +111,8 @@ const MovieInfoPage = () => {
           image={info?.poster_path}
           releaseDate={info?.release_date || info?.first_air_date}
           genre={info?.genres?.map((g: {name: string}) => g.name) || []}
+          director={credits?.filter((credit: { job?: string; name: string }) => credit.job === 'Director').map((credit: { name: string }) => credit.name) || []}
+          actor={credits?.slice(0, 10).map((credit: { name: string }) => credit.name) || []}
           rating={info?.vote_average}
           ratingCount={info?.vote_count}
           duration={info?.runtime}

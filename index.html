@@ -4,37 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Default SEO Meta Tags -->
-    <title>Flash Movies - Free Movie Streaming</title>
+    <!-- Essential Static Meta Tags (Site-wide, won't change) -->
     <meta name="application-name" content="Flash Movies">
-    <meta name="description" content="Watch free movies and TV shows online on Flash Movies. Stream the latest movies and popular TV series in HD for free, anytime and anywhere." />
-    <meta name="keywords" content="flash movies, flashmovies, flashmovies.xyz, flash movie, flash, free movies, movie streaming, watch movies online, watch tv shows online, free tv shows, stream movies free, online movie platform, HD movies, TV series streaming" />
     <meta name="robots" content="index, follow" />
     <meta name="author" content="Flash Movies" />
-    <link rel="canonical" href="https://flashmovies.xyz" />
     
-    <!-- Open Graph Default Tags -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://flashmovies.xyz" />
-    <meta property="og:title" content="Flash Movies - Free Movie Streaming" />
-    <meta property="og:description" content="Watch free movies and TV shows online on Flash Movies. Stream the latest movies and popular TV series in HD for free, anytime and anywhere." />
-    <meta property="og:image" content="https://flashmovies.xyz/flash-movies-logo.png" />
+    <!-- Open Graph Static Tags (Site-wide) -->
     <meta property="og:site_name" content="Flash Movies" />
     <meta property="og:locale" content="en_US" />
     
-    <!-- Twitter Card Default Tags -->
+    <!-- Twitter Card Static Tags (Site-wide) -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@flashmovies" />
+    <meta name="twitter:creator" content="@flashmovies" />
+    
+    <!-- Default Title (Will be overridden by Meta component) -->
+    <link rel="canonical" href="https://flashmovies.xyz" />
+    
+    <!-- Default Open Graph (Will be overridden by Meta component) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://flashmovies.xyz" />
+    <meta property="og:image" content="https://flashmovies.xyz/flash-movies-logo.png" />
+    
+    <!-- Default Twitter (Will be overridden by Meta component) -->
     <meta name="twitter:url" content="https://flashmovies.xyz" />
-    <meta name="twitter:title" content="Flash Movies - Free Movie Streaming" />
-    <meta name="twitter:description" content="Watch free movies and TV shows online on Flash Movies. Stream the latest movies and popular TV series in HD for free, anytime and anywhere." />
     <meta name="twitter:image" content="https://flashmovies.xyz/flash-movies-logo.png" />
     
     <!-- Additional SEO tags for better crawling -->
     <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     
+    <!-- Additional meta tags for better discovery -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="referrer" content="origin-when-cross-origin" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
     <!-- Preload critical resources -->
-    <link rel="preload" href="/src/main.tsx" as="script" />
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" as="style" />
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,7 +97,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" crossorigin src="/src/main.tsx"></script>
     <script type='text/javascript' src='//raptripeessentially.com/30/d7/89/30d7893f4447a63868a364443e8b11a0.js'></script>
   </body>
 </html>

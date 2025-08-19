@@ -109,7 +109,7 @@ const List: React.FC = () => {
       url={window.location.href}
         keywords={[
           ...(listItems.slice(0, 10).map((item: DataInfoProps) => item.title || item.name).filter(Boolean)),
-          `${type} streaming`, `free ${type}s`, `watch ${type}s online`, formatTitle(title) || ''
+          `${type} streaming`, `free ${type}s`, `watch ${type}s online`, formatTitle(title) || '', 'flash movies', 'flashmovies', 'flashmovies.xyz'
         ]}
         type="website"
       />
