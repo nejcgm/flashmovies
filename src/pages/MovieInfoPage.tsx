@@ -82,7 +82,7 @@ const MovieInfoPage = () => {
           keywords={[
             info.title || info.name || '',
             ...(info.genres?.map((genre: { name: string }) => genre.name) || []),
-            `${type} streaming`, `watch ${type} free`, `${type} online`, 'flash movies'
+            `${type} streaming`, `watch ${type} free`, `${type} online`, 'flash movies, flashmovies, flashmovies.xyz'
           ].filter(Boolean)}
           type={type === 'movie' ? 'video.movie' : type === 'tv' ? 'video.tv_show' : 'article'}
           publishedTime={info.release_date || info.first_air_date}

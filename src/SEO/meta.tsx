@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 
 interface IMetaProps {
@@ -26,6 +26,8 @@ const Meta = ({
   publishedTime,
   modifiedTime,
 }: IMetaProps) => {
+
+  const [savedTitle, setSavedTitle] = useState<string>()
   // Default values for dynamic content
   const defaultTitle = "Flash Movies - Free Movie Streaming";
   const defaultDescription = "Watch free movies and TV shows online on Flash Movies. Stream the latest movies and popular TV series in HD for free, anytime and anywhere.";
@@ -39,6 +41,10 @@ const Meta = ({
   const finalTitle = title || defaultTitle;
   const finalDescription = description || defaultDescription;
   const finalKeywords = keywords.length > 0 ? keywords : defaultKeywords;
+
+  useEffect(() => {
+    setSavedTitle(finalTitle)
+  }, [finalTitle])
 
   // Ensure image URL is absolute
   const absoluteImageUrl = image?.startsWith('http') 
@@ -64,7 +70,7 @@ const Meta = ({
   return (
     <Helmet>
       {/* Always render title, description and keywords (with defaults if not provided) */}
-      <title>{finalTitle}</title>
+      <title>{savedTitle || finalTitle}</title>
       <meta name="description" content={finalDescription} />
       <meta name="keywords" content={finalKeywords.join(", ")} />
       {robots && <meta name="robots" content={robots} />}
