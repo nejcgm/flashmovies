@@ -10,17 +10,13 @@ interface ContextAdRedirectOptions {
   incrementClick: () => boolean; // Passed from useAdTracker hook
 }
 
-// Track call counts for each unique function call
-const functionCallCounts = new Map<string, number>();
 let globalCallCountAd = 0;
+let newCount = 0;
 
 export const triggerContextAdRedirect = (options: ContextAdRedirectOptions): void => {
   const adsterraConfig = getAdsterraConfig();
   
-  const functionKey = options.eventLabel;
-  const currentCount = functionCallCounts.get(functionKey) || 0;
-  const newCount = currentCount + 1;
-  functionCallCounts.set(functionKey, newCount);
+  newCount += 1;
   
   const shouldTriggerMain = options.forceFire || newCount % 2 === 1;
   
@@ -34,7 +30,6 @@ export const triggerContextAdRedirect = (options: ContextAdRedirectOptions): voi
       movie_title: options.movieTitle || 'N/A',
       movie_id: options.movieId || 'N/A',
       ad_url: adsterraConfig.url,
-      function_call_count: newCount,
       ad_fired: shouldFireAd,
       global_call_ad_count: globalCallCountAd
     });
