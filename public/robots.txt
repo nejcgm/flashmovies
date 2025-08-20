@@ -24,7 +24,16 @@ Allow: /sitemaps/
 
 # Sitemap locations
 Sitemap: https://flashmovies.xyz/sitemap.xml
-# Individual sitemaps are automatically discovered via sitemap index
+
+# Individual sitemaps for better discovery
+Sitemap: https://flashmovies.xyz/sitemaps/movie-info.xml
+Sitemap: https://flashmovies.xyz/sitemaps/tv-info.xml
+Sitemap: https://flashmovies.xyz/sitemaps/celebrities.xml
+Sitemap: https://flashmovies.xyz/sitemaps/movie-watch.xml
+Sitemap: https://flashmovies.xyz/sitemaps/tv-watch.xml
+Sitemap: https://flashmovies.xyz/sitemaps/movie-categories.xml
+Sitemap: https://flashmovies.xyz/sitemaps/tv-categories.xml
+Sitemap: https://flashmovies.xyz/sitemaps/static.xml
 
 # Crawl delay (reduced for faster indexing)
 Crawl-delay: 0.5

@@ -8,140 +8,72 @@
     ],
     "rewrites": [
       {
-        "source": "!/{sitemap.xml,sitemaps/**,robots.txt,google*.html,assets/**}",
-        "destination": "/index.html"
+        "source": "**",
+        "function": "/index.html"
       }
     ],
     "headers": [
       {
         "source": "/robots.txt",
         "headers": [
-          { 
-            "key": "Access-Control-Allow-Origin", 
-            "value": "*" 
-          }
+          { "key": "Access-Control-Allow-Origin", "value": "*" }
         ]
       },
       {
         "source": "/{sitemap.xml,sitemaps/**}",
         "headers": [
-          {
-            "key": "Content-Type",
-            "value": "application/xml; charset=utf-8"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=86400"
-          }
+          { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
+          { "key": "Cache-Control", "value": "public, max-age=86400" }
         ]
       },
       {
         "source": "**/*.js",
         "headers": [
-          {
-            "key": "Content-Type",
-            "value": "application/javascript; charset=utf-8"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "max-age=31536000, immutable"
-          },
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
-          }
+          { "key": "Content-Type", "value": "application/javascript; charset=utf-8" },
+          { "key": "Cache-Control", "value": "max-age=31536000, immutable" },
+          { "key": "Access-Control-Allow-Origin", "value": "*" }
         ]
       },
       {
         "source": "**/*.css",
         "headers": [
-          {
-            "key": "Content-Type",
-            "value": "text/css; charset=utf-8"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "max-age=31536000, immutable"
-          },
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
-          }
+          { "key": "Content-Type", "value": "text/css; charset=utf-8" },
+          { "key": "Cache-Control", "value": "max-age=31536000, immutable" },
+          { "key": "Access-Control-Allow-Origin", "value": "*" }
         ]
       },
       {
         "source": "**/*.@(png|jpg|jpeg|gif|svg|webp|ico)",
         "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "max-age=31536000, immutable"
-          }
+          { "key": "Cache-Control", "value": "max-age=31536000, immutable" }
         ]
       },
       {
         "source": "**/*.html",
         "headers": [
-          {
-            "key": "Content-Type",
-            "value": "text/html; charset=utf-8"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "max-age=3600"
-          },
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
-          }
+          { "key": "Content-Type", "value": "text/html; charset=utf-8" },
+          { "key": "Cache-Control", "value": "max-age=3600" },
+          { "key": "Access-Control-Allow-Origin", "value": "*" }
         ]
       },
       {
         "source": "**/*.@(json|xml|txt)",
         "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "max-age=3600"
-          }
-        ]
-      },
-      {
-        "source": "sitemap.xml",
-        "headers": [
-          {
-            "key": "Content-Type",
-            "value": "application/xml; charset=utf-8"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "max-age=3600, public"
-          },
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
-          }
+          { "key": "Cache-Control", "value": "max-age=3600" }
         ]
       },
       {
         "source": "**",
         "headers": [
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "X-Frame-Options",
-            "value": "DENY"
-          },
-          {
-            "key": "X-XSS-Protection",
-            "value": "1; mode=block"
-          },
-          {
-            "key": "Referrer-Policy",
-            "value": "strict-origin-when-cross-origin"
-          }
+          { "key": "X-Content-Type-Options", "value": "nosniff" },
+          { "key": "X-Frame-Options", "value": "DENY" },
+          { "key": "X-XSS-Protection", "value": "1; mode=block" },
+          { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
         ]
       }
     ]
+  },
+  "functions": {
+    "source": "functions"
   }
 }

@@ -7,15 +7,18 @@ import AdsterraRedirect from './components/AdsterraRedirect';
 
 import { getAdsterraConfig } from './config/adsterraConfig';
 import { AdTrackerProvider } from './context/AdTrackerContext';
+import { HelmetProvider } from 'react-helmet-async';
 
 function Root() {
   const adsterraConfig = getAdsterraConfig();
   
   return (
+    <HelmetProvider>
     <AdTrackerProvider>    
       <AdsterraRedirect enabled={adsterraConfig.enabled} />
       <App />
     </AdTrackerProvider>
+    </HelmetProvider>
   );
 }
 
