@@ -9,7 +9,7 @@
     "rewrites": [
       {
         "source": "**",
-        "function": "/index.html"
+        "destination": "/index.html"
       }
     ],
     "headers": [
@@ -72,8 +72,5 @@
         ]
       }
     ]
-  },
-  "functions": {
-    "source": "functions"
   }
 }
