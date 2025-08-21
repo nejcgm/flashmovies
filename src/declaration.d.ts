@@ -24,4 +24,4 @@ interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
-declare module 'react-helmet';
+declare module 'react-helmet-async';
