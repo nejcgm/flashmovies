@@ -70,7 +70,7 @@ const ExoClickPlayer: React.FC = () => {
             playbackRateEnabled: false,
             allowFullscreen: true,
             fillToContainer: true,
-            autoPlay: true,
+            autoPlay: false,
           },
           vastOptions: {
             adList: [
@@ -86,9 +86,9 @@ const ExoClickPlayer: React.FC = () => {
             skipButtonCaption: "",
             skipButtonClickCaption: "",
             adClickable: true,
-            vastTimeout: 5000,
+            vastTimeout: 7000,
             showProgressbarMarkers: false,
-            allowVPAID: false,
+            allowVPAID: true,
             maxAllowedVastTagRedirects: 3,
             vastAdvanced: {
               vastLoadedCallback: () => {
