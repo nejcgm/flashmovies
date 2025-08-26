@@ -58,17 +58,7 @@ const Home = () => {
 
   return (
     <>
-      <Meta 
-        title="Flash Movies - Free Movie & TV Show Streaming"
-        description="Watch free movies and TV shows online in HD. Stream the latest movies, popular TV series, and discover new content on Flash Movies - your free entertainment destination."
-        keywords={[
-          "flash movies", "flashmovies", "flash movies website", "flashmovies.xyz",
-          "free movies", "movie streaming", "watch movies online", "free tv shows", 
-          "stream movies", "HD movies", "TV series", "popular movies", "latest movies",
-          "free streaming", "online movies", "watch tv shows", "movie site", "streaming site"
-        ]}
-        type="website"
-      />
+      <Meta/>
       {loading && (
         <div className="flex w-full justify-center">
           <Spinner />

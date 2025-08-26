@@ -7,6 +7,7 @@ import List from "./list-movie/List";
 import NotFound from "./pages/NotFound";
 import MainLayout from "./layout/MainLayout";
 import Analytics from "./SEO/Analytics";
+import ExoClickPlayer from "./pages/adVideoPlayer";
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
           <Route path="/movie-info" element={<MovieInfoPage />} />
           <Route path="/full-movie" element={<WatchMoviePage />} />
           <Route path="/list-items" element={<List />} />
+          <Route path="/ad-video-player" element={<ExoClickPlayer/>} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

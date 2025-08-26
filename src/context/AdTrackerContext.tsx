@@ -12,6 +12,7 @@ interface AdTrackerContextType {
   isInCooldown: () => boolean;
   getCooldownRemaining: () => number;
   reset: () => void;
+  setVideoAd: () => void;
 }
 
 const AdTrackerContext = createContext<AdTrackerContextType | undefined>(undefined);
@@ -122,12 +123,21 @@ export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
     });
   };
 
+  const setVideoAd = () => {
+    setState({
+      globalClickCount: 0,
+      isInCooldown: true,
+      cooldownEndTime: Date.now() + 30 * 60 * 1000
+    });
+  };
+
   const value: AdTrackerContextType = {
     state,
     incrementClick,
     isInCooldown,
     getCooldownRemaining,
-    reset
+    reset,
+    setVideoAd,
   };
 
   return (

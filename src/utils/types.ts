@@ -6,5 +6,6 @@ export enum ClickTypeEnum {
     NAVIGATION = 'navigation',
     TRAILER_CARD = 'trailer_card',
     WATCH_MOVIE = 'watch_movie',
-    WATCH_TRAILER = 'watch_trailer'
+    WATCH_TRAILER = 'watch_trailer',
+    AD_VIDEO = 'ad_video'
 }

@@ -85,7 +85,6 @@ const MovieInfoPage = () => {
             `${type} streaming`, `watch ${type} free`, `${type} online`, 'flash movies, flashmovies, flashmovies.xyz'
           ].filter(Boolean)}
           type={type === 'movie' ? 'video.movie' : type === 'tv' ? 'video.tv_show' : 'article'}
-          publishedTime={info.release_date || info.first_air_date}
         />
       )}
       

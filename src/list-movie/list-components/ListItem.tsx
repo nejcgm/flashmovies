@@ -67,7 +67,7 @@ const ListItem: React.FC<ListItemProps> = ({
           }}
         />
       )}
-      <div className="flex gap-3 max-h-[90px] sm:max-h-[90px] lg:max-h-[130px]">
+      <div className="flex gap-3 max-h-[90px] sm:max-h-[90px] lg:max-h-[180px]">
         <button
           onClick={() => {
             triggerContextAdRedirectDirect({
@@ -82,7 +82,7 @@ const ListItem: React.FC<ListItemProps> = ({
           <LazyImage
             className={`${
               largeScreen
-                ? "lg:w-[90px] lg:h-[130px] w-[60px] h-[90px] "
+                ? "lg:w-[120px] lg:h-[180px] w-[60px] h-[90px] "
                 : `sm:w-[70px] sm:h-[100px] h-[80px] w-[50px]`
             } rounded-lg object-cover`}
             src={poster ? `https://image.tmdb.org/t/p/w500${poster}` : (type === 'person' ? PersonPlaceholder : MoviePlaceholder)}
@@ -107,10 +107,10 @@ const ListItem: React.FC<ListItemProps> = ({
           } w-full flex-1 flex group`}
         >
           <div className="font-roboto text-left flex flex-col h-full">
-            <div className="h-[32px] items-center flex gap-2">
+            <div className="h-[48px] items-center flex gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="group-hover:text-[#f5c518] text-white w-[18px] sm:w-[24px] sm:h-[24px]"
+                className="group-hover:text-[#f5c518] text-white w-[18px] sm:w-[24px] sm:h-[24px] lg:w-[32px] lg:h-[32px]"
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 role="presentation"
@@ -120,7 +120,7 @@ const ListItem: React.FC<ListItemProps> = ({
               </svg>
               <div
                 className={`text-white text-[12px] sm:text-[14px] ${
-                  largeScreen && "lg:text-[16px]"
+                  largeScreen && "lg:text-[18px]"
                 } flex gap-1 font-medium`}
               >
                 {index !== null && index !== undefined && (
@@ -132,7 +132,7 @@ const ListItem: React.FC<ListItemProps> = ({
                 <div className="hidden sm:block">{title}</div>
               </div>
             </div>
-            <div className="text-[#C0C0C0] text-[11px] sm:text-[14px] flex gap-2">
+            <div className={`text-[#C0C0C0] text-[11px] sm:text-[14px] ${largeScreen && "lg:text-[16px]"} flex gap-2`}>
               <div>{year?.substring(0, 4)}</div>
               <div className="text-white">
                 {rating && <Rating rating={rating} />}

@@ -1,11 +1,7 @@
 {
   "hosting": {
     "public": "dist",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
@@ -15,9 +11,7 @@
     "headers": [
       {
         "source": "/robots.txt",
-        "headers": [
-          { "key": "Access-Control-Allow-Origin", "value": "*" }
-        ]
+        "headers": [{ "key": "Access-Control-Allow-Origin", "value": "*" }]
       },
       {
         "source": "/{sitemap.xml,sitemaps/**}",
@@ -29,7 +23,10 @@
       {
         "source": "**/*.js",
         "headers": [
-          { "key": "Content-Type", "value": "application/javascript; charset=utf-8" },
+          {
+            "key": "Content-Type",
+            "value": "application/javascript; charset=utf-8"
+          },
           { "key": "Cache-Control", "value": "max-age=31536000, immutable" },
           { "key": "Access-Control-Allow-Origin", "value": "*" }
         ]
@@ -58,9 +55,7 @@
       },
       {
         "source": "**/*.@(json|xml|txt)",
-        "headers": [
-          { "key": "Cache-Control", "value": "max-age=3600" }
-        ]
+        "headers": [{ "key": "Cache-Control", "value": "max-age=3600" }]
       },
       {
         "source": "**",
@@ -68,7 +63,10 @@
           { "key": "X-Content-Type-Options", "value": "nosniff" },
           { "key": "X-Frame-Options", "value": "DENY" },
           { "key": "X-XSS-Protection", "value": "1; mode=block" },
-          { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          }
         ]
       }
     ]

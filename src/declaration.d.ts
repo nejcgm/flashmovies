@@ -25,3 +25,12 @@ interface ImportMeta {
 }
 
 declare module 'react-helmet-async';
+
+declare global {
+  interface Window {
+    prerenderReady: boolean;
+  }
+}
+
+export {};
+

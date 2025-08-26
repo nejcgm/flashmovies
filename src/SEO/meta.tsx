@@ -18,14 +18,18 @@ const Meta = ({
   title,
   description,
   keywords = [],
-  url,
-  image,
-  robots,
+  url="https://flashmovies.xyz",
+  image="https://flashmovies.xyz/flash-movies-logo.png",
+  robots="index, follow",
   type = "website",
   siteName = "Flash Movies",
-  publishedTime,
-  modifiedTime,
+  publishedTime="2025-08-04",
+  modifiedTime=new Date().toISOString(),
 }: IMetaProps) => {
+
+  useEffect(() => {
+    window.prerenderReady = true;
+  }, []);
 
   const [savedTitle, setSavedTitle] = useState<string>()
   // Default values for dynamic content
