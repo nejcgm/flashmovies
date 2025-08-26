@@ -153,7 +153,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
                     }}
                     className="hover:underline"
                   >
-                    Upcoming
+                    Latest Releases
                   </a>
                   <a
                     href="/list-items?type=movie&search=discover&title=browse-movies-by-genre"

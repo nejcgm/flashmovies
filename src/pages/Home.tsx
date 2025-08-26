@@ -109,7 +109,7 @@ const Home = () => {
             <Carousel
               movies={upcomingMovies}
               cardCount={20}
-              showTitle={`Upcoming Movies`}
+              showTitle={`Latest Releases`}
               type={"movie"}
             />
           </div>
