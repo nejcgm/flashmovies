@@ -103,6 +103,7 @@ export const triggerContextAdRedirectDirect = (
 
 export const redirectForAdVideo = (options: {
   setVideoAd: () => void;
+  reloadPage?: () => void;
   navigateBack?: () => void;
 }) => {
   options.setVideoAd();
@@ -114,6 +115,7 @@ export const redirectForAdVideo = (options: {
       click_type: ClickTypeEnum.AD_VIDEO,
     });
   }
+  options.reloadPage?.();
   options.navigateBack?.();
 };
 

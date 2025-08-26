@@ -5,6 +5,7 @@ const AdScriptManager: React.FC = () => {
   const { isInCooldown } = useAdTracker();
 
   useEffect(() => {
+    console.log("isInCooldown", isInCooldown());
     if (isInCooldown()) return;
 
     const script = document.createElement("script");

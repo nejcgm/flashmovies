@@ -106,6 +106,9 @@ const ExoClickPlayer: React.FC = () => {
                 if(!isUnavailable) {
                 redirectForAdVideo({
                   setVideoAd,
+                  reloadPage: () => {
+                    window.location.reload();
+                  },
                   navigateBack: () => window.history.back(),
                 });
                 }
