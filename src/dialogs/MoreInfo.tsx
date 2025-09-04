@@ -8,6 +8,9 @@ import { fetchSpecific, FetchSpecificResponse } from "../functions/Fetching.ts";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { convertMinutesToHoursAndMinutes } from "../functions/Functions.ts";
+import { ClickTypeEnum } from "../utils/types.ts";
+import { redirectForMovie } from "../utils/contextAdRedirect.ts";
+import { useAdTracker } from "../context/AdTrackerContext.tsx";
 
 interface MoreInfoProps {
   movieId: string | null;
@@ -25,6 +28,7 @@ const MoreInfo: React.FC<MoreInfoProps> = ({
   const [info, setInfo] = useState<FetchSpecificResponse>();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { incrementClick } = useAdTracker();
 
   useEffect(() => {
     const loadInfo = async () => {
@@ -135,28 +139,29 @@ const MoreInfo: React.FC<MoreInfoProps> = ({
                     <div className="flex gap-3 font-semibold">
                       <button
                         onClick={() => {
-                          onTrailer();
-                          onCancel();
+                          navigate(`/full-movie/?id=${movieId}&type=${type}`);
+                          redirectForMovie(ClickTypeEnum.MOVIE_CARD, info.title, movieId, incrementClick);
                         }}
                         className="mb-[32px] items-center gap-1 justify-center flex text-[12px] sm:text-[14px] font-robo text-[#5799F0] bg-[#2C2C2C]
                       hover:bg-[#30353D] px-3 sm:px-6 py-[6px] mt-[18px] rounded-full flex-1"
                       >
-                        <div>Play Trailer</div>
+                        <div>Watch {type == "movie" ? "Movie" : "Series"}</div>
                         <img
                           className="w-[14px] sm:w-[16px] bg-[#2C2C2C]"
                           src={Play}
                           alt=""
                         />
                       </button>
-                      <a
-                        href={`https://www.imdb.com/title/${info.imdb_id}`}
-                        target="_blank"
-                        rel="noreferrer"
+                      <button 
+                      onClick={() => {
+                        onTrailer();
+                        onCancel();
+                      }}
                         className="mb-[32px] items-center gap-1 flex text-[12px] sm:text-[14px] font-robo text-[#5799F0] 
                    bg-[#2C2C2C] hover:bg-[#30353D] px-3 sm:px-6 py-[6px] mt-[18px] rounded-full flex-2"
                       >
-                        Check on IMDB
-                      </a>
+                        Play Trailer
+                      </button>
                     </div>
                   </>
                 )}
