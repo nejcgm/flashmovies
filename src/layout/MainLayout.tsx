@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import Frame from "./Frame";
 import Search from "./search/SearchComponent";
 import SkipLink from "../components/SkipLink";
-import SimpleAdDisplay from "../components/SimpleAdDisplay";
+//import SimpleAdDisplay from "../components/SimpleAdDisplay";
 const MainLayout = () => {
   return (
     <>
@@ -15,7 +15,7 @@ const MainLayout = () => {
         </main>
       </Frame>
       
-      <SimpleAdDisplay />
+      {/* <SimpleAdDisplay /> */}
     </>
   );
 };

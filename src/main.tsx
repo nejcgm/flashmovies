@@ -8,7 +8,7 @@ import AdsterraRedirect from './components/AdsterraRedirect';
 import { getAdsterraConfig } from './config/adsterraConfig';
 import { AdTrackerProvider } from './context/AdTrackerContext';
 import { HelmetProvider } from 'react-helmet-async';
-import PopupScriptManager from './components/PopupScriptManager';
+//import PopupScriptManager from './components/PopupScriptManager';
 
 function Root() {
   const adsterraConfig = getAdsterraConfig();
@@ -18,7 +18,7 @@ function Root() {
     <AdTrackerProvider>
       <AdsterraRedirect enabled={adsterraConfig.enabled} />
       <App />
-      <PopupScriptManager />
+      {/* <PopupScriptManager /> */}
     </AdTrackerProvider>
     </HelmetProvider>
   );
