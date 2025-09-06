@@ -1,6 +1,6 @@
 import React from "react";
 import UpNextCard from "./UpNextCard";
-import { DataInfoProps } from "../../functions/Interfaces";
+import { DataInfoProps } from "../../utils/Interfaces";
 
 interface UpNextProps {
   moviesHero: [];

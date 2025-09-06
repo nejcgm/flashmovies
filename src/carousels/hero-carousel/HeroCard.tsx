@@ -92,7 +92,7 @@ const HeroCard: React.FC<HeroCardProps> = ({
                     <img
                       className="rounded-lg shadow-xl w-full min-w-[80px]"
                       src={`https://image.tmdb.org/t/p/w500${poster}`}
-                      alt=""
+                      alt={`Watch Trailer for ${title} HD streaming for free on flashmovies`}
                     />
                   </div>
                 </div>

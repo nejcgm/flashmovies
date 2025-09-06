@@ -9,7 +9,7 @@ const ShareButton = () => {
         navigator.clipboard.writeText(urlToCopy);
       }}
     >
-      <img className="w-[24px] lg:w-[32px]" src={ShareIcon} alt="" />
+      <img className="w-[24px] lg:w-[32px]" src={ShareIcon} alt="shrare flash movies" />
     </button>
   );
 };

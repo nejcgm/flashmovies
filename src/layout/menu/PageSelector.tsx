@@ -92,7 +92,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
             >
               <div className="flex items-center justify-center">
                 <div className="absolute w-[51px] h-[51px] rounded-full bg-black/20  hidden group-hover:flex"></div>
-                <img className="w-[24px] sm:w-[32px]" src={CrossBlack} alt="" />
+                <img className="w-[24px] sm:w-[32px]" src={CrossBlack} alt="flashmovies" />
               </div>
             </button>
           </div>

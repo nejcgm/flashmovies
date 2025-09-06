@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import Cross from "../assets/gridicons_cross.png";
-import { fetchSpecific } from "../functions/Fetching.js";
+import { fetchSpecific } from "../utils/fetching.js";
 import CustomButton from "../components/CustomButton.js";
 import { useNavigate } from "react-router-dom";
 import { triggerContextAdRedirectDirect } from "../utils/contextAdRedirect";
@@ -53,7 +53,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
             }}
             className="hover:bg-white/10 p-2 rounded-full mb-1 self-end"
           >
-            <img className="h-[24px] sm:h-[32px]" src={Cross} alt="" />
+            <img className="h-[24px] sm:h-[32px]" src={Cross} alt="flash movies" />
           </button>
           <div className="bg-[#1A1A1A] p-[12px] sm:p-[24px] flex flex-col rounded-md">
             <iframe

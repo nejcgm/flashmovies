@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import {
   fetchSpecific,
   FetchSpecificResponse,
-} from "../../functions/Fetching.js";
+} from "../../utils/fetching.js";
 import BackButton from "../../components/BackButton";
 import ShareButton from "../../components/ShareButton.js";
 import ProviderComponent from "./components/ProviderComponent.js";
@@ -33,7 +33,7 @@ const WatchMoviePage = () => {
     <>
       {info && (
         <Meta 
-          title={`Watch ${info.title || info.name} ${info.release_date ? `(${new Date(info.release_date).getFullYear()})` : info.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} Free - Flash Movies`}
+          title={`Watch ${info.title || info.name} ${info.release_date ? `(${new Date(info.release_date).getFullYear()})` : info.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} - Flash Movies - Watch Free`}
           description={info.overview ? `Stream ${info.title || info.name} in HD. ${info.overview.slice(0, 100)}... Watch free on Flash Movies.` : `Stream ${info.title || info.name} free in HD quality on Flash Movies.`}
           image={
             info.backdrop_path 
@@ -46,7 +46,7 @@ const WatchMoviePage = () => {
           keywords={[
             info.title || info.name || '',
             ...(info.genres?.map((genre: { name: string }) => genre.name) || []),
-            `stream ${type}`, `watch ${type} online`, `${type} free`, 'flash movies', 'HD streaming, flashmovies, flashmovies.xyz'
+            `stream ${type}`, `watch ${type} online`, `${type} free`,`watch ${info.title || info.name || ''} ${type === 'movie' ? 'movie' : 'series'}`, `watch ${info.title || info.name || ''} ${type === 'movie' ? 'movie' : 'series'} for free`,`watch ${info.title || info.name || ''} ${type === 'movie' ? 'movie' : 'series'} for free on flashmovies`, 'free movies', ' free series', 'flash movies', 'HD streaming, flashmovies, flashmovies.xyz'
           ].filter(Boolean)}
           type={type === 'movie' ? 'video.movie' : 'video.tv_show'}
         />
@@ -89,9 +89,9 @@ const WatchMoviePage = () => {
       <div className="flex font-roboto items-center mb-[14px] content-center text-white justify-between">
         <div className="flex gap-4 content-center">
           <BackButton />
-          <div className="text-[24px] md:text-[32px] lg:text-[48px] font-medium">
-            {info?.title || info?.name}
-          </div>
+          <h1 className="text-[24px] md:text-[32px] lg:text-[48px] font-medium">
+            {info?.title || info?.name} {info?.release_date ? `(${new Date(info.release_date).getFullYear()})` : info?.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} - Watch Free
+          </h1>
           <ShareButton />
         </div>
       </div>

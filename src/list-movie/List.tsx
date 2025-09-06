@@ -4,9 +4,9 @@ import ListItem from "./list-components/ListItem";
 import Spiner from "../components/Spinner";
 import GenreListComponent from "./list-components/GenreListComponent";
 import BackButton from "../components/BackButton";
-import { fetchSpecific } from "../functions/Fetching.ts";
-import { formatTitle } from "../functions/Functions.ts";
-import { DataInfoProps, MediaType } from "../functions/Interfaces.ts";
+import { fetchSpecific } from "../utils/fetching.ts";
+import { formatTitle } from "../utils/helpers.ts";
+import { DataInfoProps, MediaType } from "../utils/Interfaces.ts";
 import Meta from "../SEO/meta.tsx";
 import ItemListSchema from '../SEO/ItemListSchema.tsx';
 import BreadcrumbSchema from '../SEO/BreadcrumbSchema.tsx';
@@ -109,7 +109,7 @@ const List: React.FC = () => {
       url={window.location.href}
         keywords={[
           ...(listItems.slice(0, 10).map((item: DataInfoProps) => item.title || item.name).filter(Boolean)),
-          `${type} streaming`, `free ${type}s`, `watch ${type}s online`, formatTitle(title) || '', 'flash movies', 'flashmovies', 'flashmovies.xyz'
+          `${type ? "movies" : "series"} streaming`, `free ${type ? "movies" : "series"}`, `watch ${type ? "movies" : "series"} online`, formatTitle(title) || '', 'flash movies', 'flashmovies', 'flashmovies.xyz'
         ]}
         type="website"
       />
@@ -142,10 +142,10 @@ const List: React.FC = () => {
 
       <div className="w-full flex flex-col">
         <div className="flex flex-col w-[100%] sm:w-[70%] self-center gap-2 sm:gap-4 p-4 bg-[#101010] rounded-lg">
-          <div className="font-roboto text-[#f5c518] text-[24px] sm:text-[32px] mb-[18px] sm:mb-[16px] flex gap-1 sm:gap-3 font-semibold">
+          <h1 className="font-roboto text-[#f5c518] text-[24px] sm:text-[32px] mb-[18px] sm:mb-[16px] flex gap-1 sm:gap-3 font-semibold">
             <BackButton />
             {formatTitle(title)}
-          </div>
+          </h1>
 
           {search == "discover" && (
             <GenreListComponent type={type} genreList={setGenreList} />

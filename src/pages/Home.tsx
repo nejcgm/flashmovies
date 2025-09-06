@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchSpecific } from "../functions/Fetching.js";
+import { fetchSpecific } from "../utils/fetching.js";
 import Carousel from "../carousels/classic-carousel/Carousel";
 import HeroCarousel from "../carousels/hero-carousel/HeroCarousel";
 import ActorCarousel from "../carousels/actor-carousel/ActorCarousel";

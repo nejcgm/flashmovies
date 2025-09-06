@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import MovieCard from "./MovieCard";
 import ChevroneLeft from "../../components/ChevronLeft";
 import ChevroneRight from "../../components/ChevronRight";
-import { DataInfoProps } from "../../functions/Interfaces";
+import { DataInfoProps } from "../../utils/Interfaces";
 
 interface CarouserProps {
   movies: [];

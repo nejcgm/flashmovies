@@ -56,7 +56,7 @@ const UpNextCard: React.FC<UpNextCardProps> = ({
         <img
           className="w-[75] xl:w-[90px] rounded-lg"
           src={`https://image.tmdb.org/t/p/w500${poster}`}
-          alt=""
+          alt={`Watch ${title} HD streaming for free on flashmovies`}
         />
 
         <button

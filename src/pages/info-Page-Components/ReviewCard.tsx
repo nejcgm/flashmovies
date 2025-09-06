@@ -32,7 +32,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
             src={
               avatar ? `https://image.tmdb.org/t/p/w200/${avatar}` : PersonPlaceholder
             }
-            alt=""
+            alt="reviewer avatar flashmovies"
           />
         </div>
         <div className="flex flex-1 flex-col font-roboto text-white">

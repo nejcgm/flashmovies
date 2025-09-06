@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { fetchSpecific } from "../../functions/Fetching.js";
+import { fetchSpecific } from "../../utils/fetching.js";
 import GenreButton from "./GenreButton";
-import { Genre } from "../../functions/Interfaces.ts";
+import { Genre } from "../../utils/Interfaces.ts";
 
 interface GenreListComponentProps {
   type: string;

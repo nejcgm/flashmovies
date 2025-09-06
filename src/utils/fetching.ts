@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { DataInfoProps } from "../functions/Interfaces.ts";
+import { DataInfoProps } from "./Interfaces.ts";
 const apiKey: string = import.meta.env.VITE_API_KEY;
 
 export interface FetchSpecificResponse extends DataInfoProps {

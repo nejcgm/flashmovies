@@ -49,7 +49,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
             <LazyImage
               className="object-cover w-[120px] sm:w-full sm:h-full"
               src={image ? `https://image.tmdb.org/t/p/w500/${image}` : PersonPlaceholder}
-              alt={`${name || 'Actor'} photo`}
+              alt={`${name || 'Actor'} photo HD streaming free streaming`}
               placeholder={PersonPlaceholder}
             />
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-full"></div>
@@ -59,7 +59,7 @@ const ActorCard: React.FC<ActorCardProps> = ({
           <div className="justify-end flex w-[54%] text-[12px] sm:text-[16px]">
             {popularity && popularity.toFixed(0)}
           </div>
-          <img className="w-[24px] sm:w-[32px]" src={ChartIcon} alt="" />
+          <img className="w-[24px] sm:w-[32px]" src={ChartIcon} alt="HD streaming" />
         </div>
         <div className="text-[14px] sm:text-[16px] group-hover:text-[#f5c518] transition-colors duration-300 font-medium">{name}</div>
         <div className="text-[#BBBBBB] text-[12px] sm:text-[16px] group-hover:text-white transition-colors duration-300">{job}</div>

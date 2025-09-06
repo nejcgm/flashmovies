@@ -69,7 +69,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
             <LazyImage
               className="rounded-t-lg h-[200px] sm:h-[270px] xl:h-[300px] w-full object-cover"
               src={image ? `https://image.tmdb.org/t/p/w500${image}` : MoviePlaceholder}
-              alt={`${title || 'Movie'} poster`}
+              alt={`watch ${title || 'Movie'} for free on flashmovies`}
               placeholder={MoviePlaceholder}
             />
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 rounded-t-lg"></div>

@@ -34,7 +34,7 @@ const MovieSpecificDescription: React.FC<MovieSpecificDescriptionProps> = ({
           }}
         />
       )}
-      <div className="text-[16px] sm:text-[18px] mt-[16px] text-yellow-500 lg:hidden flex font-bold">Watch Trailer</div>
+      <div className="text-[16px] sm:text-[18px] mt-[16px] lg:hidden flex font-semibold">Watch Trailer</div>
       <div className="w-full flex gap-4 md:w-[70%] pr-[6px] md:pr-[0px]">
         <button
           className="flex lg:hidden flex-1  rounded-lg min-w-[120px] max-h-[180px] w-[150px]"

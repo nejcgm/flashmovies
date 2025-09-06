@@ -3,8 +3,8 @@ import HeroCard from "./HeroCard";
 import ChevroneLeft from "../../components/ChevronLeft";
 import ChevroneRight from "../../components/ChevronRight";
 import UpNext from "./UpNext";
-import { DataInfoProps } from "../../functions/Interfaces";
-import {useSwipe} from "../../functions/Hooks";
+import { DataInfoProps } from "../../utils/Interfaces";
+import {useSwipe} from "../../utils/Hooks";
 
 interface HeroCarouselProps {
   moviesHero: [];

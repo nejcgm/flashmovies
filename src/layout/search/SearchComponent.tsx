@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ListItem from "../../list-movie/list-components/ListItem";
-import { fetchSearch, SearchResult } from "../../functions/Fetching.js";
-import { useDebounce } from "../../functions/Hooks.jsx";
+import { fetchSearch, SearchResult } from "../../utils/fetching.js";
+import { useDebounce } from "../../utils/Hooks.js";
 import { useNavigate } from "react-router-dom";
 import MenuButton from "../menu/MenuButton";
 

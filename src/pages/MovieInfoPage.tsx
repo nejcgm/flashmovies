@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { fetchSpecific } from "../functions/Fetching.js";
+import { fetchSpecific } from "../utils/fetching.js";
 import MediaComponent from "./info-Page-Components/MediaComponent.jsx";
 import Carousel from "../carousels/classic-carousel/Carousel";
 import Reviews from "./info-Page-Components/Reviews";
@@ -13,7 +13,7 @@ import AffiliateLinks from "../components/AffiliateLinks";
 import Meta from "../SEO/meta.tsx";
 import MovieSchema from "../SEO/MovieSchema.tsx";
 import BreadcrumbSchema from "../SEO/BreadcrumbSchema.tsx";
-import { DataInfoProps } from "../functions/Interfaces.ts";
+import { DataInfoProps } from "../utils/Interfaces.ts";
 
 const MovieInfoPage = () => {
   const [info, setInfo] = useState<DataInfoProps>();
@@ -69,7 +69,7 @@ const MovieInfoPage = () => {
     <>
       {info && (
         <Meta 
-          title={`${info.title || info.name} ${info.release_date ? `(${new Date(info.release_date).getFullYear()})` : info.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} - Watch Free on Flash Movies`}
+          title={`${info.title || info.name} ${info.release_date ? `(${new Date(info.release_date).getFullYear()})` : info.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} - Flash Movies - Watch Free`}
           description={info.overview ? `${info.overview.slice(0, 150)}... Watch ${info.title || info.name} free on Flash Movies.` : `Watch ${info.title || info.name} free on Flash Movies. Stream in HD quality.`}
           image={
             info.poster_path 
@@ -82,7 +82,7 @@ const MovieInfoPage = () => {
           keywords={[
             info.title || info.name || '',
             ...(info.genres?.map((genre: { name: string }) => genre.name) || []),
-            `${type} streaming`, `watch ${type} free`, `${type} online`, 'flash movies, flashmovies, flashmovies.xyz'
+            `${type} streaming`, `watch ${info.title || info.name || ''} free`, `${type} online`,`watch ${info.title || info.name || ''} ${type === 'movie' ? 'movie' : 'series'}`, `watch ${info.title || info.name || ''} ${type === 'movie' ? 'movie' : 'series'} for free`,`watch ${info.title || info.name || ''} ${type === 'movie' ? 'movie' : 'series'} for free on flashmovies`,`${info.title || info.name || ''} ${type === 'movie' ? 'movie' : 'series'} movie info`,'free movies', ' free series', 'flash movies', 'HD streaming, flashmovies, flashmovies.xyz'
           ].filter(Boolean)}
           type={type === 'movie' ? 'video.movie' : type === 'tv' ? 'video.tv_show' : 'article'}
         />

@@ -1,5 +1,5 @@
 import React from "react";
-import { Genre } from "../../functions/Interfaces.ts";
+import { Genre } from "../../utils/Interfaces.ts";
 
 interface GenreSpecificProps {
   genres: [];

@@ -36,8 +36,8 @@ const Meta = ({
   const defaultTitle = "Flash Movies - Free Movie Streaming";
   const defaultDescription = "Watch free movies and TV shows online on Flash Movies. Stream the latest movies and popular TV series in HD for free, anytime and anywhere.";
   const defaultKeywords = [
-    "flash movies", "flashmovies", "flashmovies.xyz", "flash movie", "flash",
-    "free movies", "movie streaming", "watch movies online", "watch tv shows online",
+    "flash movies", "flashmovies", "flashmovies.xyz", "flash",
+    "free movies", "movie streaming", "watch movies online on flashmovies", "watch tv shows online on flashmovies",
     "free tv shows", "stream movies free", "online movie platform", "HD movies", "TV series streaming"
   ];
 
