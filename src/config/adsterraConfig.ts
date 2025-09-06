@@ -1,7 +1,7 @@
 export const ADSTERRA_CONFIG = {
   url: 'https://raptripeessentially.com/s950viwd5w?key=22e656243ca5f0a2aef1c31a7cf4a3a7',
   
-  enabled: true,
+  enabled: false,
   
   //AdsterraRedirect Component Settings
   adsterraRedirect: {
@@ -16,7 +16,7 @@ export const ADSTERRA_CONFIG = {
   
   // Analytics & Tracking
   analytics: {
-    enabled: true,
+    enabled: false,
     trackRevenue: true
   }
 };
