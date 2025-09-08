@@ -29,8 +29,8 @@ const Home = () => {
         const [data, tv, hero, actors, topRatedMovies, upcomingMovies, topRatedTv, onTheAirTv] = await Promise.all([
           fetchSpecific("movie", "", "/popular", null, classicPage),
           fetchSpecific("tv", "", "/popular", null, classicPage),
-          fetchSpecific("movie", "", "/popular", null, heroPage),
-          fetchSpecific("person", "", "/popular", null, 1),
+          fetchSpecific("movie", "", "/now_playing", null, heroPage),
+          fetchSpecific("person", "", "/popular", null, classicPage),
           fetchSpecific("movie", "", "/top_rated", null, classicPage),
           fetchSpecific("movie", "", "/upcoming", null, classicPage),
           fetchSpecific("tv", "", "/top_rated", null, classicPage),

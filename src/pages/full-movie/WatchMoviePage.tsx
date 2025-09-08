@@ -90,7 +90,7 @@ const WatchMoviePage = () => {
         <div className="flex gap-4 content-center">
           <BackButton />
           <h1 className="text-[24px] md:text-[32px] lg:text-[48px] font-medium">
-            {info?.title || info?.name} {info?.release_date ? `(${new Date(info.release_date).getFullYear()})` : info?.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} - Watch Free
+            {info?.title || info?.name} {info?.release_date ? `(${new Date(info.release_date).getFullYear()})` : info?.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} - Watch on Flash Movies
           </h1>
           <ShareButton />
         </div>
