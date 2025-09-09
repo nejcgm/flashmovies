@@ -21,7 +21,7 @@ export const triggerContextAdRedirect = (
 
   newCount += 1;
 
-  const shouldTriggerMain = options.forceFire || newCount % 2 === 1;
+  const shouldTriggerMain = options.forceFire || newCount % 2 === 0;
 
   const shouldFireAd = shouldTriggerMain ? options.incrementClick() : false;
 
