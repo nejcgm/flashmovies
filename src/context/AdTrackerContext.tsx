@@ -4,6 +4,9 @@ interface AdTrackerState {
   globalClickCount: number;
   isInCooldown: boolean;
   cooldownEndTime: number;
+  affiliateClickCount: number;
+  affiliateIsInCooldown: boolean;
+  affiliateCooldownEndTime: number;
 }
 
 interface AdTrackerContextType {
@@ -13,6 +16,10 @@ interface AdTrackerContextType {
   getCooldownRemaining: () => number;
   reset: () => void;
   setVideoAd: () => void;
+  incrementAffiliateClick: () => boolean;
+  isAffiliateInCooldown: () => boolean;
+  getAffiliateCooldownRemaining: () => number;
+  resetAffiliate: () => void;
 }
 
 const AdTrackerContext = createContext<AdTrackerContextType | undefined>(undefined);
@@ -21,17 +28,26 @@ interface AdTrackerProviderProps {
   children: ReactNode;
   clicksBeforeCooldown?: number;
   cooldownDuration?: number; 
+  affiliateClicksBeforeCooldown?: number;
+  affiliateCooldownDuration?: number;
 }
 
 export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
   children,
   clicksBeforeCooldown = 5,
-  cooldownDuration = 30 * 60 * 1000 
+  cooldownDuration = 30 * 60 * 1000,
+  affiliateClicksBeforeCooldown = 1,
+  affiliateCooldownDuration = 1000 * 60 * 1000
+
 }) => {
+
   const [state, setState] = useState<AdTrackerState>({
     globalClickCount: 0,
     isInCooldown: false,
-    cooldownEndTime: 0
+    cooldownEndTime: 0,
+    affiliateClickCount: 0,
+    affiliateIsInCooldown: false,
+    affiliateCooldownEndTime: 0
   });
 
   useEffect(() => {
@@ -81,6 +97,7 @@ export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
       
       if (newClickCount >= clicksBeforeCooldown && !prev.isInCooldown) {
         return {
+          ...prev,
           globalClickCount: 0, 
           isInCooldown: true,
           cooldownEndTime: Date.now() + cooldownDuration
@@ -116,19 +133,74 @@ export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
   };
 
   const reset = () => {
-    setState({
+    setState(prev => ({
+      ...prev,
       globalClickCount: 0,
       isInCooldown: false,
       cooldownEndTime: 0
-    });
+    }));
   };
 
   const setVideoAd = () => {
-    setState({
+    setState(prev => ({
+      ...prev,
       globalClickCount: 0,
       isInCooldown: true,
       cooldownEndTime: Date.now() + 30 * 60 * 1000
+    }));
+  };
+
+  const incrementAffiliateClick = (): boolean => {
+    if (state.affiliateIsInCooldown) {
+      return false;
+    }
+    
+    setState(prev => {
+      const newClickCount = prev.affiliateClickCount + 1;
+      
+      if (newClickCount >= affiliateClicksBeforeCooldown && !prev.affiliateIsInCooldown) {
+        return {
+          ...prev,
+          affiliateClickCount: 0,
+          affiliateIsInCooldown: true,
+          affiliateCooldownEndTime: Date.now() + affiliateCooldownDuration
+        };
+      }
+      
+      return {
+        ...prev,
+        affiliateClickCount: newClickCount
+      };
     });
+
+    return state.affiliateClickCount + 1 <= affiliateClicksBeforeCooldown && !state.affiliateIsInCooldown;
+  };
+
+  const isAffiliateInCooldown = (): boolean => {
+    if (state.affiliateIsInCooldown && Date.now() > state.affiliateCooldownEndTime) {
+      setState(prev => ({
+        ...prev,
+        affiliateIsInCooldown: false,
+        affiliateCooldownEndTime: 0
+      }));
+      return false;
+    }
+    return state.affiliateIsInCooldown;
+  };
+
+  const getAffiliateCooldownRemaining = (): number => {
+    if (!state.affiliateIsInCooldown) return 0;
+    const remaining = state.affiliateCooldownEndTime - Date.now();
+    return Math.max(0, remaining);
+  };
+
+  const resetAffiliate = () => {
+    setState(prev => ({
+      ...prev,
+      affiliateClickCount: 0,
+      affiliateIsInCooldown: false,
+      affiliateCooldownEndTime: 0
+    }));
   };
 
   const value: AdTrackerContextType = {
@@ -138,6 +210,10 @@ export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
     getCooldownRemaining,
     reset,
     setVideoAd,
+    incrementAffiliateClick,
+    isAffiliateInCooldown,
+    getAffiliateCooldownRemaining,
+    resetAffiliate,
   };
 
   return (

@@ -15,7 +15,7 @@ interface AdsterraRedirectProps {
 const AdsterraRedirect: React.FC<AdsterraRedirectProps> = ({
   enabled = true
 }) => {
-  const { incrementClick, isInCooldown } = useAdTracker();
+  const { incrementAffiliateClick, isAffiliateInCooldown, state } = useAdTracker();
   const [isReady, setIsReady] = useState(false);
   const [localCooldownEndTime, setLocalCooldownEndTime] = useState(0);
   const adsterraConfig = getAdsterraConfig();
@@ -36,25 +36,28 @@ const AdsterraRedirect: React.FC<AdsterraRedirectProps> = ({
     const handleClick = () => {
       if (!isReady) return;
       
-      if (isInCooldown()) return;
-      
-      if (adsterraConfig.adsterraRedirect.useLocalCooldown && 
+      if (isAffiliateInCooldown()) return;
+
+      // Check local cooldown if this is after first click
+      if (state.affiliateClickCount > 0 && 
           localCooldownEndTime > 0 && Date.now() < localCooldownEndTime) return;
 
-      const shouldFireAd = incrementClick();
+      const shouldFireAd = incrementAffiliateClick();
 
       if (shouldFireAd) {
         if (typeof window !== 'undefined' && window.gtag) {
           window.gtag('event', 'adsterra_redirect', {
             event_category: 'monetization',
-            revenue_type: 'context_redirect',
-            ad_url: adsterraConfig.url
+            revenue_type: 'affiliate_redirect',
+            ad_url: adsterraConfig.affiliateUrl,
+            click_number: state.affiliateClickCount + 1
           });
         }
 
-        window.open(adsterraConfig.url, '_blank', 'noopener');
-        
-        if (adsterraConfig.adsterraRedirect.useLocalCooldown) {
+        window.open(adsterraConfig.affiliateUrl, '_blank', 'noopener');
+
+        // Set local cooldown after first click
+        if (state.affiliateClickCount === 0) {
           const localCooldownDuration = adsterraConfig.adsterraRedirect.localCooldownMinutes * 60 * 1000;
           setLocalCooldownEndTime(Date.now() + localCooldownDuration);
         }
@@ -68,7 +71,7 @@ const AdsterraRedirect: React.FC<AdsterraRedirectProps> = ({
       clearInterval(cooldownTimer);
       document.removeEventListener('click', handleClick, true);
     };
-  }, [enabled, isReady, incrementClick, isInCooldown, adsterraConfig, localCooldownEndTime]);
+  }, [enabled, isReady, incrementAffiliateClick, isAffiliateInCooldown, adsterraConfig, state.affiliateClickCount, localCooldownEndTime]);
 
   return null;
 };

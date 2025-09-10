@@ -1,13 +1,14 @@
 export const ADSTERRA_CONFIG = {
   url: 'https://raptripeessentially.com/s950viwd5w?key=22e656243ca5f0a2aef1c31a7cf4a3a7',
+  affiliateUrl: 'https://www.amazon.com/s?k=movie+posters&tag=flashmovies-20',
   
-  enabled: false,
+  enabled: true,
   
   //AdsterraRedirect Component Settings
   adsterraRedirect: {
     enabled: true,                    // Enable/disable the component
     useLocalCooldown: true,          // Whether to use local cooldown in addition to global
-    localCooldownMinutes: 2,         // Custom local cooldown duration in minutes
+    localCooldownMinutes: 1,         // Custom local cooldown duration in minutes
     minTimeBeforeFirstRedirect: 15,   // Initial delay before becoming active (seconds)
     description: "Settings for AdsterraRedirect component"
   },
@@ -16,7 +17,7 @@ export const ADSTERRA_CONFIG = {
   
   // Analytics & Tracking
   analytics: {
-    enabled: false,
+    enabled: true,
     trackRevenue: true
   }
 };
@@ -25,6 +26,7 @@ export const ADSTERRA_CONFIG = {
 export const getAdsterraConfig = () => {
   return {
     url: ADSTERRA_CONFIG.url,
+    affiliateUrl: ADSTERRA_CONFIG.affiliateUrl,
     enabled: ADSTERRA_CONFIG.enabled,
     adsterraRedirect: ADSTERRA_CONFIG.adsterraRedirect,
     analytics: ADSTERRA_CONFIG.analytics
