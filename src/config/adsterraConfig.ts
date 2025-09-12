@@ -1,6 +1,6 @@
 export const ADSTERRA_CONFIG = {
   url: 'https://raptripeessentially.com/s950viwd5w?key=22e656243ca5f0a2aef1c31a7cf4a3a7',
-  affiliateUrl: 'https://www.amazon.com/s?k=movie+posters&tag=flashmovies-20',
+  affiliateUrl: 'https://www.amazon.com/s?k=movie+posters&tag=flashmovies05-20',
   
   enabled: true,
   
