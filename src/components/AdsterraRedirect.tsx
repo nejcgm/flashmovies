@@ -49,12 +49,12 @@ const AdsterraRedirect: React.FC<AdsterraRedirectProps> = ({
           window.gtag('event', 'adsterra_redirect', {
             event_category: 'monetization',
             revenue_type: 'affiliate_redirect',
-            ad_url: adsterraConfig.affiliateUrl,
+            ad_url: adsterraConfig.affiliateUrl[state.affiliateClickCount],
             click_number: state.affiliateClickCount + 1
           });
         }
 
-        window.open(adsterraConfig.affiliateUrl, '_blank', 'noopener');
+        window.open(adsterraConfig.affiliateUrl[state.affiliateClickCount], '_blank', 'noopener');
 
         // Set local cooldown after first click
         if (state.affiliateClickCount === 0) {

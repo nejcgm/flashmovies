@@ -34,7 +34,7 @@ interface AdTrackerProviderProps {
 
 export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
   children,
-  clicksBeforeCooldown = 4,
+  clicksBeforeCooldown = 3,
   cooldownDuration = 30 * 60 * 1000,
   affiliateClicksBeforeCooldown = 1,
   affiliateCooldownDuration = 1000 * 60 * 1000
