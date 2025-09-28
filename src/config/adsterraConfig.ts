@@ -8,8 +8,8 @@ export const ADSTERRA_CONFIG = {
   adsterraRedirect: {
     enabled: true,           // Enable/disable the component
     useLocalCooldown: true,          // Whether to use local cooldown in addition to global
-    localCooldownMinutes: 1,         // Custom local cooldown duration in minutes
-    minTimeBeforeFirstRedirect: 15,   // Initial delay before becoming active (seconds)
+    localCooldownMinutes: 1.5,         // Custom local cooldown duration in minutes
+    minTimeBeforeFirstRedirect: 30,   // Initial delay before becoming active (seconds)
     description: "Settings for AdsterraRedirect component"
   },
   
