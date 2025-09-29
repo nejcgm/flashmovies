@@ -80,7 +80,7 @@ export const EpisodeSelector = ({
                 </div>
             </div>
         </div>
-        <div className="mt-4 md:mt-6 flex gap-2 flex-wrap justify-center sm:justify-start">
+        <div className="mt-4 md:mt-5 flex gap-2 sm:gap-3 flex-wrap justify-center sm:justify-start">
             {seasonEpisodes?.map((episode) => (
                 <div key={episode.id}>
                     <CustomButton 
