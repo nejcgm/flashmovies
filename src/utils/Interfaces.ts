@@ -34,4 +34,15 @@ export interface DataInfoProps {
   file_path: string;
   media_type: string;
   genres: [];
+  number_of_seasons: number;
+}
+
+
+export interface Episode {
+  id: number;
+  name: string;
+  episode_number: number;
+  season_number: number;
+  overview: string;
+  air_date: string;
 }

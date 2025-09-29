@@ -20,7 +20,6 @@ const ProviderButton = ({
       className={`${className} bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1.5 px-2 sm:py-2 sm:px-4 text-sm sm:text-base rounded shadow`}
       style={{...style }}
       key={provider}
-      data-testid={`provider-button-${provider}`}
       onClick={() => updateProvider(url)}
       value={url}
       type="button"

@@ -64,7 +64,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
               allowFullScreen
             ></iframe>
             <CustomButton
-              className="mt-4 font-semibold text-[14px] sm:text-[18px] py-2 px-8"
+              className="bg-yellow-500 mt-4 font-semibold text-[14px] sm:text-[18px] py-2 px-8"
               onClick={() => {
                 triggerContextAdRedirectDirect({
                   eventLabel: "movie_card_click",

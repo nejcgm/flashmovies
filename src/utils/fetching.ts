@@ -10,6 +10,7 @@ export interface FetchSpecificResponse extends DataInfoProps {
   reviews: [];
   cast: [];
   profiles: [];
+  episodes: [];
 }
 
 export const fetchSpecific = async (
@@ -40,6 +41,23 @@ export const fetchSpecific = async (
     return fetchedInfo;
   }
   return null;
+};
+
+export const fetchSpecificSeason = async (
+  type: string | number | null,
+  movieId: number | string | null,
+  season: number | string | null
+): Promise<FetchSpecificResponse | null> => {
+  const url = `https://api.themoviedb.org/3/${type}/${movieId}/season/${season}?language=en-US`;
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization: apiKey,
+    },
+  };
+  const response: AxiosResponse<FetchSpecificResponse> = await axios.request({ url, ...options });
+  return response.data;
 };
 
 export interface SearchResult {
