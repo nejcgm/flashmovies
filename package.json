@@ -10,7 +10,8 @@
     "build:sitemap-index": "npm run build && node generate-sitemap-index.js && cp -r public/sitemap* dist/ && cp -r public/sitemaps dist/",
     "lint": "eslint .",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "node24": "bash ./use-node24.sh"
   },
   "dependencies": {
     "@tailwindcss/line-clamp": "^0.4.4",

@@ -26,10 +26,10 @@ const TopSection: React.FC<TopSectionProps> = ({
   return (
     <div className="sm:flex w-full justify-between items-center pr-[6px] sm:pr-[0px]">
       <div>
-        <div className="capitalise text-[18px] sm:text-[24px] md:text-[32px] xl:text-[48px] flex items-center gap-2">
+        <div className="capitalise text-[18px] sm:mr-[32px] sm:text-[24px] md:text-[32px] xl:text-[48px] flex items-center gap-2 sm:mb-[10px]">
           <div className="hidden sm:flex"><BackButton /></div>
-          <h1 className="mr-[18px] lg:mr-0">{title} {release ? `(${new Date(release).getFullYear()})` : ''} - Movie Info</h1>
-          <div className="hidden lg:flex mr-[18px]"><ShareButton /></div>
+          <h1 className="mr-[18px] lg:mr-0 leading-[1.2]">{title} {release ? `(${new Date(release).getFullYear()})` : ''} - Movie Info</h1>
+          <div className="hidden lg:flex min-w-[50px]"><ShareButton /></div>
         </div>
         <ul className="hidden sm:flex list-disc list-inside text-[12px] sm:text-[14px] text-[#BBBBBB] gap-2 sm:gap-4 marker:text-[12px] self-end">
           <li className="list-none">{release}</li>
