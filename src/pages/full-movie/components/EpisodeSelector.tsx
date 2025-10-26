@@ -21,6 +21,7 @@ export const EpisodeSelector = ({
     const [selectedSeason, setSelectedSeason] = useState(1);
     const [seasonEpisodes, setSeasonEpisodes] = useState<Episode[]>([]);
     const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
+    const today = new Date();
 
     useEffect(() => {
         const loadSeasonEpisodes = async () => {
@@ -87,6 +88,7 @@ export const EpisodeSelector = ({
                         onClick={() => {
                             handleEpisodeChange(episode);
                         }}
+                        disabled={episode.air_date ? today < new Date(episode.air_date) : true}
                         className={`sm:px-2 sm:py-1.5 px-2 py-[6px] md:text-sm text-[11px]
                             
                         ${selectedEpisode?.episode_number === episode.episode_number ? 'bg-yellow-500' : 'bg-gray-500'}`}
