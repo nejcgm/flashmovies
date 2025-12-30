@@ -8,6 +8,8 @@ import NotFound from "./pages/NotFound";
 import MainLayout from "./layout/MainLayout";
 import Analytics from "./SEO/Analytics";
 import ExoClickPlayer from "./pages/adVideoPlayer";
+import TermsAndConditionsPage from "./pages/footer-pages/TermsAndConditionsPage";
+import FAQPage from "./pages/footer-pages/FAQ";
 
 const App: React.FC = () => {
   return (
@@ -20,6 +22,8 @@ const App: React.FC = () => {
           <Route path="/full-movie" element={<WatchMoviePage />} />
           <Route path="/list-items" element={<List />} />
           <Route path="/ad-video-player" element={<ExoClickPlayer/>} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
+          <Route path="/frequently-asked-questions" element={<FAQPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

@@ -5,7 +5,7 @@ import HeroCarousel from "../carousels/hero-carousel/HeroCarousel";
 import ActorCarousel from "../carousels/actor-carousel/ActorCarousel";
 import Spinner from "../components/Spinner";
 import Meta from "../SEO/meta.tsx";
-import AffiliateLinks from '../components/AffiliateLinks';
+import AffiliateLinks from "../components/AffiliateLinks";
 
 const Home = () => {
   const [classicCarousel, setClassicCarousel] = useState<[]>([]);
@@ -21,12 +21,20 @@ const Home = () => {
   const heroPage = 2;
   const classicPage = 1;
 
-
   useEffect(() => {
     setLoading(true);
     const loadHomeData = async () => {
       try {
-        const [data, tv, hero, actors, topRatedMovies, upcomingMovies, topRatedTv, onTheAirTv] = await Promise.all([
+        const [
+          data,
+          tv,
+          hero,
+          actors,
+          topRatedMovies,
+          upcomingMovies,
+          topRatedTv,
+          onTheAirTv,
+        ] = await Promise.all([
           fetchSpecific("movie", "", "/popular", null, classicPage),
           fetchSpecific("tv", "", "/popular", null, classicPage),
           fetchSpecific("movie", "", "/now_playing", null, heroPage),
@@ -36,7 +44,16 @@ const Home = () => {
           fetchSpecific("tv", "", "/top_rated", null, classicPage),
           fetchSpecific("tv", "", "/on_the_air", null, classicPage),
         ]);
-        if (hero && data && tv && actors && topRatedMovies && upcomingMovies && topRatedTv && onTheAirTv) {
+        if (
+          hero &&
+          data &&
+          tv &&
+          actors &&
+          topRatedMovies &&
+          upcomingMovies &&
+          topRatedTv &&
+          onTheAirTv
+        ) {
           setHeroCarousel(hero.results);
           setClassicCarousel(data.results);
           setTv(tv.results);
@@ -58,7 +75,7 @@ const Home = () => {
 
   return (
     <>
-      <Meta/>
+      <Meta />
       {loading && (
         <div className="flex w-full justify-center">
           <Spinner />
@@ -69,9 +86,13 @@ const Home = () => {
         <>
           <div className="sr-only">
             <h1>Flash Movies - Free Movie Streaming Platform</h1>
-            <p>Welcome to Flash Movies (flashmovies.xyz), your premier destination for free movie and TV show streaming. 
-            Flash Movies offers thousands of movies and TV series in HD quality. Stream popular movies, latest releases, 
-            and trending TV shows on Flash Movies platform completely free.</p>
+            <p>
+              Welcome to Flash Movies (flashmovies.xyz), your premier
+              destination for free movie and TV show streaming. Flash Movies
+              offers thousands of movies and TV series in HD quality. Stream
+              popular movies, latest releases, and trending TV shows on Flash
+              Movies platform completely free.
+            </p>
             <h2>What you can watch on Flash Movies:</h2>
             <ul>
               <li>Latest blockbuster movies on Flash Movies</li>
@@ -87,7 +108,13 @@ const Home = () => {
             showTitle={"explore Trailers"}
           />
 
-          <div className="mt-[42px] sm:mt-[64px]">
+          <div className="text-center text-xs sm:text-sm px-3 text-gray-500 mt-4 sm:mt-8">
+            Ads can be a pain, but they are our only way to maintain the server.
+            Your patience is highly appreciated and we hope our service can be
+            worth it.
+          </div>
+
+          <div className="mt-[24px] sm:mt-[42px]">
             <Carousel
               movies={classicCarousel}
               cardCount={20}
@@ -115,7 +142,7 @@ const Home = () => {
           </div>
 
           <div className="mt-[32px] sm:mt-[64px]">
-            <AffiliateLinks 
+            <AffiliateLinks
               movieTitle="Flash Movies"
               className="bg-gradient-to-r from-[#1a1a1a] to-[#2d2d2d] border-2 border-[#f5c518]"
             />
