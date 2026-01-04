@@ -17,11 +17,11 @@ function Root() {
     <HelmetProvider>
     <AdTrackerProvider>
       <Snowfall
-      snowflakeCount={110}      
+      snowflakeCount={100}      
       speed={[0.9, 1.7]}        
-      radius={[1, 2]}       
-      opacity={[0.15, 0.3]}     
-      wind={[-0.2, 0.6]}        
+      radius={[0.85, 1.25]}       
+      opacity={[0.13, 0.3]}     
+      wind={[-0.1, 0.4]}        
     />
       <AdsterraRedirect enabled={adsterraConfig.enabled} />
       <App />
