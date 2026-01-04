@@ -56,7 +56,7 @@ export default function FAQPage() {
             5. How do I report copyright infringement?
           </h2>
           <p className="text-base sm:text-lg text-gray-300 leading-relaxed">
-            If you believe your copyrighted material is improperly embedded or linked on FlashMovies, please submit a DMCA notice to our email: <strong>flashmoviesxyz@gmail.com</strong>.
+            If you believe your copyrighted material is improperly embedded or linked on FlashMovies, please submit a DMCA notice to our email: <strong>flashmoviesxyz@proton.me</strong>.
             Include all necessary information such as your contact info, URLs, and a statement of good faith.
           </p>
         </section>

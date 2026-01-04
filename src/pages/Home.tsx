@@ -5,7 +5,6 @@ import HeroCarousel from "../carousels/hero-carousel/HeroCarousel";
 import ActorCarousel from "../carousels/actor-carousel/ActorCarousel";
 import Spinner from "../components/Spinner";
 import Meta from "../SEO/meta.tsx";
-import AffiliateLinks from "../components/AffiliateLinks";
 
 const Home = () => {
   const [classicCarousel, setClassicCarousel] = useState<[]>([]);
@@ -138,13 +137,6 @@ const Home = () => {
               cardCount={20}
               showTitle={`Latest Releases`}
               type={"movie"}
-            />
-          </div>
-
-          <div className="mt-[32px] sm:mt-[64px]">
-            <AffiliateLinks
-              movieTitle="Flash Movies"
-              className="bg-gradient-to-r from-[#1a1a1a] to-[#2d2d2d] border-2 border-[#f5c518]"
             />
           </div>
 

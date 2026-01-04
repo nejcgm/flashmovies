@@ -8,7 +8,6 @@ import ActorCarousel from "../carousels/actor-carousel/ActorCarousel";
 import Spinner from "../components/Spinner";
 import TopSection from "./info-Page-Components/TopSection.jsx";
 import MovieSpecificDescription from "./info-Page-Components/MovieSpecificDescription.jsx";
-import AffiliateLinks from "../components/AffiliateLinks";
 
 import Meta from "../SEO/meta.tsx";
 import MovieSchema from "../SEO/MovieSchema.tsx";
@@ -162,7 +161,6 @@ const MovieInfoPage = () => {
                   title={info.title || info.name}
                 />
 
-                <AffiliateLinks movieTitle={info.title || info.name || ''} />
               </>
             )}
           </div>

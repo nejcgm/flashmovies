@@ -10,7 +10,6 @@ import { DataInfoProps, MediaType } from "../utils/Interfaces.ts";
 import Meta from "../SEO/meta.tsx";
 import ItemListSchema from '../SEO/ItemListSchema.tsx';
 import BreadcrumbSchema from '../SEO/BreadcrumbSchema.tsx';
-import AffiliateLinks from '../components/AffiliateLinks';
 
 const List: React.FC = () => {
   const [listItems, setListItems] = useState<DataInfoProps[]>([]);
@@ -150,13 +149,6 @@ const List: React.FC = () => {
           {search == "discover" && (
             <GenreListComponent type={type} genreList={setGenreList} />
           )}
-
-          <div className="mb-3">
-            <AffiliateLinks 
-              movieTitle={`${type === 'movie' ? 'Movies' : type === 'tv' ? 'TV Shows' : 'Content'}`}
-              className="bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] mx-0 px-0"
-            />
-          </div>
 
           {listItems.map((item: DataInfoProps, index: number) => {
             const isLastItem = index === listItems.length - 1;
