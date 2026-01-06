@@ -13,6 +13,7 @@ import Meta from "../SEO/meta.tsx";
 import MovieSchema from "../SEO/MovieSchema.tsx";
 import BreadcrumbSchema from "../SEO/BreadcrumbSchema.tsx";
 import { DataInfoProps } from "../utils/Interfaces.ts";
+import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
 
 const MovieInfoPage = () => {
   const [info, setInfo] = useState<DataInfoProps>();
@@ -23,6 +24,19 @@ const MovieInfoPage = () => {
   const [searchParams] = useSearchParams();
   const movieId: string | null = searchParams.get("id") as string | null;
   const type: string | null = searchParams.get("type") as string | null;
+
+  const [, addToLocaleStorageList] = useLocaleStorageList(
+    type as string,
+    `recentlyViewed${type}IdStorage`,
+    `recentlyViewed${type}Cache`,
+    20
+  );
+
+  useEffect(() => {
+    if (movieId && type) {
+      addToLocaleStorageList(type, movieId);
+    }
+  }, [movieId, type]);
 
   useEffect(() => {
     const loadInfoData = async () => {
@@ -67,54 +81,109 @@ const MovieInfoPage = () => {
   return (
     <>
       {info && (
-        <Meta 
-          title={`${info.title || info.name} ${info.release_date ? `(${new Date(info.release_date).getFullYear()})` : info.first_air_date ? `(${new Date(info.first_air_date).getFullYear()})` : ''} - Flash Movies - Watch Free`}
-          description={info.overview ? `${info.overview.slice(0, 150)}... Watch ${info.title || info.name} free on Flash Movies.` : `Watch ${info.title || info.name} free on Flash Movies. Stream in HD quality.`}
+        <Meta
+          title={`${info.title || info.name} ${
+            info.release_date
+              ? `(${new Date(info.release_date).getFullYear()})`
+              : info.first_air_date
+              ? `(${new Date(info.first_air_date).getFullYear()})`
+              : ""
+          } - Flash Movies - Watch Free`}
+          description={
+            info.overview
+              ? `${info.overview.slice(0, 150)}... Watch ${
+                  info.title || info.name
+                } free on Flash Movies.`
+              : `Watch ${
+                  info.title || info.name
+                } free on Flash Movies. Stream in HD quality.`
+          }
           image={
-            info.poster_path 
-              ? `https://image.tmdb.org/t/p/w500${info.poster_path}` 
-              : info.backdrop_path 
-                ? `https://image.tmdb.org/t/p/w1280${info.backdrop_path}` 
-                : "https://flashmovies.xyz/flash-movies-logo.png"
+            info.poster_path
+              ? `https://image.tmdb.org/t/p/w500${info.poster_path}`
+              : info.backdrop_path
+              ? `https://image.tmdb.org/t/p/w1280${info.backdrop_path}`
+              : "https://flashmovies.xyz/flash-movies-logo.png"
           }
           url={window.location.href}
           keywords={[
-            info.title || info.name || '',
-            ...(info.genres?.map((genre: { name: string }) => genre.name) || []),
-            `${type} streaming`, `watch ${info.title || info.name || ''} free`, `${type} online`,`watch ${info.title || info.name || ''} ${type === 'movie' ? 'movie' : 'series'}`, `watch ${info.title || info.name || ''} ${type === 'movie' ? 'movie' : 'series'} for free`,`watch ${info.title || info.name || ''} ${type === 'movie' ? 'movie' : 'series'} for free on flashmovies`,`${info.title || info.name || ''} ${type === 'movie' ? 'movie' : 'series'} movie info`,'free movies', ' free series', 'flash movies', 'HD streaming, flashmovies, flashmovies.xyz'
+            info.title || info.name || "",
+            ...(info.genres?.map((genre: { name: string }) => genre.name) ||
+              []),
+            `${type} streaming`,
+            `watch ${info.title || info.name || ""} free`,
+            `${type} online`,
+            `watch ${info.title || info.name || ""} ${
+              type === "movie" ? "movie" : "series"
+            }`,
+            `watch ${info.title || info.name || ""} ${
+              type === "movie" ? "movie" : "series"
+            } for free`,
+            `watch ${info.title || info.name || ""} ${
+              type === "movie" ? "movie" : "series"
+            } for free on flashmovies`,
+            `${info.title || info.name || ""} ${
+              type === "movie" ? "movie" : "series"
+            } movie info`,
+            "free movies",
+            " free series",
+            "flash movies",
+            "HD streaming, flashmovies, flashmovies.xyz",
           ].filter(Boolean)}
-          type={type === 'movie' ? 'video.movie' : type === 'tv' ? 'video.tv_show' : 'article'}
+          type={
+            type === "movie"
+              ? "video.movie"
+              : type === "tv"
+              ? "video.tv_show"
+              : "article"
+          }
         />
       )}
-      
+
       {info && (
-        <BreadcrumbSchema 
+        <BreadcrumbSchema
           items={[
             { name: "Home", url: "https://flashmovies.xyz/" },
-            { 
-              name: type === 'movie' ? 'Movies' : type === 'tv' ? 'TV Shows' : 'People', 
-              url: `https://flashmovies.xyz/list-items?type=${type}&search=popular&title=popular-${type}s` 
+            {
+              name:
+                type === "movie"
+                  ? "Movies"
+                  : type === "tv"
+                  ? "TV Shows"
+                  : "People",
+              url: `https://flashmovies.xyz/list-items?type=${type}&search=popular&title=popular-${type}s`,
             },
-            { 
-              name: info.title || info.name || 'Content', 
-              url: window.location.href 
-            }
+            {
+              name: info.title || info.name || "Content",
+              url: window.location.href,
+            },
           ]}
         />
       )}
-      {info && type !== 'person' && (
+      {info && type !== "person" && (
         <MovieSchema
-          title={info?.title || info?.name || ''}
+          title={info?.title || info?.name || ""}
           description={info?.overview}
           image={info?.poster_path}
           releaseDate={info?.release_date || info?.first_air_date}
-          genre={info?.genres?.map((g: {name: string}) => g.name) || []}
-          director={credits?.filter((credit: { job?: string; name: string }) => credit.job === 'Director').map((credit: { name: string }) => credit.name) || []}
-          actor={credits?.slice(0, 10).map((credit: { name: string }) => credit.name) || []}
+          genre={info?.genres?.map((g: { name: string }) => g.name) || []}
+          director={
+            credits
+              ?.filter(
+                (credit: { job?: string; name: string }) =>
+                  credit.job === "Director"
+              )
+              .map((credit: { name: string }) => credit.name) || []
+          }
+          actor={
+            credits
+              ?.slice(0, 10)
+              .map((credit: { name: string }) => credit.name) || []
+          }
           rating={info?.vote_average}
           ratingCount={info?.vote_count}
           duration={info?.runtime}
-          type={type === 'movie' ? 'movie' : 'tv'}
+          type={type === "movie" ? "movie" : "tv"}
           url={window.location.href}
         />
       )}
@@ -160,7 +229,6 @@ const MovieInfoPage = () => {
                   genres={info.genres}
                   title={info.title || info.name}
                 />
-
               </>
             )}
           </div>

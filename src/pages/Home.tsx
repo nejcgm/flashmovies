@@ -5,6 +5,8 @@ import HeroCarousel from "../carousels/hero-carousel/HeroCarousel";
 import ActorCarousel from "../carousels/actor-carousel/ActorCarousel";
 import Spinner from "../components/Spinner";
 import Meta from "../SEO/meta.tsx";
+import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
+import AffiliateLinks from "../components/AffiliateLinks.tsx";
 
 const Home = () => {
   const [classicCarousel, setClassicCarousel] = useState<[]>([]);
@@ -72,6 +74,19 @@ const Home = () => {
     loadHomeData();
   }, [heroPage, classicPage]);
 
+  const [recentMovies] = useLocaleStorageList(
+    `movie`,
+    `recentlyViewedmovieIdStorage`,
+    `recentlyViewedmovieCache`,
+    20
+  );
+  const [recentTvShows] = useLocaleStorageList(
+    `tv`,
+    `recentlyViewedtvIdStorage`,
+    `recentlyViewedtvCache`,
+    20
+  );
+
   return (
     <>
       <Meta />
@@ -113,7 +128,22 @@ const Home = () => {
             worth it.
           </div>
 
-          <div className="mt-[24px] sm:mt-[42px]">
+          {recentMovies.length > 0 && (
+            <div className="mt-[24px] sm:mt-[42px]">
+              <Carousel
+                movies={recentMovies}
+                cardCount={20}
+                showTitle={`Recently Viewed Movies`}
+                type={"movie"}
+              />
+            </div>
+          )}
+
+          <div
+            className={`mt-[24px] ${
+              recentMovies.length > 0 ? "sm:mt-[64px]" : "sm:mt-[42px]"
+            }`}
+          >
             <Carousel
               movies={classicCarousel}
               cardCount={20}
@@ -139,6 +169,24 @@ const Home = () => {
               type={"movie"}
             />
           </div>
+
+          <div className="mt-[32px] sm:mt-[64px]">
+            <AffiliateLinks
+              movieTitle="Flash Movies"
+              className="bg-gradient-to-r from-[#1a1a1a] to-[#2d2d2d] border-2 border-[#f5c518]"
+            />
+          </div>
+
+          {recentTvShows.length > 0 && (
+            <div className="mt-[24px] sm:mt-[64px]">
+              <Carousel
+                movies={recentTvShows}
+                cardCount={20}
+                showTitle={`Recently Viewed TV Shows`}
+                type={"tv"}
+              />
+            </div>
+          )}
 
           <div className="mt-[24px] sm:mt-[64px]">
             <Carousel
