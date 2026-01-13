@@ -161,6 +161,7 @@ const WatchMoviePage = () => {
           title="Choose Server"
           movieId={movieId!}
           type={type!}
+          description="Swap Servers to find the best balance between quality and stability"
           className="mt-[8px]"
         />
         <div className="h-[32px]"></div>

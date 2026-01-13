@@ -8,6 +8,7 @@ interface ProviderComponentProps {
   movieId: string;
   type: string;
   className?: string;
+  description?: string;
 }
 
 const ProviderComponent = ({
@@ -15,13 +16,14 @@ const ProviderComponent = ({
   title,
   movieId,
   type,
-  className,  
+  className,
+  description,
 }: ProviderComponentProps) => {
-  const providers = STREAMING_PROVIDERS.map(provider => ({
+  const providers = STREAMING_PROVIDERS.map((provider) => ({
     name: provider.name,
     url: provider.url(type, movieId),
     description: provider.description,
-    priority: provider.priority
+    priority: provider.priority,
   }));
 
   const [providerUrl, setProviderUrl] = useState(providers[0].url);
@@ -37,14 +39,14 @@ const ProviderComponent = ({
   const handleProviderSelection = (provider: string, url: string) => {
     setSelectedProvider(provider);
     setProviderUrl(url);
-    const index = providers.findIndex(p => p.name === provider);
+    const index = providers.findIndex((p) => p.name === provider);
     setCurrentProviderIndex(index);
-    setIframeKey(prev => prev + 1);
+    setIframeKey((prev) => prev + 1);
   };
 
   const handleProviderError = () => {
     if (!failedProviders.includes(selectedProvider)) {
-      setFailedProviders(prev => [...prev, selectedProvider]);
+      setFailedProviders((prev) => [...prev, selectedProvider]);
     }
 
     if (currentProviderIndex < providers.length - 1) {
@@ -58,14 +60,19 @@ const ProviderComponent = ({
   };
 
   const getCurrentProviderDescription = () => {
-    const currentProvider = providers.find(p => p.name === selectedProvider);
+    const currentProvider = providers.find((p) => p.name === selectedProvider);
     return currentProvider?.description || "";
   };
 
   return (
     <>
       <div className={className}>
-        <div className="font-semibold text-lg sm:text-[24px] text-yellow-500">{title}</div>
+        <div className="font-semibold text-lg sm:text-[24px] mb-1 text-yellow-500">
+          {title}
+        </div>
+        <div className="sm:mb-1 text-gray-400 text-xs sm:text-sm">
+          {description}
+        </div>
         <div className="flex flex-wrap gap-x-2 gap-y-2 sm:gap-x-3 sm:gap-y-3 mt-4">
           {providers.map((provider) => (
             <ProviderButton
@@ -76,16 +83,16 @@ const ProviderComponent = ({
                 handleProviderSelection(provider.name, url);
               }}
               className={
-                selectedProvider === provider.name 
-                  ? "bg-yellow-500" 
+                selectedProvider === provider.name
+                  ? "bg-yellow-500"
                   : failedProviders.includes(provider.name)
-                    ? "bg-red-500 opacity-50"
-                    : "bg-gray-500"
+                  ? "bg-red-500 opacity-50"
+                  : "bg-gray-500"
               }
             />
           ))}
         </div>
-        
+
         <div className="mt-2 text-sm text-gray-400">
           {getCurrentProviderDescription()}
         </div>
@@ -94,7 +101,7 @@ const ProviderComponent = ({
       <iframe
         key={iframeKey}
         src={providerUrl}
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         onError={handleIframeError}
       />
     </>
