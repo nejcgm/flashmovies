@@ -13,6 +13,7 @@ import FAQPage from "./pages/footer-pages/FAQ";
 import LoginPage from "./pages/auth/login";
 import RegisterPage from "./pages/auth/register";
 import AuthLayout from "./layout/AuthLayout";
+import PlansPage from "./pages/payments/plans";
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,10 @@ const App: React.FC = () => {
         <Route path="/auth" element={<AuthLayout />}>
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/register" element={<RegisterPage />} />
+        </Route>
+        
+        <Route path="/plans" element={<AuthLayout />}>
+          <Route path="/plans" element={<PlansPage />} />
         </Route>
         
         <Route path="/" element={<MainLayout />}>
