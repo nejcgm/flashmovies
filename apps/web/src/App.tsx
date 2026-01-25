@@ -10,12 +10,20 @@ import Analytics from "./SEO/Analytics";
 import ExoClickPlayer from "./pages/adVideoPlayer";
 import TermsAndConditionsPage from "./pages/footer-pages/TermsAndConditionsPage";
 import FAQPage from "./pages/footer-pages/FAQ";
+import LoginPage from "./pages/auth/login";
+import RegisterPage from "./pages/auth/register";
+import AuthLayout from "./layout/AuthLayout";
 
 const App: React.FC = () => {
   return (
     <>
       <Analytics />
       <Routes>
+        <Route path="/auth" element={<AuthLayout />}>
+          <Route path="/auth/login" element={<LoginPage />} />
+          <Route path="/auth/register" element={<RegisterPage />} />
+        </Route>
+        
         <Route path="/" element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/movie-info" element={<MovieInfoPage />} />

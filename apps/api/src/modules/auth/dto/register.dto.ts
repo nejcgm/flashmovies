@@ -1,15 +1,24 @@
-import { IsEmail, IsString, MinLength, MaxLength, Matches, IsOptional } from 'class-validator';
+import { IsEmail, IsString, MinLength, MaxLength, Matches, IsOptional, Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
+
+@ValidatorConstraint({ name: 'noPlus', async: false })
+class NoPlusInEmail implements ValidatorConstraintInterface {
+  validate(email: string) {
+    return !email.includes('+');
+  }
+
+  defaultMessage() {
+    return 'Email address cannot contain "+"';
+  }
+}
 
 export class RegisterDto {
   @IsEmail()
+  @Validate(NoPlusInEmail)
   email: string;
 
   @IsString()
   @MinLength(8)
   @MaxLength(72)
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/, {
-    message: 'Password must contain uppercase, lowercase, number and special character',
-  })
   password: string;
 
   @IsOptional()
