@@ -12,9 +12,15 @@ export class PaymentsController {
     return this.paymentsService.getPlans();
   }
 
-  @Post('checkout')
+  @Post('create-order')
   @UseGuards(JwtAuthGuard)
-  async createCheckout(@CurrentUser() user: any, @Body('planCode') planCode: string) {
-    return this.paymentsService.createCheckoutSession(user.id, planCode);
+  async createOrder(@CurrentUser() user: any, @Body('planCode') planCode: string) {
+    return this.paymentsService.createPayPalOrder(user.id, planCode);
+  }
+
+  @Post('capture-order')
+  @UseGuards(JwtAuthGuard)
+  async captureOrder(@CurrentUser() user: any, @Body('orderId') orderId: string) {
+    return this.paymentsService.capturePayPalOrder(orderId, user.id);
   }
 }

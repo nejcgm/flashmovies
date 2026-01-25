@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   // Validate required environment variables
-  const REQUIRED = ['JWT_SECRET', 'DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD', 'STRIPE_SECRET_KEY'];
+  const REQUIRED = ['JWT_SECRET', 'DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD', 'PAYPAL_CLIENT_ID', 'PAYPAL_CLIENT_SECRET'];
   REQUIRED.forEach(v => {
     if (!process.env[v]) {
       console.error(`Missing required environment variable: ${v}`);
@@ -13,10 +13,7 @@ async function bootstrap() {
     }
   });
 
-  const app = await NestFactory.create(AppModule, {
-    // Enable raw body for Stripe webhook signature verification
-    rawBody: true,
-  });
+  const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
   // Global validation pipe

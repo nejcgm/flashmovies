@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Headers, RawBodyRequest } from '@nestjs/common';
+import { Controller, Post, Req, Headers } from '@nestjs/common';
 import { Request } from 'express';
 import { PaymentsService } from './payments.service';
 
@@ -6,15 +6,12 @@ import { PaymentsService } from './payments.service';
 export class WebhookController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
-  @Post('stripe')
-  async handleStripeWebhook(
-    @Headers('stripe-signature') signature: string,
-    @Req() req: RawBodyRequest<Request>,
+  @Post('paypal')
+  async handlePayPalWebhook(
+    @Headers() headers: Record<string, string>,
+    @Req() req: Request,
   ) {
-    const rawBody = req.rawBody;
-    if (!rawBody) {
-      throw new Error('Raw body not available');
-    }
-    return this.paymentsService.handleWebhook(signature, rawBody);
+    const body = JSON.stringify(req.body);
+    return this.paymentsService.handleWebhook(headers, body);
   }
 }

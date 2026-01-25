@@ -8,7 +8,7 @@ export class UsersService {
 
   async findById(id: number) {
     const result = await this.pool.query(
-      `SELECT u.id, u.email, u.display_name, u.role_id, u.stripe_customer_id, u.created_at,
+      `SELECT u.id, u.email, u.display_name, u.role_id, u.paypal_payer_id, u.created_at,
               lr.code as role_code, lr.display_name as role_name
        FROM users u
        JOIN lookup_values lr ON u.role_id = lr.id
@@ -59,10 +59,10 @@ export class UsersService {
     };
   }
 
-  async updateStripeCustomerId(userId: number, customerId: string) {
+  async updatePayPalPayerId(userId: number, payerId: string) {
     await this.pool.query(
-      'UPDATE users SET stripe_customer_id = $1 WHERE id = $2',
-      [customerId, userId],
+      'UPDATE users SET paypal_payer_id = $1 WHERE id = $2',
+      [payerId, userId],
     );
   }
 

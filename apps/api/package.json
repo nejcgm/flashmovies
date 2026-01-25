@@ -1,7 +1,7 @@
 {
   "name": "flashmovies-api",
   "version": "1.0.0",
-  "description": "FlashMovies API - Authentication and Stripe payments",
+  "description": "FlashMovies API - Authentication and PayPal payments",
   "author": "Nejc",
   "private": true,
   "license": "UNLICENSED",
@@ -32,8 +32,7 @@
     "passport-jwt": "^4.0.1",
     "pg": "^8.11.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1",
-    "stripe": "^14.0.0"
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
