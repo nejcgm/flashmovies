@@ -103,6 +103,7 @@ const ProviderComponent = ({
         src={providerUrl}
         style={{ display: "none" }}
         onError={handleIframeError}
+        allow="encrypted-media"
       />
     </>
   );

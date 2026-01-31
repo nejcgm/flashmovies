@@ -15,7 +15,7 @@ export const STREAMING_PROVIDERS: StreamingProvider[] = [
   {
     name: "MoviesAPI Club",
     url: (type: string, movieId: string) => `https://moviesapi.club/${type}/${movieId}`,
-    priority: 4,
+    priority: 2,
     description: "Best Quality (1080p) 🤩"
   },
   {
@@ -26,8 +26,18 @@ export const STREAMING_PROVIDERS: StreamingProvider[] = [
   },
   {
     name: "AutoEmbed",
-    url: (type: string, movieId: string) => `https://autoembed.co/${type}/tmdb/${movieId}`,
-    priority: 2,
+    url: (type: string, movieId: string) => `https://player.autoembed.cc/embed/${type}/${movieId}?autoplay=true`,
+    priority: 4,
     description: "Backup 😎"
-  }
+  },
+  {
+    name: "videasy.net test2",
+    url: (type: string, movieId: string) => `https://player.videasy.net/${type}/${movieId}?color=EAB308&overlay=true&episodeSelector=true`,
+    priority: 5,
+    description: "Backup 😎 Test"
+  },
 ]; 
+
+//https://player.autoembed.cc/embed/movie/1084242?autoplay=true&download=true
+//https://test.autoembed.cc/embed/movie/1084242?autoplay=true&download=true&server=1
+//https://player.videasy.net/movie/299534
