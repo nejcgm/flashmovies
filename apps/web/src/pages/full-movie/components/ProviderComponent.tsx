@@ -3,7 +3,11 @@ import ProviderButton from "./ProviderButton";
 import { STREAMING_PROVIDERS } from "../../../config/streamingProviders";
 
 interface ProviderComponentProps {
-  newProvider: (providerUrl: string) => void;
+  newProvider: (
+    providerUrl: string,
+    isEpisodeSlugPartOfSlug: boolean,
+    params?: string
+  ) => void;
   title?: string;
   movieId: string;
   type: string;
@@ -24,39 +28,30 @@ const ProviderComponent = ({
     url: provider.url(type, movieId),
     description: provider.description,
     priority: provider.priority,
+    isEpisodeSlugPartOfSlug: provider.isEpisodeSlugPartOfSlug,
+    params: provider.params,
   }));
 
   const [providerUrl, setProviderUrl] = useState(providers[0].url);
   const [selectedProvider, setSelectedProvider] = useState(providers[0].name);
-  const [currentProviderIndex, setCurrentProviderIndex] = useState(0);
-  const [iframeKey, setIframeKey] = useState(0);
-  const [failedProviders, setFailedProviders] = useState<string[]>([]);
+  const [isEpisodeSlugPartOfSlug, setIsEpisodeSlugPartOfSlug] =
+    useState<boolean>(providers[0].isEpisodeSlugPartOfSlug);
+  const [params, setParams] = useState(providers[0].params);
 
   useEffect(() => {
-    newProvider(providerUrl);
-  }, [providerUrl, newProvider]);
+    newProvider(providerUrl, isEpisodeSlugPartOfSlug, params);
+  }, [providerUrl, isEpisodeSlugPartOfSlug, params, newProvider]);
 
-  const handleProviderSelection = (provider: string, url: string) => {
+  const handleProviderSelection = (
+    provider: string,
+    url: string,
+    isEpisodeSlugPartOfSlug: boolean,
+    params?: string
+  ) => {
     setSelectedProvider(provider);
     setProviderUrl(url);
-    const index = providers.findIndex((p) => p.name === provider);
-    setCurrentProviderIndex(index);
-    setIframeKey((prev) => prev + 1);
-  };
-
-  const handleProviderError = () => {
-    if (!failedProviders.includes(selectedProvider)) {
-      setFailedProviders((prev) => [...prev, selectedProvider]);
-    }
-
-    if (currentProviderIndex < providers.length - 1) {
-      const nextProvider = providers[currentProviderIndex + 1];
-      handleProviderSelection(nextProvider.name, nextProvider.url);
-    }
-  };
-
-  const handleIframeError = () => {
-    handleProviderError();
+    setIsEpisodeSlugPartOfSlug(isEpisodeSlugPartOfSlug);
+    setParams(params);
   };
 
   const getCurrentProviderDescription = () => {
@@ -80,13 +75,16 @@ const ProviderComponent = ({
               provider={provider.name}
               url={provider.url}
               updateProvider={(url) => {
-                handleProviderSelection(provider.name, url);
+                handleProviderSelection(
+                  provider.name,
+                  url,
+                  provider.isEpisodeSlugPartOfSlug,
+                  provider.params
+                );
               }}
               className={
                 selectedProvider === provider.name
                   ? "bg-yellow-500"
-                  : failedProviders.includes(provider.name)
-                  ? "bg-red-500 opacity-50"
                   : "bg-gray-500"
               }
             />
@@ -97,13 +95,6 @@ const ProviderComponent = ({
           {getCurrentProviderDescription()}
         </div>
       </div>
-
-      <iframe
-        key={iframeKey}
-        src={providerUrl}
-        style={{ display: "none" }}
-        onError={handleIframeError}
-      />
     </>
   );
 };

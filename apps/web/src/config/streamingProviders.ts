@@ -3,31 +3,45 @@ export interface StreamingProvider {
   url: (type: string, movieId: string) => string;
   priority: number;
   description: string;
+  isEpisodeSlugPartOfSlug: boolean;
+  params?: string;
 }
 
 export const STREAMING_PROVIDERS: StreamingProvider[] = [
+  //moviesapi.club
   {
-    name: "VidSrc Pro",
-    url: (type: string, movieId: string) => `https://vidsrc.xyz/embed/${type}/${movieId}`,
+    name: "Server 1",
+    url: (type: string, movieId: string) => `https://moviesapi.club/${type}/${movieId}`,
+    isEpisodeSlugPartOfSlug: false,
+    params: `color=EAB308`,
     priority: 1,
+    description: "Good Overall 😎"
+  },
+  //vidsrc.xyz
+  {
+    name: "Server 2",
+    url: (type: string, movieId: string) => `https://vidsrc.net/embed/${type}/${movieId}`,
+    isEpisodeSlugPartOfSlug: false,
+    params: `autonext=1`,
+    priority: 2,
     description: "Most Stable 💪"
   },
+  //videasy.net
   {
-    name: "MoviesAPI Club",
-    url: (type: string, movieId: string) => `https://moviesapi.club/${type}/${movieId}`,
-    priority: 4,
-    description: "Best Quality (1080p) 🤩"
-  },
-  {
-    name: "111Movies",
-    url: (type: string, movieId: string) => `https://111movies.com/${type}/${movieId}`,
+    name: "Server 3",
+    url: (type: string, movieId: string) => `https://player.videasy.net/${type}/${movieId}`,
+    isEpisodeSlugPartOfSlug: true,
+    params: `color=EAB308&overlay=true&episodeSelector=true`,
     priority: 3,
-    description: "Second best quality 🤔"
+    description: "Best Quality 😎"
   },
+  //111movies.com
   {
-    name: "AutoEmbed",
-    url: (type: string, movieId: string) => `https://autoembed.co/${type}/tmdb/${movieId}`,
-    priority: 2,
-    description: "Backup 😎"
-  }
+    name: "Server 4",
+    url: (type: string, movieId: string) => `https://111movies.com/${type}/${movieId}`,
+    isEpisodeSlugPartOfSlug: true,
+    params: `color=EAB308`,
+    priority: 3,
+    description: "Good Overall Quality 😎"
+  },
 ]; 
