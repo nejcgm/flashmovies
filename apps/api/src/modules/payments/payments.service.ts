@@ -19,6 +19,7 @@ interface PayPalOrder {
       captures?: Array<{
         id: string;
         status: string;
+        custom_id?: string;
         amount: {
           currency_code: string;
           value: string;
@@ -162,6 +163,14 @@ export class PaymentsService {
 
     const order: PayPalOrder = await response.json();
 
+    // Store pending order in database
+    await this.pool.query(
+      `INSERT INTO pending_paypal_orders (paypal_order_id, user_id, plan_id)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (paypal_order_id) DO UPDATE SET user_id = $2, plan_id = $3`,
+      [order.id, userId, plan.id],
+    );
+
     return {
       orderId: order.id,
       status: order.status,
@@ -169,6 +178,17 @@ export class PaymentsService {
   }
 
   async capturePayPalOrder(orderId: string, userId: number) {
+    // Get plan info from pending order
+    const pendingOrderResult = await this.pool.query(
+      'SELECT plan_id FROM pending_paypal_orders WHERE paypal_order_id = $1 AND user_id = $2',
+      [orderId, userId],
+    );
+
+    if (pendingOrderResult.rows.length === 0) {
+      throw new BadRequestException('Order not found or does not belong to user');
+    }
+
+    const planId = pendingOrderResult.rows[0].plan_id;
     const accessToken = await this.getPayPalAccessToken();
 
     const response = await fetch(`${this.paypalBaseUrl}/v2/checkout/orders/${orderId}/capture`, {
@@ -188,7 +208,13 @@ export class PaymentsService {
     const order: PayPalOrder = await response.json();
 
     if (order.status === 'COMPLETED') {
-      await this.handleSuccessfulPayment(order, userId);
+      await this.handleSuccessfulPayment(order, userId, planId);
+
+      // Clean up pending order after successful payment
+      await this.pool.query(
+        'DELETE FROM pending_paypal_orders WHERE paypal_order_id = $1',
+        [orderId],
+      );
     }
 
     return {
@@ -197,27 +223,9 @@ export class PaymentsService {
     };
   }
 
-  private async handleSuccessfulPayment(order: PayPalOrder, userId: number) {
-    // Parse custom_id to get plan info
-    const customId = order.purchase_units[0]?.custom_id;
-    let planId: number;
-    let planCode: string;
-
-    try {
-      const parsed = JSON.parse(customId || '{}');
-      planId = parsed.planId;
-      planCode = parsed.planCode;
-    } catch {
-      console.error('Failed to parse custom_id:', customId);
-      throw new BadRequestException('Invalid order data');
-    }
-
-    if (!planId) {
-      throw new BadRequestException('Plan information missing from order');
-    }
-
-    // Get capture details
-    const capture = order.purchase_units[0]?.payments?.captures?.[0];
+  private async handleSuccessfulPayment(order: PayPalOrder, userId: number, planId: number) {
+    // Get capture details from PayPal response
+    const capture = order.purchase_units?.[0]?.payments?.captures?.[0];
     const captureId = capture?.id;
     const amountCents = capture ? Math.round(parseFloat(capture.amount.value) * 100) : 0;
     const currency = capture?.amount.currency_code || 'USD';

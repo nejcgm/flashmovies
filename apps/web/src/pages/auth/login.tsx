@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../client/auth';
+import { useUser } from '../../context/UserContext';
 import {
   FormInput,
   FormButton,
@@ -12,6 +13,7 @@ import {
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { refreshUser } = useUser();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -32,6 +34,7 @@ const LoginPage: React.FC = () => {
 
     try {
       await login(formData);
+      await refreshUser();
       navigate('/');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };

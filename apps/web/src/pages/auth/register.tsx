@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../../client/auth';
+import { useUser } from '../../context/UserContext';
 import {
   AuthFormLayout,
   FormInput,
@@ -12,6 +13,7 @@ import {
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
+  const { refreshUser } = useUser();
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
@@ -59,6 +61,7 @@ const RegisterPage: React.FC = () => {
         password: formData.password,
         displayName: formData.displayName || undefined,
       });
+      await refreshUser();
       navigate('/');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };

@@ -7,6 +7,8 @@ import Spinner from "../components/Spinner";
 import Meta from "../SEO/meta.tsx";
 import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
 import AffiliateLinks from "../components/AffiliateLinks.tsx";
+import SectionDivider from "../components/SectionDivider";
+import { useUser } from "../context/UserContext";
 
 const Home = () => {
   const [classicCarousel, setClassicCarousel] = useState<[]>([]);
@@ -18,6 +20,7 @@ const Home = () => {
   const [heroCarousel, setHeroCarousel] = useState<[]>([]);
   const [actors, setActors] = useState<[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const { isPro } = useUser();
 
   const heroPage = 2;
   const classicPage = 1;
@@ -128,6 +131,8 @@ const Home = () => {
             worth it.
           </div>
 
+          <SectionDivider title="Movies" icon="movie" />
+
           {recentMovies.length > 0 && (
             <div className="mt-[24px] sm:mt-[42px]">
               <Carousel
@@ -170,12 +175,16 @@ const Home = () => {
             />
           </div>
 
-          <div className="mt-[32px] sm:mt-[64px]">
-            <AffiliateLinks
-              movieTitle="Flash Movies"
-              className="bg-gradient-to-r from-[#1a1a1a] to-[#2d2d2d] border-2 border-[#f5c518]"
-            />
-          </div>
+          {!isPro && (
+            <div className="mt-[32px] sm:mt-[64px]">
+              <AffiliateLinks
+                movieTitle="Flash Movies"
+                className="bg-gradient-to-r from-[#1a1a1a] to-[#2d2d2d] border-2 border-[#f5c518]"
+              />
+            </div>
+          )}
+
+          <SectionDivider title="TV Shows" icon="tv" />
 
           {recentTvShows.length > 0 && (
             <div className="mt-[24px] sm:mt-[64px]">
@@ -214,6 +223,8 @@ const Home = () => {
               type={"tv"}
             />
           </div>
+
+          <SectionDivider title="Popular Celebrities" icon="actor" />
 
           <div className="mt-[32px] sm:mt-[64px]">
             <ActorCarousel

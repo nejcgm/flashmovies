@@ -5,6 +5,7 @@ import InfoCta from "../../components/InfoCta";
 import MoreInfo from "../../dialogs/MoreInfo";
 import { triggerContextAdRedirectDirect } from '../../utils/contextAdRedirect';
 import { useAdTracker } from '../../context/AdTrackerContext';
+import { useUser } from '../../context/UserContext';
 import { ClickTypeEnum } from '../../utils/types';
 
 interface UpNextCardProps {
@@ -27,6 +28,7 @@ const UpNextCard: React.FC<UpNextCardProps> = ({
   const [displayInfo, setDisplayInfo] = useState(false);
   const [trailer, setTrailer] = useState(false);
   const { incrementClick } = useAdTracker();
+  const { isPro } = useUser();
 
   return (
     <>
@@ -65,7 +67,8 @@ const UpNextCard: React.FC<UpNextCardProps> = ({
               eventLabel: 'upnext_card_click',
               movieTitle: title,
               movieId: movieId,
-              clickType: ClickTypeEnum.UPNEXT_CARD
+              clickType: ClickTypeEnum.UPNEXT_CARD,
+              isPro
             }, incrementClick);
             setTrailer(true);
             timerActive();

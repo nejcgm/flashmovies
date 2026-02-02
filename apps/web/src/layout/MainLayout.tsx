@@ -4,6 +4,7 @@ import Frame from "./Frame";
 import Search from "./search/SearchComponent";
 import SkipLink from "../components/SkipLink";
 import Footer from "./footer/Footer";
+import ProBanner from "../components/ProBanner";
 //import SimpleAdDisplay from "../components/SimpleAdDisplay";
 const MainLayout = () => {
   return (
@@ -11,6 +12,7 @@ const MainLayout = () => {
       <SkipLink />
       <Frame>
         <Search />
+        <ProBanner />
         <main id="main-content">
           <Outlet />
         </main>

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { redirectForAdVideo } from "../utils/contextAdRedirect";
 import { useAdTracker } from "../context/AdTrackerContext";
+import { useUser } from "../context/UserContext";
 
 declare global {
   interface Window {
@@ -14,6 +15,14 @@ const ExoClickPlayer: React.FC = () => {
   const [isFluidPlayerReady, setIsFluidPlayerReady] = useState(false);
   const { setVideoAd } = useAdTracker();
   const [adIsUnavailable, setAdIsUnavailable] = useState(false);
+  const { isPro } = useUser();
+
+  // Redirect pro users - they don't need to watch ads
+  useEffect(() => {
+    if (isPro) {
+      window.history.back();
+    }
+  }, [isPro]);
   useEffect(() => {
     const loadFluidPlayer = () => {
       if (window.fluidPlayer) {
@@ -141,6 +150,11 @@ const ExoClickPlayer: React.FC = () => {
       }
     };
   }, [isFluidPlayerReady]);
+
+  // Don't render anything for pro users while redirecting
+  if (isPro) {
+    return null;
+  }
 
   return (
     <>

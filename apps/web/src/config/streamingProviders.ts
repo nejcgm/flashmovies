@@ -5,9 +5,28 @@ export interface StreamingProvider {
   description: string;
   isEpisodeSlugPartOfSlug: boolean;
   params?: string;
+  isPremium?: boolean;
 }
 
 export const STREAMING_PROVIDERS: StreamingProvider[] = [
+  {
+    name: "Premium",
+    url: (type: string, movieId: string) => `https://player2.autoembed.cc/embed/${type}/${movieId}`,
+    isEpisodeSlugPartOfSlug: true,
+    params: `color=EAB308&autoplay=true`,
+    priority: 3,
+    description: "Ad-free, Best Quality 👑",
+    isPremium: true,
+  },
+  {
+    name: "Premium Backup",
+    url: (type: string, movieId: string) => `https://player.autoembed.cc/embed/${type}/${movieId}`,
+    isEpisodeSlugPartOfSlug: true,
+    params: `color=EAB308&autoplay=true`,
+    priority: 3,
+    description: "Ad-free, Best Quality 👑",
+    isPremium: true,
+  },
   //moviesapi.club
   {
     name: "Server 1",

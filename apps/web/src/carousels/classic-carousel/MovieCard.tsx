@@ -7,6 +7,7 @@ import LazyImage from "../../components/LazyImage";
 import { useNavigate } from "react-router-dom";
 import { redirectForMovie } from '../../utils/contextAdRedirect';
 import { useAdTracker } from '../../context/AdTrackerContext';
+import { useUser } from '../../context/UserContext';
 import { ClickTypeEnum } from '../../utils/types';
 
 const MoviePlaceholder = "/dark-mode-img-placeholder.png";
@@ -30,9 +31,10 @@ const MovieCard: React.FC<MovieCardProps> = ({
   const [trailer, setTrailer] = useState(false);
   const navigate = useNavigate();
   const { incrementClick } = useAdTracker();
+  const { isPro } = useUser();
 
   const handleCardClick = () => {
-    redirectForMovie(ClickTypeEnum.MOVIE_CARD, title, movieId, incrementClick);
+    redirectForMovie(ClickTypeEnum.MOVIE_CARD, title, movieId, incrementClick, isPro);
     navigate(`/movie-info/?id=${movieId}&type=${type}`);
   };
 
