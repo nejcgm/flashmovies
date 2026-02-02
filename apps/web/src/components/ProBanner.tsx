@@ -29,7 +29,7 @@ const ProBanner: React.FC = () => {
   return (
     <div className="mx-2 mb-2 sm:mx-0 mt-1 sm:mt-2">
       <Link
-        to="/plans"
+        to="payments/plans"
         className="block rounded-lg bg-gradient-to-r from-[#1a1a1a] via-[#2a2a2a] to-[#1a1a1a] border border-[#f5c518]/30 hover:border-[#f5c518]/60 transition-colors"
       >
         <div className="px-3 py-2 sm:py-2.5 flex items-center justify-between gap-2">

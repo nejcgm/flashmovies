@@ -4,6 +4,7 @@ import { fetchSearch, SearchResult } from "../../utils/fetching.js";
 import { useDebounce } from "../../utils/Hooks.js";
 import { useNavigate } from "react-router-dom";
 import MenuButton from "../menu/MenuButton";
+import UserMenu from "../UserMenu";
 
 const Search = () => {
   const [query, setQuery] = useState<string | undefined>("");
@@ -34,7 +35,8 @@ const Search = () => {
           className="fixed w-screen h-screen z-10"
         ></div>
       )}
-      <div className=" w-full items-center justify-center flex mt-[32px] mb-[32px]">
+      <div className="w-full items-center justify-center flex mt-[32px] mb-[32px]">
+        {/* Logo */}
         <button
           className="flex w-[32px] h-[32px] sm:w-[48px] sm:h-[48px] mr-2 sm:mr-4"
           onClick={() => {
@@ -73,11 +75,12 @@ const Search = () => {
           </svg>
         </button>
 
-        <div className=" w-[65%] sm:w-[40%] flex-col">
+        {/* Search Input */}
+        <div className="w-[50%] sm:w-[40%] flex-col">
           <input
-            className="relative  z-20 font-roboto py-1 px-3 sm:py-2 sm:px-6 rounded-lg w-full focus-none outline-offset-[-2px] outline-[#F5C518] "
+            className="relative z-20 font-roboto py-1 px-3 sm:py-2 sm:px-6 rounded-lg w-full focus-none outline-offset-[-2px] outline-[#F5C518] "
             type="text"
-            placeholder="Search for movies..."
+            placeholder="Search..."
             onChange={(e) => {
               setQuery(e.target.value);
             }}
@@ -122,7 +125,10 @@ const Search = () => {
             </div>
           )}
         </div>
-        <div className="ml-1 sm:ml-4">
+
+        {/* Right side: User/Login + Menu */}
+        <div className="flex items-center ml-1 sm:ml-2">
+          <UserMenu />
           <MenuButton />
         </div>
       </div>

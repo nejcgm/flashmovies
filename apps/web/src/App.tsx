@@ -27,8 +27,8 @@ const App: React.FC = () => {
           <Route path="/auth/logout" element={<LogoutPage />} />
         </Route>
         
-        <Route path="/plans" element={<AuthLayout />}>
-          <Route path="/plans" element={<PlansPage />} />
+        <Route path="/payments/plans" element={<AuthLayout />}>
+          <Route path="/payments/plans" element={<PlansPage />} />
         </Route>
         
         <Route path="/" element={<MainLayout />}>

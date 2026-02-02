@@ -125,11 +125,13 @@ const Home = () => {
             showTitle={"explore Trailers"}
           />
 
-          <div className="text-center text-xs sm:text-sm px-3 text-gray-500 mt-4 sm:mt-8">
-            Ads can be a pain, but they are our only way to maintain the server.
-            Your patience is highly appreciated and we hope our service can be
-            worth it.
-          </div>
+          {!isPro && (
+            <div className="text-center text-xs sm:text-sm px-3 text-gray-500 mt-4 sm:mt-8">
+              Ads can be a pain, but they are our only way to maintain the server.
+              Your patience is highly appreciated and we hope our service can be
+              worth it.
+            </div>
+          )}
 
           <SectionDivider title="Movies" icon="movie" />
 

@@ -74,7 +74,7 @@ const ProviderComponent = ({
   ) => {
     // If non-pro user clicks premium provider, redirect to plans page
     if (isPremium && !isPro) {
-      navigate('/plans');
+      navigate('payments/plans');
       return;
     }
 

@@ -40,10 +40,12 @@ const PlansPage: React.FC = () => {
   };
 
   const lifetimeFeatures = [
-    { text: 'Remove all ads forever', included: true },
+    { text: 'Remove all on site ads forever', included: true },
+    { text: 'Access to premium streaming servers', included: true },
     { text: 'Unlimited HD streaming', included: true },
     { text: 'Early access to new features', included: true },
     { text: 'No recurring payments', included: true },
+    { text: 'Cleaner experience', included: true },
   ];
 
   const freeFeatures = [
@@ -51,6 +53,7 @@ const PlansPage: React.FC = () => {
     { text: 'HD streaming', included: true },
     { text: 'Ad-supported viewing', included: true },
     { text: 'No ads', included: false },
+    { text: 'Access to premium streaming servers', included: false },
   ];
 
   if (loading) {
