@@ -27,6 +27,25 @@ const WatchMoviePage = () => {
     loadInfo();
   }, [movieId, type]);
 
+  const buildFullUrl = (
+    baseUrl: string,
+    isEpisodeSlugPartOfSlug: boolean,
+    season?: number,
+    episode?: number,
+    params?: string,
+  ) => {
+    let fullUrl: string;
+    if (isEpisodeSlugPartOfSlug && type === "tv") {
+      fullUrl = `${baseUrl}/${season ?? "1"}/${episode ?? "1"}${params && `?${params}`}`;
+    } else if (type === "tv") {
+      fullUrl = `${baseUrl}?season=${season ?? "1"}&episode=${episode ?? "1"}${params && `&${params}`}`;
+    } else {
+      fullUrl = `${baseUrl}?${params || ""}`;
+    }
+    console.log(fullUrl);
+    return fullUrl;
+  };
+
   return (
     <>
       {info && (
@@ -134,8 +153,7 @@ const WatchMoviePage = () => {
         <iframe
           className="w-full h-full"
           src={
-            currentProviderUrl +
-            `?season=${selectedEpisode?.season_number}&episode=${selectedEpisode?.episode_number}`
+            currentProviderUrl
           }
           referrerPolicy="origin"
           frameBorder="0"
@@ -157,7 +175,17 @@ const WatchMoviePage = () => {
         </div>
 
         <ProviderComponent
-          newProvider={setCurrentProviderUrl}
+          newProvider={(url, isEpisodeSlugPartOfSlug, params) => {
+            setCurrentProviderUrl(
+              buildFullUrl(
+                url,
+                isEpisodeSlugPartOfSlug,
+                selectedEpisode?.season_number,
+                selectedEpisode?.episode_number,
+                params,
+              )
+            );
+          }}
           title="Choose Server"
           movieId={movieId!}
           type={type!}
