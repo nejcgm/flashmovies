@@ -10,6 +10,12 @@ interface PayPalAccessToken {
   expires_in: number;
 }
 
+interface PayPalClientToken {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
 interface PayPalOrder {
   id: string;
   status: string;
@@ -73,6 +79,55 @@ export class PaymentsService {
 
     const data: PayPalAccessToken = await response.json();
     return data.access_token;
+  }
+
+   // Get a browser-safe client token for PayPal SDK v6
+  async getClientToken(): Promise<{ clientToken: string; expiresIn: number }> {
+    const clientId = this.configService.get('PAYPAL_CLIENT_ID');
+    const clientSecret = this.configService.get('PAYPAL_CLIENT_SECRET');
+    const frontendUrl = this.configService.get('FRONTEND_URL') || 'http://localhost:5173';
+
+    if (!clientId || !clientSecret) {
+      throw new InternalServerErrorException('PayPal credentials not configured');
+    }
+
+    const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+
+    // Extract domain from frontend URL
+    const url = new URL(frontendUrl);
+    const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+
+    // Build request body - only include domains for production (not localhost)
+    const bodyParams: Record<string, string> = {
+      'grant_type': 'client_credentials',
+      'response_type': 'client_token',
+    };
+
+    // Only add domains parameter for production URLs (not localhost)
+    if (!isLocalhost) {
+      bodyParams['domains[]'] = url.hostname;
+    }
+
+    const response = await fetch(`${this.paypalBaseUrl}/v1/oauth2/token`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams(bodyParams).toString(),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('PayPal client token error:', error);
+      throw new InternalServerErrorException('Failed to get PayPal client token');
+    }
+
+    const data: PayPalClientToken = await response.json();
+    return {
+      clientToken: data.access_token,
+      expiresIn: data.expires_in,
+    };
   }
 
   async getPlans() {

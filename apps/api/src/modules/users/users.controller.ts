@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -24,5 +24,14 @@ export class UsersController {
   @Get('subscription')
   async getSubscription(@CurrentUser() user: any) {
     return this.usersService.getSubscriptionStatus(user.id);
+  }
+
+  /**
+   * TEST ENDPOINT: Remove pro status from current user
+   * Use this to test the payment flow again
+   */
+  @Post('remove-pro')
+  async removePro(@CurrentUser() user: any) {
+    return this.usersService.removeProStatus(user.id);
   }
 }

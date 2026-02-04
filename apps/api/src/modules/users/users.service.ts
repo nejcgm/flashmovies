@@ -75,4 +75,37 @@ export class UsersService {
       await this.pool.query('UPDATE users SET role_id = $1 WHERE id = $2', [proRoleId, userId]);
     }
   }
+
+  /**
+   * Remove pro status from user (TEST ENDPOINT ONLY)
+   * - Downgrades user role to 'user'
+   * - Cancels active subscriptions
+   */
+  async removeProStatus(userId: number) {
+    const userRoleResult = await this.pool.query(
+      "SELECT id FROM lookup_values WHERE category = 'user_role' AND code = 'user'",
+    );
+    const userRoleId = userRoleResult.rows[0]?.id;
+
+    const cancelledStatusResult = await this.pool.query(
+      "SELECT id FROM lookup_values WHERE category = 'subscription_status' AND code = 'cancelled'",
+    );
+    const cancelledStatusId = cancelledStatusResult.rows[0]?.id;
+
+    if (userRoleId) {
+      await this.pool.query('UPDATE users SET role_id = $1 WHERE id = $2', [userRoleId, userId]);
+    }
+
+    if (cancelledStatusId) {
+      await this.pool.query(
+        `UPDATE subscriptions SET status_id = $1 
+         WHERE user_id = $2 AND status_id = (
+           SELECT id FROM lookup_values WHERE category = 'subscription_status' AND code = 'active'
+         )`,
+        [cancelledStatusId, userId],
+      );
+    }
+
+    return { message: 'Pro status removed successfully' };
+  }
 }

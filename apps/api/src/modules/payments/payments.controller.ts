@@ -14,6 +14,13 @@ export class PaymentsController {
     return this.paymentsService.getPlans();
   }
 
+  // Client token for PayPal SDK v6
+  @Get('client-token')
+  @Throttle({ short: { limit: 1, ttl: 1000 }, medium: { limit: 5, ttl: 60000 }, long: { limit: 20, ttl: 600000 } })
+  async getClientToken() {
+    return this.paymentsService.getClientToken();
+  }
+
   @Post('create-order')
   @UseGuards(JwtAuthGuard)
   @Throttle({ short: { limit: 1, ttl: 2000 }, medium: { limit: 3, ttl: 60000 }, long: { limit: 10, ttl: 600000 } })

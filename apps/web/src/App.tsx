@@ -15,6 +15,7 @@ import RegisterPage from "./pages/auth/register";
 import LogoutPage from "./pages/auth/logout";
 import AuthLayout from "./layout/AuthLayout";
 import PlansPage from "./pages/payments/plans";
+import RemoveProPage from "./pages/payments/remove-pro";
 
 const App: React.FC = () => {
   return (
@@ -27,8 +28,9 @@ const App: React.FC = () => {
           <Route path="/auth/logout" element={<LogoutPage />} />
         </Route>
         
-        <Route path="/payments/plans" element={<AuthLayout />}>
+        <Route path="/payments" element={<AuthLayout />}>
           <Route path="/payments/plans" element={<PlansPage />} />
+          <Route path="/payments/remove-pro" element={<RemoveProPage />} />
         </Route>
         
         <Route path="/" element={<MainLayout />}>
