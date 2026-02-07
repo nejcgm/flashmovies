@@ -11,6 +11,7 @@ import { convertMinutesToHoursAndMinutes } from "../utils/helpers.ts";
 import { ClickTypeEnum } from "../utils/types.ts";
 import { redirectForMovie } from "../utils/contextAdRedirect.ts";
 import { useAdTracker } from "../context/AdTrackerContext.tsx";
+import { useUser } from "../context/UserContext.tsx";
 
 interface MoreInfoProps {
   movieId: string | null;
@@ -29,6 +30,7 @@ const MoreInfo: React.FC<MoreInfoProps> = ({
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { incrementClick } = useAdTracker();
+  const { isPro } = useUser();
 
   useEffect(() => {
     const loadInfo = async () => {
@@ -140,7 +142,7 @@ const MoreInfo: React.FC<MoreInfoProps> = ({
                       <button
                         onClick={() => {
                           navigate(`/full-movie/?id=${movieId}&type=${type}`);
-                          redirectForMovie(ClickTypeEnum.MOVIE_CARD, info.title, movieId, incrementClick);
+                          redirectForMovie(ClickTypeEnum.MOVIE_CARD, info.title, movieId, incrementClick, isPro);
                         }}
                         className="mb-[32px] items-center gap-1 justify-center flex text-[12px] sm:text-[14px] font-robo text-[#5799F0] bg-[#2C2C2C]
                       hover:bg-[#30353D] px-3 sm:px-6 py-[6px] mt-[18px] rounded-full flex-1"

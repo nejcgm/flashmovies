@@ -42,7 +42,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     // Get user details
     const userResult = await this.pool.query(
-      `SELECT u.id, u.email, u.display_name, u.role_id, u.stripe_customer_id,
+      `SELECT u.id, u.email, u.display_name, u.role_id, u.paypal_payer_id,
               lr.code as role_code, ls.code as status_code
        FROM users u
        JOIN lookup_values lr ON u.role_id = lr.id
@@ -61,7 +61,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: user.email,
       displayName: user.display_name,
       role: user.role_code,
-      stripeCustomerId: user.stripe_customer_id,
+      paypalPayerId: user.paypal_payer_id,
     };
   }
 }

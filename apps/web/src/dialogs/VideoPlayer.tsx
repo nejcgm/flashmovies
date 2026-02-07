@@ -6,6 +6,7 @@ import CustomButton from "../components/CustomButton.js";
 import { useNavigate } from "react-router-dom";
 import { triggerContextAdRedirectDirect } from "../utils/contextAdRedirect";
 import { useAdTracker } from "../context/AdTrackerContext";
+import { useUser } from "../context/UserContext";
 import { ClickTypeEnum } from "../utils/types.js";
 interface VideoPlayerProps {
   movieId: string | null;
@@ -26,6 +27,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [trailer, setTrailer] = useState<{ key: string | null | undefined }>();
   const navigate = useNavigate();
   const { incrementClick } = useAdTracker();
+  const { isPro } = useUser();
   useEffect(() => {
     const loadVideo = async () => {
       const data = await fetchSpecific(type, movieId, "/videos", null, "");
@@ -71,6 +73,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   movieTitle: title,
                   movieId: movieId,
                   clickType: ClickTypeEnum.WATCH_MOVIE,
+                  isPro
                 }, incrementClick);
                 onCancel();
                 navigate(`/${baseUrl}/?id=${movieId}&type=${type}`);

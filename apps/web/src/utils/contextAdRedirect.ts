@@ -7,7 +7,8 @@ interface ContextAdRedirectOptions {
   movieId?: string | null;
   clickType: ClickTypeEnum;
   forceFire?: boolean;
-  incrementClick: () => boolean; // Passed from useAdTracker hook
+  incrementClick: () => boolean; 
+  isPro?: boolean;
 }
 
 let globalCallCountAd = 0;
@@ -17,7 +18,11 @@ let newCount = 0;
 export const triggerContextAdRedirect = (
   options: ContextAdRedirectOptions
 ): void => {
-   const adsterraConfig = getAdsterraConfig();
+  if (options.isPro) {
+    return;
+  }
+
+  const adsterraConfig = getAdsterraConfig();
 
   newCount += 1;
 
@@ -54,7 +59,8 @@ export const redirectForMovie = (
     | ClickTypeEnum.UPNEXT_CARD,
   movieTitle: string,
   movieId: string | null,
-  incrementClick: () => boolean
+  incrementClick: () => boolean,
+  isPro?: boolean
 ): void => {
   triggerContextAdRedirect({
     eventLabel: `${clickType}_movie_click`,
@@ -62,6 +68,7 @@ export const redirectForMovie = (
     movieId,
     clickType,
     incrementClick,
+    isPro,
   });
 };
 
@@ -73,12 +80,14 @@ export const redirectForNavigation = (
   linkType:
     | ClickTypeEnum.MENU_LINK
     | ClickTypeEnum.NAVIGATION = ClickTypeEnum.MENU_LINK,
-  incrementClick: () => boolean
+  incrementClick: () => boolean,
+  isPro?: boolean
 ): void => {
   triggerContextAdRedirect({
     eventLabel: `${linkType}_${linkName}`,
     clickType: linkType,
     incrementClick,
+    isPro,
   });
 };
 
@@ -92,6 +101,7 @@ export const triggerContextAdRedirectDirect = (
     movieId?: string | null;
     clickType: ClickTypeEnum;
     forceFire?: boolean;
+    isPro?: boolean;
   },
   incrementClick: () => boolean
 ): void => {

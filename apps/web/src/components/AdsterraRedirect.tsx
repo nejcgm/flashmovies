@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAdTracker } from '../context/AdTrackerContext';
 import { getAdsterraConfig } from '../config/adsterraConfig';
+import { useUser } from '../context/UserContext';
 
 declare global {
   interface Window {
@@ -16,12 +17,13 @@ const AdsterraRedirect: React.FC<AdsterraRedirectProps> = ({
   enabled = true
 }) => {
   const { incrementAffiliateClick, isAffiliateInCooldown, state } = useAdTracker();
+  const { isPro, isLoading } = useUser();
   const [isReady, setIsReady] = useState(false);
   const [localCooldownEndTime, setLocalCooldownEndTime] = useState(0);
   const adsterraConfig = getAdsterraConfig();
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || isPro || isLoading) return;
 
     const readyTimer = setTimeout(() => {
       setIsReady(true);
@@ -71,7 +73,7 @@ const AdsterraRedirect: React.FC<AdsterraRedirectProps> = ({
       clearInterval(cooldownTimer);
       document.removeEventListener('click', handleClick, true);
     };
-  }, [enabled, isReady, incrementAffiliateClick, isAffiliateInCooldown, adsterraConfig, state.affiliateClickCount, localCooldownEndTime]);
+  }, [enabled, isReady, incrementAffiliateClick, isAffiliateInCooldown, adsterraConfig, state.affiliateClickCount, localCooldownEndTime, isPro, isLoading]);
 
   return null;
 };

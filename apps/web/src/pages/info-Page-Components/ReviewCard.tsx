@@ -4,6 +4,8 @@ import Rating from "../../components/Rating";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import DOMPurify from "dompurify";
+import { useUser } from "../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 interface ReviewCardProps {
   avatar: string;
@@ -22,6 +24,8 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
 }) => {
   const ContentLength = content.length;
   const [expand, setExpand] = useState(250);
+  const { isPro } = useUser();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -44,20 +48,26 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
           <div className="text-[12px] sm:text-[16px]">
             {/* <div dangerouslySetInnerHTML={{ __html: content.slice(0, expand)}}/> */}
             <ReactMarkdown rehypePlugins={[rehypeRaw]}>{DOMPurify.sanitize(content.slice(0, expand))}</ReactMarkdown>
-            <button
-              onClick={() => {
-                setExpand((prevValue) =>
-                  prevValue === 250 ? ContentLength : 250
-                );
-              }}
-              className="text-[#BBBBBB]"
-            >
-              {ContentLength < 250
-                ? " "
-                : expand == 250
-                ? " ...Read More"
-                : " ...View Less"}
-            </button>
+            {ContentLength > 250 && (
+              <button
+                onClick={() => {
+                  if (isPro) {
+                    setExpand((prevValue) =>
+                      prevValue === 250 ? ContentLength : 250
+                    );
+                  } else {
+                    navigate('/payments/plans');
+                  }
+                }}
+                className={`${isPro ? 'text-[#BBBBBB]' : 'text-[#F5C518]'}`}
+              >
+                {expand === 250
+                  ? isPro
+                    ? " ...Read More"
+                    : " ...Read More (Pro)"
+                  : " ...View Less"}
+              </button>
+            )}
           </div>
         </div>
       </div>
