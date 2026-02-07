@@ -64,7 +64,10 @@ interface GuestPaymentSessionOptions {
 
 interface GuestPaymentSession {
   start: (
-    options: { presentationMode: 'auto' | 'popup' | 'modal' | 'redirect' },
+    options: { 
+      presentationMode: 'auto' | 'popup' | 'modal' | 'redirect';
+      targetElement?: Element;
+    },
     orderPromise: Promise<{ orderId: string }>
   ) => Promise<void>;
 }
@@ -116,6 +119,7 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
   disabled = false,
 }) => {
   const googlePayContainerRef = useRef<HTMLDivElement>(null);
+  const cardButtonContainerRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -126,7 +130,6 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
   
   // Credit Card state
   const [cardReady, setCardReady] = useState(false);
-  const [cardSession, setCardSession] = useState<GuestPaymentSession | null>(null);
   const [cardProcessing, setCardProcessing] = useState(false);
   
   // Google Pay state
@@ -140,6 +143,8 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
   const googlePaySessionRef = useRef<GooglePaySession | null>(null);
   const googlePayConfigRef = useRef<GooglePayConfig | null>(null);
   const paymentsClientRef = useRef<GooglePaymentsClient | null>(null);
+  const cardSessionRef = useRef<GuestPaymentSession | null>(null);
+  const createOrderRef = useRef<() => Promise<{ orderId: string }>>(() => Promise.resolve({ orderId: '' }));
   
   useEffect(() => {
     onSuccessRef.current = onSuccess;
@@ -151,6 +156,11 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
     const response = await createPayPalOrder(planCode);
     return { orderId: response.orderId };
   }, [planCode]);
+
+  // Keep createOrderRef updated
+  useEffect(() => {
+    createOrderRef.current = createOrder;
+  }, [createOrder]);
 
   // Initialize payment methods
   useEffect(() => {
@@ -250,7 +260,12 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
         }
 
         // Setup Credit/Debit Card (Guest Checkout)
-        if (paymentMethods.isEligible('card')) {
+        
+        try {
+          if (typeof sdkInstance.createPayPalGuestOneTimePaymentSession !== 'function') {
+            throw new Error('Guest payments not available');
+          }
+          
           const guestSession = sdkInstance.createPayPalGuestOneTimePaymentSession({
             onApprove: async (data) => {
               try {
@@ -276,14 +291,16 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
             },
             onWarn: (data) => {
               console.warn('Card payment warning:', data.message);
-              // Don't show error to user for warnings - the flow may still continue
             },
           });
 
+          cardSessionRef.current = guestSession;
+
           if (mounted) {
-            setCardSession(guestSession);
             setCardReady(true);
           }
+        } catch (err) {
+          console.error('Guest card payments error:', err);
         }
 
         // Setup Google Pay
@@ -352,24 +369,68 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
     }
   };
 
-  // Handle Credit/Debit Card click
-  const handleCardClick = async () => {
-    if (!cardSession || cardProcessing || disabled) return;
-
-    try {
-      setCardProcessing(true);
-      await cardSession.start(
-        { presentationMode: 'auto' },
-        createOrder()
-      );
-    } catch (err) {
-      const error = err as Error;
-      if (!error.message?.includes('cancel')) {
-        onError(error.message || 'Card payment failed');
-      }
-      setCardProcessing(false);
+  // Render the PayPal card button web component when ready
+  const cardProcessingRef = useRef(false);
+  const disabledRef = useRef(disabled);
+  
+  useEffect(() => {
+    cardProcessingRef.current = cardProcessing;
+    disabledRef.current = disabled;
+  }, [cardProcessing, disabled]);
+  
+  useEffect(() => {
+    
+    if (loading || !cardReady || !cardSessionRef.current) {
+      return;
     }
-  };
+
+    const timeoutId = setTimeout(() => {
+      const container = cardButtonContainerRef.current;
+      if (!container) {
+        return;
+      }
+
+      if (container.querySelector('paypal-basic-card-button')) {
+        return;
+      }
+
+      container.innerHTML = '';
+
+      const cardContainer = document.createElement('paypal-basic-card-container');
+      const cardButton = document.createElement('paypal-basic-card-button');
+      cardButton.id = 'paypal-basic-card-button';
+      
+      cardContainer.style.width = '100%';
+      cardContainer.style.display = 'block';
+      
+      // Add click handler to start the payment session
+      cardButton.addEventListener('click', async () => {
+        if (cardProcessingRef.current || disabledRef.current || !cardSessionRef.current) return;
+        
+        try {
+          await cardSessionRef.current.start(
+            { 
+              presentationMode: 'auto',
+              targetElement: cardButton,
+            },
+            createOrderRef.current()
+          );
+        } catch (err) {
+          const error = err as Error;
+          if (!error.message?.includes('cancel')) {
+            onErrorRef.current(error.message || 'Card payment failed');
+          }
+        }
+      });
+
+      cardContainer.appendChild(cardButton);
+      container.appendChild(cardContainer);
+    }, 50);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [cardReady, loading]);
 
   // Handle Google Pay click
   const handleGooglePayClick = async () => {
@@ -436,7 +497,6 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
       setGooglePayProcessing(false);
     }
   };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-4">
@@ -493,29 +553,19 @@ const PaymentButtons: React.FC<PaymentButtonsProps> = ({
         </button>
       )}
 
-      {/* Credit/Debit Card Button */}
-      {cardReady && (
-        <button
-          onClick={handleCardClick}
-          disabled={isProcessing}
-          className="w-full py-3 px-4 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        >
-          {cardProcessing ? (
-            <>
-              <Spinner />
-              <span>Processing...</span>
-            </>
-          ) : (
-            <>
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                <line x1="1" y1="10" x2="23" y2="10"/>
-              </svg>
-              <span>Credit or Debit Card</span>
-            </>
-          )}
-        </button>
-      )}
+      {/* Credit/Debit Card Button - PayPal Web Component */}
+      <div className={`relative ${cardReady ? '' : 'hidden'}`}>
+        {cardProcessing && (
+          <div className="absolute inset-0 bg-gray-800/80 rounded-lg flex items-center justify-center z-10">
+            <Spinner />
+            <span className="ml-2 text-white">Processing...</span>
+          </div>
+        )}
+        <div 
+          ref={cardButtonContainerRef} 
+          className={`w-full ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
+        />
+      </div>
 
       {/* Google Pay Button */}
       {googlePayReady && (
