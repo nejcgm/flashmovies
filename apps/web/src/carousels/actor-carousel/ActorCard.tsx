@@ -4,6 +4,7 @@ import ChartIcon from "../../assets/chart.png";
 import { useNavigate } from "react-router-dom";
 import { triggerContextAdRedirectDirect } from '../../utils/contextAdRedirect';
 import { useAdTracker } from '../../context/AdTrackerContext';
+import { useUser } from '../../context/UserContext';
 import { ClickTypeEnum } from '../../utils/types';
 
 const PersonPlaceholder = "/dark-mode-avatar-placeholder.png";
@@ -27,13 +28,15 @@ const ActorCard: React.FC<ActorCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const { incrementClick } = useAdTracker();
+  const { isPro } = useUser();
   
   const handleActorClick = () => {
     triggerContextAdRedirectDirect({
       eventLabel: 'actor_card_click',
       movieTitle: name,
       movieId: actorId,
-      clickType: ClickTypeEnum.MOVIE_CARD
+      clickType: ClickTypeEnum.MOVIE_CARD,
+      isPro
     }, incrementClick);
     navigate(`/movie-info/?id=${actorId}&type=${media}`);
   };

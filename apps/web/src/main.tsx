@@ -6,8 +6,9 @@ import App from './App';
 import AdsterraRedirect from './components/AdsterraRedirect';
 import { getAdsterraConfig } from './config/adsterraConfig';
 import { AdTrackerProvider } from './context/AdTrackerContext';
+import { UserProvider } from './context/UserContext';
 import { HelmetProvider } from 'react-helmet-async';
-import { Snowfall } from 'react-snowfall';
+//import { Snowfall } from 'react-snowfall';
 //import PopupScriptManager from './components/PopupScriptManager';
 
 function Root() {
@@ -15,18 +16,20 @@ function Root() {
   
   return (
     <HelmetProvider>
+    <UserProvider>
     <AdTrackerProvider>
-      <Snowfall
+      {/* <Snowfall
       snowflakeCount={100}      
       speed={[0.9, 1.7]}        
       radius={[0.85, 1.25]}       
       opacity={[0.13, 0.3]}     
       wind={[-0.1, 0.4]}        
-    />
+    /> */}
       <AdsterraRedirect enabled={adsterraConfig.enabled} />
       <App />
       {/* <PopupScriptManager /> */}
     </AdTrackerProvider>
+    </UserProvider>
     </HelmetProvider>
   );
 }

@@ -5,6 +5,7 @@ import Rating from "../../components/Rating";
 import VoteCount from "../../components/VoteCount";
 import { redirectForMovie } from '../../utils/contextAdRedirect';
 import { useAdTracker } from '../../context/AdTrackerContext';
+import { useUser } from '../../context/UserContext';
 import { ClickTypeEnum } from '../../utils/types';
 
 interface HeroCardProps {
@@ -33,9 +34,10 @@ const HeroCard: React.FC<HeroCardProps> = ({
   const [displayInfo, setDisplayInfo] = useState(false);
   const [trailer, setTrailer] = useState(false);
   const { incrementClick } = useAdTracker();
+  const { isPro } = useUser();
 
   const handlePlayClick = () => {
-    redirectForMovie(ClickTypeEnum.HERO_CARD, title, movieId, incrementClick);
+    redirectForMovie(ClickTypeEnum.HERO_CARD, title, movieId, incrementClick, isPro);
 
     setTrailer(true);
     timerActive();
