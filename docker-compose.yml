@@ -2,24 +2,24 @@ services:
   # ===========================================
   # Database - Always needed
   # ===========================================
-  postgres:
-    image: postgres:15-alpine
-    container_name: flashmovies-db
-    environment:
-      POSTGRES_DB: flashmovies_db
-      POSTGRES_USER: flashmovies_user
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./apps/api/migrations:/docker-entrypoint-initdb.d:ro
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U flashmovies_user -d flashmovies_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: flashmovies-db
+  #   environment:
+  #     POSTGRES_DB: flashmovies_db
+  #     POSTGRES_USER: flashmovies_user
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #     - ./apps/api/migrations:/docker-entrypoint-initdb.d:ro
+  #   ports:
+  #     - "5432:5432"
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U flashmovies_user -d flashmovies_db"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   restart: unless-stopped
 
   # ===========================================
   # API - Only for production/staging
@@ -30,8 +30,8 @@ services:
       context: ./apps/api
       dockerfile: Dockerfile
     container_name: flashmovies-api
-    profiles:
-      - production
+    # profiles:
+    #   - production
     environment:
       PORT: 3000
       NODE_ENV: production
