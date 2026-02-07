@@ -10,6 +10,7 @@ import Rating from "../../components/Rating";
 import { useNavigate } from "react-router-dom";
 import { triggerContextAdRedirectDirect } from '../../utils/contextAdRedirect';
 import { useAdTracker } from '../../context/AdTrackerContext';
+import { useUser } from '../../context/UserContext';
 import { ClickTypeEnum } from '../../utils/types';
 //import { MediaType } from "../../functions/Interfaces.ts";
 
@@ -42,6 +43,7 @@ const ListItem: React.FC<ListItemProps> = ({
   const [trailer, setTrailer] = useState<boolean>(false);
   const navigate = useNavigate();
   const { incrementClick } = useAdTracker();
+  const { isPro } = useUser();
 
   return (
     <>
@@ -74,7 +76,8 @@ const ListItem: React.FC<ListItemProps> = ({
               eventLabel: 'list_item_poster_click',
               movieTitle: title,
               movieId: movieId,
-              clickType: ClickTypeEnum.MOVIE_CARD
+              clickType: ClickTypeEnum.MOVIE_CARD,
+              isPro
             }, incrementClick);
             setTrailer(true);
           }}
@@ -97,7 +100,8 @@ const ListItem: React.FC<ListItemProps> = ({
               eventLabel: 'list_item_navigation_click',
               movieTitle: title,
               movieId: movieId,
-              clickType: ClickTypeEnum.MOVIE_CARD
+              clickType: ClickTypeEnum.MOVIE_CARD,
+              isPro
             }, incrementClick);
             navigate(`/movie-info/?id=${movieId}&type=${type}`);
             onCancel();

@@ -25,10 +25,22 @@ export interface CaptureOrderResponse {
   orderId: string;
 }
 
+export interface ClientTokenResponse {
+  clientToken: string;
+  expiresIn: number;
+}
+
 // Get all available plans (public endpoint)
 export const getPlans = async (): Promise<Plan[]> => {
   const response = await axios.get<Plan[]>(
     `${API_BASE_URL}${API_PREFIX}/public/payments/plans`
+  );
+  return response.data;
+};
+
+export const getPayPalClientToken = async (): Promise<ClientTokenResponse> => {
+  const response = await axios.get<ClientTokenResponse>(
+    `${API_BASE_URL}${API_PREFIX}/public/payments/client-token`
   );
   return response.data;
 };
@@ -51,7 +63,7 @@ export const capturePayPalOrder = async (orderId: string): Promise<CaptureOrderR
   return response.data;
 };
 
-// Get PayPal Client ID for SDK
-export const getPayPalClientId = (): string => {
-  return import.meta.env.VITE_PAYPAL_CLIENT_ID || '';
+// Check if we're in sandbox mode
+export const isPayPalSandbox = (): boolean => {
+  return import.meta.env.VITE_PAYPAL_MODE !== 'live';
 };

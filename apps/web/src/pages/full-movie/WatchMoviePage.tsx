@@ -42,7 +42,6 @@ const WatchMoviePage = () => {
     } else {
       fullUrl = `${baseUrl}?${params || ""}`;
     }
-    console.log(fullUrl);
     return fullUrl;
   };
 
