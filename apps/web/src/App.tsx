@@ -9,6 +9,7 @@ import MainLayout from "./layout/MainLayout";
 import Analytics from "./SEO/Analytics";
 import ExoClickPlayer from "./pages/adVideoPlayer";
 import TermsAndConditionsPage from "./pages/footer-pages/TermsAndConditionsPage";
+import ProPlanTermsConditionsPage from "./pages/footer-pages/ProPlanTermsConditionsPage";
 import FAQPage from "./pages/footer-pages/FAQ";
 import LoginPage from "./pages/auth/login";
 import RegisterPage from "./pages/auth/register";
@@ -40,6 +41,7 @@ const App: React.FC = () => {
           <Route path="/list-items" element={<List />} />
           <Route path="/ad-video-player" element={<ExoClickPlayer/>} />
           <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
+          <Route path="/pro-plan-terms-and-conditions" element={<ProPlanTermsConditionsPage />} />
           <Route path="/frequently-asked-questions" element={<FAQPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>

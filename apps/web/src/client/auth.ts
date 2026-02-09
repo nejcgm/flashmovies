@@ -90,7 +90,7 @@ authAxios.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       clearAuthData();
-      window.location.href = '/login';
+      window.location.href = '/auth/login';
     }
     return Promise.reject(error);
   }
