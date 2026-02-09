@@ -1,133 +1,28 @@
-import { Injectable, Inject, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Pool } from 'pg';
+import Stripe from 'stripe';
 import { DATABASE_POOL } from '../../config/database.module';
 import { UsersService } from '../users/users.service';
 
-interface PayPalAccessToken {
-  access_token: string;
-  token_type: string;
-  expires_in: number;
-}
-
-interface PayPalClientToken {
-  access_token: string;
-  token_type: string;
-  expires_in: number;
-}
-
-interface PayPalOrder {
-  id: string;
-  status: string;
-  purchase_units: Array<{
-    custom_id?: string;
-    payments?: {
-      captures?: Array<{
-        id: string;
-        status: string;
-        custom_id?: string;
-        amount: {
-          currency_code: string;
-          value: string;
-        };
-      }>;
-    };
-  }>;
-  payer?: {
-    payer_id: string;
-    email_address: string;
-  };
-}
-
 @Injectable()
 export class PaymentsService {
-  private readonly paypalBaseUrl: string;
+  private readonly stripe: Stripe;
+  private readonly logger = new Logger(PaymentsService.name);
 
   constructor(
     @Inject(DATABASE_POOL) private readonly pool: Pool,
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
   ) {
-    const isProduction = this.configService.get('PAYPAL_MODE') === 'live';
-    this.paypalBaseUrl = isProduction
-      ? 'https://api-m.paypal.com'
-      : 'https://api-m.sandbox.paypal.com';
-  }
-
-  private async getPayPalAccessToken(): Promise<string> {
-    const clientId = this.configService.get('PAYPAL_CLIENT_ID');
-    const clientSecret = this.configService.get('PAYPAL_CLIENT_SECRET');
-
-    if (!clientId || !clientSecret) {
-      throw new InternalServerErrorException('PayPal credentials not configured');
+    const stripeSecretKey = this.configService.get('STRIPE_SECRET_KEY');
+    if (!stripeSecretKey) {
+      throw new InternalServerErrorException('Stripe secret key not configured');
     }
-
-    const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-
-    const response = await fetch(`${this.paypalBaseUrl}/v1/oauth2/token`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: 'grant_type=client_credentials',
+    this.stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2026-01-28.clover',
     });
-
-    if (!response.ok) {
-      throw new InternalServerErrorException('Failed to get PayPal access token');
-    }
-
-    const data: PayPalAccessToken = await response.json();
-    return data.access_token;
-  }
-
-   // Get a browser-safe client token for PayPal SDK v6
-  async getClientToken(): Promise<{ clientToken: string; expiresIn: number }> {
-    const clientId = this.configService.get('PAYPAL_CLIENT_ID');
-    const clientSecret = this.configService.get('PAYPAL_CLIENT_SECRET');
-    const frontendUrl = this.configService.get('FRONTEND_URL') || 'http://localhost:5173';
-
-    if (!clientId || !clientSecret) {
-      throw new InternalServerErrorException('PayPal credentials not configured');
-    }
-
-    const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-
-    // Extract domain from frontend URL
-    const url = new URL(frontendUrl);
-    const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
-
-    // Build request body - only include domains for production (not localhost)
-    const bodyParams: Record<string, string> = {
-      'grant_type': 'client_credentials',
-      'response_type': 'client_token',
-    };
-
-    // Only add domains parameter for production URLs (not localhost)
-    if (!isLocalhost) {
-      bodyParams['domains[]'] = url.hostname;
-    }
-
-    const response = await fetch(`${this.paypalBaseUrl}/v1/oauth2/token`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams(bodyParams).toString(),
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('PayPal client token error:', error);
-      throw new InternalServerErrorException('Failed to get PayPal client token');
-    }
-
-    const data: PayPalClientToken = await response.json();
-    return {
-      clientToken: data.access_token,
-      expiresIn: data.expires_in,
-    };
+    this.logger.log('Stripe initialized successfully');
   }
 
   async getPlans() {
@@ -155,8 +50,7 @@ export class PaymentsService {
     }));
   }
 
-  async createPayPalOrder(userId: number, planCode: string) {
-    // Get plan
+  async createCheckoutSession(userId: number, planCode: string) {
     const planResult = await this.pool.query(
       'SELECT * FROM plans WHERE code = $1 AND is_active = TRUE',
       [planCode],
@@ -172,216 +66,226 @@ export class PaymentsService {
       throw new BadRequestException('Cannot checkout free plan');
     }
 
-    const accessToken = await this.getPayPalAccessToken();
-    const priceInDollars = (plan.price_cents / 100).toFixed(2);
+    const userResult = await this.pool.query(
+      'SELECT email FROM users WHERE id = $1',
+      [userId],
+    );
 
-    const orderPayload = {
-      intent: 'CAPTURE',
-      purchase_units: [
+    if (userResult.rows.length === 0) {
+      throw new BadRequestException('User not found');
+    }
+
+    const user = userResult.rows[0];
+
+    const session = await this.stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
         {
-          reference_id: `user_${userId}_plan_${plan.id}`,
-          description: plan.name,
-          custom_id: JSON.stringify({
-            userId,
-            planId: plan.id,
-            planCode: plan.code,
-          }),
-          amount: {
-            currency_code: plan.currency,
-            value: priceInDollars,
+          price_data: {
+            currency: plan.currency.toLowerCase(),
+            unit_amount: plan.price_cents,
+            product_data: {
+              name: plan.name,
+              description: plan.description || 'FlashMovies Pro Plan',
+            },
           },
+          quantity: 1,
         },
       ],
-      application_context: {
-        brand_name: 'FlashMovies',
-        landing_page: 'NO_PREFERENCE',
-        user_action: 'PAY_NOW',
-        return_url: `${this.configService.get('FRONTEND_URL')}/payment/success`,
-        cancel_url: `${this.configService.get('FRONTEND_URL')}/payment/cancel`,
+      mode: 'payment',
+      success_url: `${this.configService.get('FRONTEND_URL')}/payments/plans?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${this.configService.get('FRONTEND_URL')}/payments/plans`,
+      customer_email: user.email,
+      metadata: {
+        userId: userId.toString(),
+        planId: plan.id.toString(),
+        planCode: plan.code,
       },
-    };
-
-    const response = await fetch(`${this.paypalBaseUrl}/v2/checkout/orders`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(orderPayload),
     });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('PayPal order creation failed:', error);
-      throw new InternalServerErrorException('Failed to create PayPal order');
-    }
-
-    const order: PayPalOrder = await response.json();
-
-    // Store pending order in database
-    await this.pool.query(
-      `INSERT INTO pending_paypal_orders (paypal_order_id, user_id, plan_id)
-       VALUES ($1, $2, $3)
-       ON CONFLICT (paypal_order_id) DO UPDATE SET user_id = $2, plan_id = $3`,
-      [order.id, userId, plan.id],
-    );
 
     return {
-      orderId: order.id,
-      status: order.status,
+      sessionId: session.id,
+      url: session.url,
     };
   }
 
-  async capturePayPalOrder(orderId: string, userId: number) {
-    // Get plan info from pending order
-    const pendingOrderResult = await this.pool.query(
-      'SELECT plan_id FROM pending_paypal_orders WHERE paypal_order_id = $1 AND user_id = $2',
-      [orderId, userId],
-    );
-
-    if (pendingOrderResult.rows.length === 0) {
-      throw new BadRequestException('Order not found or does not belong to user');
+  async handleWebhook(signature: string, rawBody: Buffer) {
+    const webhookSecret = this.configService.get('STRIPE_WEBHOOK_SECRET');
+    
+    if (!webhookSecret) {
+      throw new InternalServerErrorException('Stripe webhook secret not configured');
     }
 
-    const planId = pendingOrderResult.rows[0].plan_id;
-    const accessToken = await this.getPayPalAccessToken();
+    let event: Stripe.Event;
 
-    const response = await fetch(`${this.paypalBaseUrl}/v2/checkout/orders/${orderId}/capture`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('PayPal capture failed:', error);
-      throw new BadRequestException('Failed to capture PayPal payment');
+    try {
+      event = this.stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
+    } catch (err) {
+      this.logger.error(`Webhook signature verification failed: ${err.message}`);
+      throw new BadRequestException(`Webhook Error: ${err.message}`);
     }
 
-    const order: PayPalOrder = await response.json();
+    this.logger.log(`Webhook event received: ${event.type}`);
 
-    if (order.status === 'COMPLETED') {
-      await this.handleSuccessfulPayment(order, userId, planId);
-
-      // Clean up pending order after successful payment
-      await this.pool.query(
-        'DELETE FROM pending_paypal_orders WHERE paypal_order_id = $1',
-        [orderId],
-      );
-    }
-
-    return {
-      status: order.status,
-      orderId: order.id,
-    };
-  }
-
-  private async handleSuccessfulPayment(order: PayPalOrder, userId: number, planId: number) {
-    // Get capture details from PayPal response
-    const capture = order.purchase_units?.[0]?.payments?.captures?.[0];
-    const captureId = capture?.id;
-    const amountCents = capture ? Math.round(parseFloat(capture.amount.value) * 100) : 0;
-    const currency = capture?.amount.currency_code || 'USD';
-
-    // Update user's PayPal payer ID if available
-    if (order.payer?.payer_id) {
-      await this.usersService.updatePayPalPayerId(userId, order.payer.payer_id);
-    }
-
-    // Get active subscription status
-    const activeStatusResult = await this.pool.query(
-      "SELECT id FROM lookup_values WHERE category = 'subscription_status' AND code = 'active'",
-    );
-    const activeStatusId = activeStatusResult.rows[0]?.id || 1;
-
-    // Create subscription record (lifetime - no expiry)
-    await this.pool.query(
-      `INSERT INTO subscriptions (user_id, plan_id, paypal_order_id, status_id, is_lifetime, expires_at)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
-      [userId, planId, order.id, activeStatusId, true, null],
-    );
-
-    // Record payment
-    const succeededStatusResult = await this.pool.query(
-      "SELECT id FROM lookup_values WHERE category = 'payment_status' AND code = 'succeeded'",
-    );
-    const succeededStatusId = succeededStatusResult.rows[0]?.id || 1;
-
-    await this.pool.query(
-      `INSERT INTO payments (user_id, paypal_capture_id, amount_cents, currency, status_id)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [userId, captureId, amountCents, currency, succeededStatusId],
-    );
-
-    // Upgrade user role to pro
-    await this.usersService.upgradeToProRole(userId);
-  }
-
-  async handleWebhook(headers: Record<string, string>, body: string) {
-    const webhookId = this.configService.get('PAYPAL_WEBHOOK_ID');
-    const accessToken = await this.getPayPalAccessToken();
-
-    // Verify webhook signature
-    const verifyPayload = {
-      auth_algo: headers['paypal-auth-algo'],
-      cert_url: headers['paypal-cert-url'],
-      transmission_id: headers['paypal-transmission-id'],
-      transmission_sig: headers['paypal-transmission-sig'],
-      transmission_time: headers['paypal-transmission-time'],
-      webhook_id: webhookId,
-      webhook_event: JSON.parse(body),
-    };
-
-    const verifyResponse = await fetch(`${this.paypalBaseUrl}/v1/notifications/verify-webhook-signature`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(verifyPayload),
-    });
-
-    if (!verifyResponse.ok) {
-      throw new BadRequestException('Webhook verification failed');
-    }
-
-    const verifyResult = await verifyResponse.json();
-    if (verifyResult.verification_status !== 'SUCCESS') {
-      throw new BadRequestException('Invalid webhook signature');
-    }
-
-    const event = JSON.parse(body);
-
-    // Handle different webhook events
-    switch (event.event_type) {
-      case 'PAYMENT.CAPTURE.COMPLETED':
-        // Payment was captured successfully - already handled in capturePayPalOrder
-        console.log('Payment capture completed:', event.resource.id);
+    switch (event.type) {
+      case 'checkout.session.completed':
+        await this.handleCheckoutSessionCompleted(event.data.object as Stripe.Checkout.Session);
         break;
-      case 'PAYMENT.CAPTURE.REFUNDED':
-        await this.handleRefund(event.resource);
+      case 'charge.refunded':
+        await this.handleRefund(event.data.object as Stripe.Charge);
+        break;
+      case 'payment_intent.succeeded':
+        this.logger.log(`Payment succeeded: ${event.data.object.id}`);
+        break;
+      case 'payment_intent.payment_failed':
+        this.logger.warn(`Payment failed: ${event.data.object.id}`);
         break;
       default:
-        console.log('Unhandled webhook event:', event.event_type);
+        this.logger.debug(`Unhandled event type: ${event.type}`);
     }
 
     return { received: true };
   }
 
-  private async handleRefund(resource: { id: string; amount: { value: string } }) {
-    // Mark payment as refunded
-    const refundedStatusResult = await this.pool.query(
-      "SELECT id FROM lookup_values WHERE category = 'payment_status' AND code = 'refunded'",
-    );
-    const refundedStatusId = refundedStatusResult.rows[0]?.id || 4;
+  private async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+    this.logger.log(`Processing checkout session: ${session.id}`);
 
-    await this.pool.query(
-      'UPDATE payments SET status_id = $1 WHERE paypal_capture_id = $2',
-      [refundedStatusId, resource.id],
-    );
+    const { userId, planId, planCode } = session.metadata || {};
 
-    console.log(`Payment ${resource.id} marked as refunded`);
+    if (!userId || !planId) {
+      if (session.customer_email) {
+        const userResult = await this.pool.query(
+          'SELECT id FROM users WHERE email = $1',
+          [session.customer_email],
+        );
+        
+        if (userResult.rows.length > 0) {
+          const foundUserId = userResult.rows[0].id;
+          const planResult = await this.pool.query(
+            'SELECT id FROM plans WHERE code = $1',
+            [planCode || 'pro_lifetime'],
+          );
+          
+          if (planResult.rows.length > 0) {
+            await this.grantProAccess(foundUserId, planResult.rows[0].id, session);
+            return;
+          }
+        }
+      }
+      
+      this.logger.error(`Cannot process checkout: missing user/plan metadata for session ${session.id}`);
+      return;
+    }
+
+    await this.grantProAccess(parseInt(userId), parseInt(planId), session);
+  }
+
+  private async grantProAccess(userId: number, planId: number, session: Stripe.Checkout.Session) {
+    try {
+      const existingSubResult = await this.pool.query(
+        'SELECT id FROM subscriptions WHERE stripe_checkout_session_id = $1',
+        [session.id],
+      );
+
+      if (existingSubResult.rows.length > 0) {
+        this.logger.log(`Subscription already exists for session ${session.id}`);
+        return;
+      }
+
+      const activeStatusResult = await this.pool.query(
+        "SELECT id FROM lookup_values WHERE category = 'subscription_status' AND code = 'active'",
+      );
+      const activeStatusId = activeStatusResult.rows[0]?.id || 1;
+
+      await this.pool.query(
+        `INSERT INTO subscriptions (user_id, plan_id, stripe_checkout_session_id, status_id, is_lifetime, expires_at)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [userId, planId, session.id, activeStatusId, true, null],
+      );
+
+      const succeededStatusResult = await this.pool.query(
+        "SELECT id FROM lookup_values WHERE category = 'payment_status' AND code = 'succeeded'",
+      );
+      const succeededStatusId = succeededStatusResult.rows[0]?.id || 1;
+
+      const amountCents = session.amount_total || 0;
+      const currency = (session.currency || 'usd').toUpperCase();
+      const paymentIntentId = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id;
+
+      await this.pool.query(
+        `INSERT INTO payments (user_id, stripe_payment_intent_id, amount_cents, currency, status_id)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [userId, paymentIntentId, amountCents, currency, succeededStatusId],
+      );
+
+      if (session.customer) {
+        const customerId = typeof session.customer === 'string' ? session.customer : session.customer.id;
+        await this.pool.query(
+          'UPDATE users SET stripe_customer_id = $1 WHERE id = $2',
+          [customerId, userId],
+        );
+      }
+
+      await this.usersService.upgradeToProRole(userId);
+
+      this.logger.log(`Pro access granted to user ${userId}`);
+    } catch (error) {
+      this.logger.error(`Failed to grant Pro access: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  private async handleRefund(charge: Stripe.Charge) {
+    try {
+      this.logger.log(`Processing refund for charge: ${charge.id}`);
+
+      const paymentIntentId = typeof charge.payment_intent === 'string' ? charge.payment_intent : charge.payment_intent?.id;
+
+      if (!paymentIntentId) {
+        this.logger.warn(`No payment intent ID found for refund on charge ${charge.id}`);
+        return;
+      }
+
+      const refundedStatusResult = await this.pool.query(
+        "SELECT id FROM lookup_values WHERE category = 'payment_status' AND code = 'refunded'",
+      );
+      const refundedStatusId = refundedStatusResult.rows[0]?.id || 4;
+
+      const paymentResult = await this.pool.query(
+        'UPDATE payments SET status_id = $1 WHERE stripe_payment_intent_id = $2 RETURNING user_id',
+        [refundedStatusId, paymentIntentId],
+      );
+
+      if (paymentResult.rows.length === 0) {
+        this.logger.warn(`Payment not found for payment intent ${paymentIntentId}`);
+        return;
+      }
+
+      const userId = paymentResult.rows[0].user_id;
+
+      const cancelledStatusResult = await this.pool.query(
+        "SELECT id FROM lookup_values WHERE category = 'subscription_status' AND code = 'cancelled'",
+      );
+      const cancelledStatusId = cancelledStatusResult.rows[0]?.id;
+
+      const activeStatusResult = await this.pool.query(
+        "SELECT id FROM lookup_values WHERE category = 'subscription_status' AND code = 'active'",
+      );
+      const activeStatusId = activeStatusResult.rows[0]?.id;
+
+      if (cancelledStatusId && activeStatusId) {
+        await this.pool.query(
+          'UPDATE subscriptions SET status_id = $1 WHERE user_id = $2 AND status_id = $3',
+          [cancelledStatusId, userId, activeStatusId],
+        );
+      }
+
+      await this.usersService.downgradeFromProRole(userId);
+
+      this.logger.log(`Refund processed: Payment ${paymentIntentId} refunded, Pro access revoked for user ${userId}`);
+    } catch (error) {
+      this.logger.error(`Failed to process refund: ${error.message}`, error.stack);
+      throw error;
+    }
   }
 }
