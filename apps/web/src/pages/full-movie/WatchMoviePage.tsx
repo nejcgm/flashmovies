@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchSpecific } from "../../utils/fetching.js";
 import BackButton from "../../components/BackButton";
 import ShareButton from "../../components/ShareButton.js";
@@ -17,8 +17,13 @@ const WatchMoviePage = () => {
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
   const movieId = searchParams.get("id");
   const type = searchParams.get("type");
+  const navigate = useNavigate();
   useEffect(() => {
     const loadInfo = async () => {
+      if (movieId === "1439112" && type === "movie") {
+        navigate("/404");
+        return;
+      }
       const data = await fetchSpecific(type, movieId, "details", null, "");
       if (data) {
         setInfo(data);

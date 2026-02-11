@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { createCheckoutSession } from '../../client/payments';
+import React, { useState } from "react";
+import { createCheckoutSession } from "../../client/payments";
 
 interface StripeBuyButtonProps {
   className?: string;
@@ -7,8 +7,8 @@ interface StripeBuyButtonProps {
 }
 
 export default function StripeBuyButton({
-  className = '',
-  planCode = 'pro_lifetime',
+  className = "",
+  planCode = "pro_lifetime",
 }: StripeBuyButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,12 +17,12 @@ export default function StripeBuyButton({
     try {
       setLoading(true);
       setError(null);
-      
+
       const { url } = await createCheckoutSession(planCode);
       window.location.href = url;
     } catch (err) {
-      console.error('Checkout error:', err);
-      setError('Failed to start checkout. Please try again.');
+      console.error("Checkout error:", err);
+      setError("Failed to start checkout. Please try again.");
       setLoading(false);
     }
   };
@@ -53,7 +53,7 @@ export default function StripeBuyButton({
                    font-semibold rounded-lg text-center transition-all duration-300
                    disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? 'Starting checkout...' : 'Get Pro'}
+        {loading ? "Starting checkout..." : "Get Pro"}
       </button>
     </div>
   );

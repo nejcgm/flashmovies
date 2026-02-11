@@ -96,7 +96,7 @@ const Carousel: React.FC<CarouserProps> = ({
           className="flex gap-4 relative w-full overflow-x-auto carousel scrollbar-hide"
           ref={scrollContainer}
         >
-          {movies
+          {movies.filter((item: DataInfoProps) => item.id != "1439112")
             ?.slice(0, cardCount)
             .map((item: DataInfoProps, index: number) => (
               <MovieCard

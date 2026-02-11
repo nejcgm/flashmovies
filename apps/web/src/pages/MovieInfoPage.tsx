@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchSpecific } from "../utils/fetching.js";
 import MediaComponent from "./info-Page-Components/MediaComponent.jsx";
 import Carousel from "../carousels/classic-carousel/Carousel";
@@ -15,7 +15,8 @@ import BreadcrumbSchema from "../SEO/BreadcrumbSchema.tsx";
 import { DataInfoProps } from "../utils/Interfaces.ts";
 import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
 
-const MovieInfoPage = () => {
+  const MovieInfoPage = () => {
+  const navigate = useNavigate();
   const [info, setInfo] = useState<DataInfoProps>();
   const [relatedMovies, setRelatedMovies] = useState<[]>([]);
   const [credits, setCredits] = useState<DataInfoProps[]>([]);
@@ -24,6 +25,12 @@ const MovieInfoPage = () => {
   const [searchParams] = useSearchParams();
   const movieId: string | null = searchParams.get("id") as string | null;
   const type: string | null = searchParams.get("type") as string | null;
+
+  useEffect(() => {
+    if (movieId === "1439112" && type === "movie") {
+      navigate("/404");
+    }
+  }, [movieId, type]);
 
   const [, addToLocaleStorageList] = useLocaleStorageList(
     type as string,
@@ -72,6 +79,9 @@ const MovieInfoPage = () => {
     };
 
     if (type != "person") {
+      if (movieId === "1439112" && type === "movie") {
+        return;
+      }
       loadInfoData();
     } else {
       loadPersonData();
