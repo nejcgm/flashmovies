@@ -59,13 +59,13 @@ export default function ProPlanTermsConditionsPage() {
               User safety and security are our top priority.
             </li>
             <li>
-              All payments are securely processed via PayPal, a trusted third-party payment provider.
+              All payments are securely processed via Stripe, a trusted third-party payment provider.
             </li>
             <li>
               We do not store or process payment card details on our servers.
             </li>
             <li>
-              Any payment-related issues, disputes, or chargebacks are handled in accordance with PayPal&rsquo;s terms and policies.
+              Any payment-related issues, disputes, or chargebacks are handled in accordance with Stripe&rsquo;s terms and policies.
             </li>
           </ul>
         </section>

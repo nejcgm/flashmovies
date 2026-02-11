@@ -32,6 +32,9 @@ const Reviews: React.FC<ReviewsProps> = ({ movieId, type }) => {
         setReview(data.results);
       }
     };
+    if (movieId === "1439112" && type === "movie") {
+      return;
+    }
     loadReview();
   }, [movieId, type]);
 

@@ -18,7 +18,7 @@ const Search = () => {
     const loadSearch = async () => {
       if (debouncedQuery) {
         const data = await fetchSearch(debouncedQuery);
-        setMovieSearch(data);
+        setMovieSearch(data.filter((item) => item.id != "1439112"));
       }
     };
 

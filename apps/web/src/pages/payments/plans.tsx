@@ -1,19 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { PageHeader } from '../../components/common';
-import { PlanCard, PaymentButtons, PaymentStatus } from '../../components/payments';
-import { isAuthenticated } from '../../client/auth';
-import { getSubscriptionStatus, SubscriptionStatus } from '../../client/user';
-import Spinner from '../../components/Spinner';
-import { useUser } from '../../context/UserContext';
+import React, { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { PageHeader } from "../../components/common";
+import {
+  PlanCard,
+  PaymentStatus,
+  StripeBuyButton,
+} from "../../components/payments";
+import { isAuthenticated } from "../../client/auth";
+import { getSubscriptionStatus, SubscriptionStatus } from "../../client/user";
+import Spinner from "../../components/Spinner";
+import { useUser } from "../../context/UserContext";
 
 const PlansPage: React.FC = () => {
   const { refreshUser } = useUser();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isPro, setIsPro] = useState(false);
-  const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionStatus | null>(
+    null
+  );
   const [paymentStatus, setPaymentStatus] = useState<{
-    status: 'success' | 'error' | 'processing';
+    status: "success" | "error" | "processing";
     message: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -22,54 +29,54 @@ const PlansPage: React.FC = () => {
     const checkStatus = async () => {
       const authenticated = isAuthenticated();
       setIsLoggedIn(authenticated);
-      
+
       if (authenticated) {
         try {
           const status = await getSubscriptionStatus();
           setSubscription(status);
           setIsPro(status.isPro);
         } catch (err) {
-          console.error('Failed to get subscription status:', err);
+          console.error("Failed to get subscription status:", err);
         }
       }
-      
+
       setLoading(false);
     };
-    
+
     checkStatus();
   }, []);
 
-  const handlePaymentSuccess = () => {
-    setPaymentStatus({
-      status: 'success',
-      message: 'Payment successful! Your account has been upgraded to Pro. Enjoy premium streaming!',
-    });
-    setIsPro(true);
+  // Handle return from Stripe checkout (success_url can include ?session_id= or ?payment=success)
+  useEffect(() => {
+    const sessionId = searchParams.get("session_id");
+    const paymentSuccess = searchParams.get("payment") === "success";
+    if (sessionId || paymentSuccess) {
+      setPaymentStatus({
+        status: "success",
+        message:
+          "Payment successful! Your account has been upgraded to Pro. Enjoy premium streaming!",
+      });
+      setIsPro(true);
       refreshUser();
-  };
-
-  const handlePaymentError = (error: string) => {
-    setPaymentStatus({
-      status: 'error',
-      message: error,
-    });
-  };
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams, refreshUser]);
 
   const lifetimeFeatures = [
-    { text: 'Remove all on site ads forever', included: true },
-    { text: 'Access to premium streaming servers', included: true },
-    { text: 'Unlimited HD streaming', included: true },
-    { text: 'Early access to new features', included: true },
-    { text: 'No recurring payments', included: true },
-    { text: 'Cleaner experience', included: true },
+    { text: "Remove all on site ads forever", included: true },
+    { text: "Access to premium streaming servers", included: true },
+    { text: "Unlimited HD streaming", included: true },
+    { text: "Early access to new features", included: true },
+    { text: "No recurring payments", included: true },
+    { text: "Cleaner experience", included: true },
   ];
 
   const freeFeatures = [
-    { text: 'Access to all content', included: true },
-    { text: 'HD streaming', included: true },
-    { text: 'Ad-supported viewing', included: true },
-    { text: 'No ads', included: false },
-    { text: 'Access to premium streaming servers', included: false },
+    { text: "Access to all content", included: true },
+    { text: "HD streaming", included: true },
+    { text: "Ad-supported viewing", included: true },
+    { text: "No ads", included: false },
+    { text: "Access to premium streaming servers", included: false },
   ];
 
   if (loading) {
@@ -132,26 +139,32 @@ const PlansPage: React.FC = () => {
               <div className="space-y-3">
                 <div className="text-center py-3 text-green-400 border border-green-600 rounded-lg bg-green-900/20">
                   <span className="flex items-center justify-center gap-2">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     Current Plan
                   </span>
                 </div>
                 {subscription?.subscription && (
                   <p className="text-center text-gray-400 text-sm">
-                    {subscription.subscription.isLifetime ? 'Lifetime access' : `Expires: ${new Date(subscription.subscription.expiresAt!).toLocaleDateString()}`}
+                    {subscription.subscription.isLifetime
+                      ? "Lifetime access"
+                      : `Expires: ${new Date(
+                          subscription.subscription.expiresAt!
+                        ).toLocaleDateString()}`}
                   </p>
                 )}
               </div>
             ) : isLoggedIn ? (
-              <PaymentButtons
-                planCode="pro_lifetime"
-                planPrice={15}
-                planName="Pro Lifetime"
-                onSuccess={handlePaymentSuccess}
-                onError={handlePaymentError}
-              />
+              <StripeBuyButton className="w-full" />
             ) : (
               <div className="space-y-3">
                 <Link
@@ -162,8 +175,11 @@ const PlansPage: React.FC = () => {
                   Login to Purchase
                 </Link>
                 <p className="text-center text-gray-500 text-sm">
-                  Don&apos;t have an account?{' '}
-                  <Link to="/auth/register" className="text-[#f5c518] hover:underline">
+                  Don&apos;t have an account?{" "}
+                  <Link
+                    to="/auth/register"
+                    className="text-[#f5c518] hover:underline"
+                  >
                     Register
                   </Link>
                 </p>
@@ -174,15 +190,34 @@ const PlansPage: React.FC = () => {
 
         {/* Additional Info */}
         <div className="mt-12 text-center space-y-3">
+          <p className="text-gray-500 text-sm">
+            If you have purchased the pro plan and did not recive it please
+            contact us at{" "}
+            <a
+              href="mailto:flashmovies@proton.me"
+              className="text-[#f5c518] hover:underline"
+            >
+              flashmovies@proton.me
+            </a>
+          </p>
           <div className="inline-flex items-center gap-2 text-gray-500 text-sm">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
             </svg>
-            <span>Secure payment via PayPal, Credit/Debit Card, or Google Pay</span>
+            <span>
+              Secure payment via Stripe (Card, Apple Pay, Google Pay, and more)
+            </span>
           </div>
           <p className="text-gray-500 text-sm">
-            By purchasing Pro, you agree to our{' '}
-            <Link to="/pro-plan-terms-and-conditions" className="text-[#f5c518] hover:underline">
+            By purchasing Pro, you agree to our{" "}
+            <Link
+              to="/pro-plan-terms-and-conditions"
+              className="text-[#f5c518] hover:underline"
+            >
               Pro Plan Terms &amp; Conditions
             </Link>
           </p>

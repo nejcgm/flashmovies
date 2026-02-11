@@ -15,19 +15,9 @@ export interface Plan {
   isLifetime: boolean;
 }
 
-export interface CreateOrderResponse {
-  orderId: string;
-  status: string;
-}
-
-export interface CaptureOrderResponse {
-  status: string;
-  orderId: string;
-}
-
-export interface ClientTokenResponse {
-  clientToken: string;
-  expiresIn: number;
+export interface CreateCheckoutSessionResponse {
+  sessionId: string;
+  url: string;
 }
 
 // Get all available plans (public endpoint)
@@ -38,32 +28,11 @@ export const getPlans = async (): Promise<Plan[]> => {
   return response.data;
 };
 
-export const getPayPalClientToken = async (): Promise<ClientTokenResponse> => {
-  const response = await axios.get<ClientTokenResponse>(
-    `${API_BASE_URL}${API_PREFIX}/public/payments/client-token`
-  );
-  return response.data;
-};
-
-// Create a PayPal order (requires auth)
-export const createPayPalOrder = async (planCode: string): Promise<CreateOrderResponse> => {
-  const response = await authAxios.post<CreateOrderResponse>(
-    '/public/payments/create-order',
+// Create a Stripe checkout session (requires auth)
+export const createCheckoutSession = async (planCode: string): Promise<CreateCheckoutSessionResponse> => {
+  const response = await authAxios.post<CreateCheckoutSessionResponse>(
+    '/public/payments/create-checkout-session',
     { planCode }
   );
   return response.data;
-};
-
-// Capture a PayPal order (requires auth)
-export const capturePayPalOrder = async (orderId: string): Promise<CaptureOrderResponse> => {
-  const response = await authAxios.post<CaptureOrderResponse>(
-    '/public/payments/capture-order',
-    { orderId }
-  );
-  return response.data;
-};
-
-// Check if we're in sandbox mode
-export const isPayPalSandbox = (): boolean => {
-  return import.meta.env.VITE_PAYPAL_MODE !== 'live';
 };
