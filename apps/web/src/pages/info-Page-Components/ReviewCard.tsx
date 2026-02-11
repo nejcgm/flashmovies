@@ -4,7 +4,7 @@ import Rating from "../../components/Rating";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import DOMPurify from "dompurify";
-// import { useUser } from "../../context/UserContext";
+import { useUser } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 interface ReviewCardProps {
@@ -24,8 +24,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
 }) => {
   const ContentLength = content.length;
   const [expand, setExpand] = useState(250);
-  // const { isPro } = useUser();
-  const isPro = true;
+  const { isPro } = useUser();
   const navigate = useNavigate();
 
   return (

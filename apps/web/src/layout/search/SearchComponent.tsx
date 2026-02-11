@@ -4,7 +4,7 @@ import { fetchSearch, SearchResult } from "../../utils/fetching.js";
 import { useDebounce } from "../../utils/Hooks.js";
 import { useNavigate } from "react-router-dom";
 import MenuButton from "../menu/MenuButton";
-// import UserMenu from "../UserMenu";
+import UserMenu from "../UserMenu";
 
 const Search = () => {
   const [query, setQuery] = useState<string | undefined>("");
@@ -128,7 +128,7 @@ const Search = () => {
 
         {/* Right side: User/Login + Menu */}
         <div className="flex items-center ml-1 sm:ml-2">
-          {/* <UserMenu /> */}
+          <UserMenu />
           <MenuButton />
         </div>
       </div>
