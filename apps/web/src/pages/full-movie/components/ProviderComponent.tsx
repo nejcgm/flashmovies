@@ -122,6 +122,7 @@ const ProviderComponent = ({
               }
               isPremium={provider.isPremium}
               isLocked={provider.isPremium && !isPro}
+              showDiscountCallout={provider.isPremium && !isPro}
             />
           ))}
         </div>

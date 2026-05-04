@@ -7,11 +7,13 @@ export interface StreamingProvider {
   params?: string;
   isPremium?: boolean;
 }
+//one day
+//https://player2.autoembed.app/embed/${type}/${movieId}
 
 export const STREAMING_PROVIDERS: StreamingProvider[] = [
   {
     name: "Premium",
-    url: (type: string, movieId: string) => `https://player2.autoembed.cc/embed/${type}/${movieId}`,
+    url: (type: string, movieId: string) => `https://player.autoembed.app/embed/${type}/${movieId}`,
     isEpisodeSlugPartOfSlug: true,
     params: `color=EAB308&autoplay=true`,
     priority: 3,
@@ -20,7 +22,7 @@ export const STREAMING_PROVIDERS: StreamingProvider[] = [
   },
   {
     name: "Premium Backup",
-    url: (type: string, movieId: string) => `https://player.autoembed.cc/embed/${type}/${movieId}`,
+    url: (type: string, movieId: string) => `https://player.autoembed.app/embed/${type}/${movieId}`,
     isEpisodeSlugPartOfSlug: true,
     params: `color=EAB308&autoplay=true`,
     priority: 3,

@@ -63,9 +63,9 @@ const PlansPage: React.FC = () => {
   }, [searchParams, setSearchParams, refreshUser]);
 
   const lifetimeFeatures = [
-    { text: "Remove all on site ads forever", included: true },
+    { text: "Remove all on site ads forever", included: true, emphasized: true },
     { text: "Access to premium streaming servers", included: true },
-    { text: "Unlimited HD streaming", included: true },
+    { text: "Full comment viewing everywhere", included: true },
     { text: "Early access to new features", included: true },
     { text: "No recurring payments", included: true },
     { text: "Cleaner experience", included: true },
@@ -75,6 +75,7 @@ const PlansPage: React.FC = () => {
     { text: "Access to all content", included: true },
     { text: "HD streaming", included: true },
     { text: "Ad-supported viewing", included: true },
+    { text: "Full comment viewing everywhere", included: false },
     { text: "No ads", included: false },
     { text: "Access to premium streaming servers", included: false },
   ];
@@ -106,86 +107,89 @@ const PlansPage: React.FC = () => {
           </div>
         )}
 
-        {/* Plans Grid */}
+        {/* Plans Grid — Pro first on mobile, Free left on md+ */}
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-3xl mx-auto">
-          {/* Free Plan */}
-          <PlanCard
-            name="Free"
-            price={0}
-            description="Basic access with ads"
-            features={freeFeatures}
-          >
-            {!isPro ? (
-              <div className="text-center py-3 text-gray-400 border border-gray-700 rounded-lg">
-                Current Plan
-              </div>
-            ) : (
-              <div className="text-center py-3 text-gray-500 border border-gray-800 rounded-lg bg-gray-900/50">
-                Free Tier
-              </div>
-            )}
-          </PlanCard>
-
-          {/* Pro Lifetime Plan */}
-          <PlanCard
-            name="Pro"
-            price={15}
-            description="Removes all ads"
-            features={lifetimeFeatures}
-            isLifetime
-            highlighted={!isPro}
-          >
-            {isPro ? (
-              <div className="space-y-3">
-                <div className="text-center py-3 text-green-400 border border-green-600 rounded-lg bg-green-900/20">
-                  <span className="flex items-center justify-center gap-2">
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Current Plan
-                  </span>
+          <div className="order-2 md:order-1 h-full">
+            <PlanCard
+              name="Free"
+              price={0}
+              description="Basic access with ads"
+              features={freeFeatures}
+            >
+              {!isPro ? (
+                <div className="text-center py-3 text-gray-400 border border-gray-700 rounded-lg">
+                  Current Plan
                 </div>
-                {subscription?.subscription && (
-                  <p className="text-center text-gray-400 text-sm">
-                    {subscription.subscription.isLifetime
-                      ? "Lifetime access"
-                      : `Expires: ${new Date(
-                          subscription.subscription.expiresAt!
-                        ).toLocaleDateString()}`}
-                  </p>
-                )}
-              </div>
-            ) : isLoggedIn ? (
-              <StripeBuyButton className="w-full" />
-            ) : (
-              <div className="space-y-3">
-                <Link
-                  to="/auth/login"
-                  className="block w-full py-3 px-4 bg-[#f5c518] hover:bg-yellow-600 text-black 
-                           font-semibold rounded-lg text-center transition-all duration-300"
-                >
-                  Login to Purchase
-                </Link>
-                <p className="text-center text-gray-500 text-sm">
-                  Don&apos;t have an account?{" "}
+              ) : (
+                <div className="text-center py-3 text-gray-500 border border-gray-800 rounded-lg bg-gray-900/50">
+                  Free Tier
+                </div>
+              )}
+            </PlanCard>
+          </div>
+
+          <div className="order-1 md:order-2 h-full">
+            <PlanCard
+              name="Pro"
+              price={9.99}
+              compareAtPrice={15}
+              description="Removes all ads"
+              features={lifetimeFeatures}
+              isLifetime
+              highlighted={!isPro}
+            >
+              {isPro ? (
+                <div className="space-y-3">
+                  <div className="text-center py-3 text-green-400 border border-green-600 rounded-lg bg-green-900/20">
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Current Plan
+                    </span>
+                  </div>
+                  {subscription?.subscription && (
+                    <p className="text-center text-gray-400 text-sm">
+                      {subscription.subscription.isLifetime
+                        ? "Lifetime access"
+                        : `Expires: ${new Date(
+                            subscription.subscription.expiresAt!
+                          ).toLocaleDateString()}`}
+                    </p>
+                  )}
+                </div>
+              ) : isLoggedIn ? (
+                <StripeBuyButton className="w-full" />
+              ) : (
+                <div className="space-y-3">
                   <Link
-                    to="/auth/register"
-                    className="text-[#f5c518] hover:underline"
+                    to="/auth/login"
+                    className="block w-full py-3 px-4 bg-[#f5c518] hover:bg-yellow-600 text-black 
+                           font-semibold rounded-lg text-center transition-all duration-300"
                   >
-                    Register
+                    Login to Purchase
                   </Link>
-                </p>
-              </div>
-            )}
-          </PlanCard>
+                  <p className="text-center text-gray-500 text-sm">
+                    Don&apos;t have an account?{" "}
+                    <Link
+                      to="/auth/register"
+                      className="text-[#f5c518] hover:underline"
+                    >
+                      Register
+                    </Link>
+                  </p>
+                </div>
+              )}
+            </PlanCard>
+          </div>
         </div>
 
         {/* Additional Info */}
