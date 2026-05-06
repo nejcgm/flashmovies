@@ -108,7 +108,7 @@ const ProBanner: React.FC = () => {
               <div className="relative px-4 py-3 sm:px-5 sm:py-3.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-3">
                 <div className="flex flex-1 min-w-0 items-center gap-3 sm:gap-4">
                   <div
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#f5c518]/45 bg-black/25 text-[#f5c518] sm:h-12 sm:w-12"
+                    className="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#f5c518]/45 bg-black/25 text-[#f5c518] sm:h-12 sm:w-12"
                     aria-hidden
                   >
                     <svg
@@ -202,7 +202,7 @@ const ProBanner: React.FC = () => {
                     <button
                       type="button"
                       onClick={handleDismiss}
-                      className="absolute bottom-2 right-2 z-10 p-1.5 text-gray-500 hover:text-white transition-colors rounded-md hover:bg-white/5 sm:static sm:bottom-auto sm:right-auto sm:z-auto"
+                      className="absolute top-2 right-2 z-10 p-1.5 text-gray-500 hover:text-white transition-colors rounded-md hover:bg-white/5 sm:static sm:top-auto sm:right-auto sm:z-auto"
                       aria-label="Dismiss banner"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">

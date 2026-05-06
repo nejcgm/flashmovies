@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { useNavigate } from "react-router-dom";
+import { ProPlansPromoStrip } from "../../components/common/ProPlansPromoStrip";
 import CrossBlack from "../../assets/crossBlack.png";
 import { redirectForNavigation } from '../../utils/contextAdRedirect';
 import { useAdTracker } from '../../context/AdTrackerContext';
@@ -15,7 +16,7 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
   const navigate = useNavigate();
   const Container = useRef<HTMLDivElement>(null);
   const { incrementClick } = useAdTracker();
-  const { isPro } = useUser();
+  const { isPro, isLoading } = useUser();
 
   useEffect(() => {
     if (Container.current) {
@@ -271,6 +272,13 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
               </div>
             </div>
           </div>
+
+          {!isLoading && (
+            <ProPlansPromoStrip
+              className="mt-10 sm:mt-12 sm:mx-auto sm:max-w-xl md:max-w-xl"
+              onClick={() => onCancel()}
+            />
+          )}
         </div>
       </div>
     </>

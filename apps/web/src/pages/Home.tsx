@@ -7,6 +7,7 @@ import Spinner from "../components/Spinner";
 import Meta from "../SEO/meta.tsx";
 import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
 import AffiliateLinks from "../components/AffiliateLinks.tsx";
+import { ProPlansPromoStrip } from "../components/common/ProPlansPromoStrip";
 import SectionDivider from "../components/SectionDivider";
 import { useUser } from "../context/UserContext";
 
@@ -180,10 +181,7 @@ const Home = () => {
 
           {!isPro && (
             <div className="mt-[32px] sm:mt-[64px]">
-              <AffiliateLinks
-                movieTitle="Flash Movies"
-                className="bg-gradient-to-r from-[#1a1a1a] to-[#2d2d2d] border-2 border-[#f5c518]"
-              />
+              <ProPlansPromoStrip prominent />
             </div>
           )}
 
@@ -236,6 +234,16 @@ const Home = () => {
               actors={actors}
             />
           </div>
+
+          {!isPro && (
+            <div className="mt-[32px] sm:mt-[64px]">
+              <AffiliateLinks
+                movieTitle="Flash Movies"
+                className="bg-gradient-to-r from-[#1a1a1a] to-[#2d2d2d] border-2 border-[#f5c518]"
+              />
+            </div>
+          )}
+
           <div className="h-[80px] sm:h-[120px]"> </div>
         </>
       )}

@@ -9,6 +9,7 @@ import MovieSchema from "../../SEO/MovieSchema.tsx";
 import BreadcrumbSchema from "../../SEO/BreadcrumbSchema.tsx";
 import { EpisodeSelector } from "./components/EpisodeSelector.tsx";
 import { DataInfoProps, Episode } from "../../utils/Interfaces.ts";
+import { ProPlansPromoStrip } from "../../components/common/ProPlansPromoStrip";
 
 const WatchMoviePage = () => {
   const [info, setInfo] = useState<DataInfoProps>();
@@ -196,6 +197,7 @@ const WatchMoviePage = () => {
           description="Swap Servers to find the best balance between quality and stability"
           className="mt-[8px]"
         />
+        <ProPlansPromoStrip className="mt-4 sm:mt-6" />
         <div className="h-[32px]"></div>
       </div>
     </>

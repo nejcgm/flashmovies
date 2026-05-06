@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import GenreSpecific from "./GenreSpecific";
 import VideoPlayer from "../../dialogs/VideoPlayer";
+import { ProPlansPromoStrip } from "../../components/common/ProPlansPromoStrip";
 
 interface MovieSpecificDescriptionProps {
   description: string;
@@ -35,9 +36,9 @@ const MovieSpecificDescription: React.FC<MovieSpecificDescriptionProps> = ({
         />
       )}
       <div className="text-[16px] sm:text-[18px] mt-[16px] lg:hidden flex font-semibold">Watch Trailer</div>
-      <div className="w-full flex gap-4 md:w-[70%] pr-[6px] md:pr-[0px]">
+      <div className="w-full flex gap-4 md:w-[70%] pr-[6px] md:pr-[0px] lg:hidden">
         <button
-          className="flex lg:hidden flex-1  rounded-lg min-w-[120px] max-h-[180px] w-[150px]"
+          className="flex flex-1 rounded-lg min-w-[120px] max-h-[180px] w-[150px]"
           onClick={() => {
             setTrailer(true);
           }}
@@ -67,27 +68,32 @@ const MovieSpecificDescription: React.FC<MovieSpecificDescriptionProps> = ({
             </div>
           </div>
         </button>
+      </div>
 
-        <div className="flex-col flex lg:mt-[24px]">
-          <GenreSpecific genres={genres} />
+      <ProPlansPromoStrip
+        when={type !== 'person'}
+        className="mt-4 sm:mt-5 lg:mt-6"
+      />
 
-          <div className="mt-[8px] lg:mt-[16px] text-[12px] sm:text-[16px]">
-            {description?.slice(0, expand)}
-            <button
-              onClick={() => {
-                setExpand((prevValue) =>
-                  prevValue === 500 ? ContentLength : 500
-                );
-              }}
-              className="text-[#BBBBBB]"
-            >
-              {ContentLength < 500
-                ? " "
-                : expand == 500
-                ? " ...Read More"
-                : " ...View Less"}
-            </button>
-          </div>
+      <div className="flex flex-col mt-[8px] lg:mt-[24px] w-full md:w-[70%] pr-[6px] md:pr-[0px]">
+        <GenreSpecific genres={genres} />
+
+        <div className="mt-[8px] lg:mt-[16px] text-[12px] sm:text-[16px]">
+          {description?.slice(0, expand)}
+          <button
+            onClick={() => {
+              setExpand((prevValue) =>
+                prevValue === 500 ? ContentLength : 500
+              );
+            }}
+            className="text-[#BBBBBB]"
+          >
+            {ContentLength < 500
+              ? " "
+              : expand == 500
+              ? " ...Read More"
+              : " ...View Less"}
+          </button>
         </div>
       </div>
     </>
