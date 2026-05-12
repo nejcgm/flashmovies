@@ -4,6 +4,7 @@ import BackButton from "../../components/BackButton";
 import Rating from "../../components/Rating";
 import ShareButton from "../../components/ShareButton";
 import { convertMinutesToHoursAndMinutes } from "../../utils/helpers.js";
+import { mediaYearInParens } from "../../utils/mediaDisplayTitle";
 interface TopSectionProps {
   title: string;
   release: string;
@@ -23,15 +24,29 @@ const TopSection: React.FC<TopSectionProps> = ({
   popularity,
   type,
 }) => {
+  const yearInHeading = mediaYearInParens(release);
+
   return (
-    <div className="sm:flex w-full justify-between items-center pr-[6px] sm:pr-[0px]">
-      <div>
-        <div className="capitalise text-[18px] sm:mr-[32px] sm:text-[24px] md:text-[32px] xl:text-[48px] flex items-center gap-2 sm:mb-[10px]">
-          <div className="hidden sm:flex"><BackButton /></div>
-          <h1 className="mr-[18px] lg:mr-0 leading-[1.2]">{title} {release ? `(${new Date(release).getFullYear()})` : ''} - Movie Info</h1>
-          <div className="hidden lg:flex min-w-[50px]"><ShareButton /></div>
+    <div className="flex w-full flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 sm:mb-2.5 sm:mr-8 sm:gap-3">
+          <div className="hidden shrink-0 sm:flex">
+            <BackButton />
+          </div>
+          <h1 className="min-w-0 flex-1 pr-1 text-xl font-semibold leading-snug text-white sm:pr-0 sm:text-2xl md:text-3xl lg:text-4xl">
+            <span className="text-white">
+              {title}
+              {yearInHeading ? ` ${yearInHeading}` : ""}
+            </span>
+            <span className="ml-2 text-sm font-normal text-gray-400 sm:ml-2 sm:text-base md:text-[0.55em] md:text-gray-400">
+              — Movie Info
+            </span>
+          </h1>
+          <div className="hidden min-w-[50px] shrink-0 lg:flex">
+            <ShareButton />
+          </div>
         </div>
-        <ul className="hidden sm:flex list-disc list-inside text-[12px] sm:text-[14px] text-[#BBBBBB] gap-2 sm:gap-4 marker:text-[12px] self-end">
+        <ul className="hidden list-inside list-disc gap-2 self-end text-[12px] text-[#BBBBBB] marker:text-[12px] sm:flex sm:gap-4 sm:text-[14px]">
           <li className="list-none">{release}</li>
           {type == "movie" && runtime > 0 && (
             <li className="">{convertMinutesToHoursAndMinutes(runtime)}</li>
@@ -40,7 +55,7 @@ const TopSection: React.FC<TopSectionProps> = ({
         </ul>
       </div>
 
-      <div className="text-[#BBBBBB] mt-[8px] sm:mt-0 uppercase flex gap-1 sm:gap-3 text-[12px] sm:text-[16px] md:tracking-[2px]">
+      <div className="text-[#BBBBBB] flex shrink-0 gap-2 text-[12px] uppercase sm:mt-0 sm:gap-3 sm:text-[16px] md:tracking-[2px]">
         <div className="flex flex-col items-center">
           {type != "person" && (
             <>
@@ -53,15 +68,15 @@ const TopSection: React.FC<TopSectionProps> = ({
           )}
         </div>
 
-        <div className="flex flex-col items-center ">
+        <div className="flex flex-col items-center">
           <div>popularity</div>
-          <div className="text-white flex items-center">
+          <div className="flex items-center text-white">
             <div>{popularity?.toFixed(0)}</div>
             <img className="h-[24px] sm:h-[32px]" src={ChartIcon} alt="flashmovies" />
           </div>
         </div>
       </div>
-      <ul className="sm:hidden mt-[8px] list-disc list-inside flex text-[12px] sm:text-[14px] text-[#BBBBBB] gap-2 sm:gap-4 marker:text-[12px] self-end">
+      <ul className="mt-0.5 flex list-inside list-disc flex-wrap gap-x-3 gap-y-0.5 self-start text-[12px] text-[#BBBBBB] marker:text-[12px] sm:hidden">
           <li className="list-none">{release}</li>
           {type == "movie" && runtime > 0 && (
             <li className="">{convertMinutesToHoursAndMinutes(runtime)}</li>

@@ -17,9 +17,9 @@ const ProBanner: React.FC = () => {
         try {
           const { timestamp } = JSON.parse(dismissedData);
           const now = Date.now();
-          const fifteenMinutes = 15 * 60 * 1000;
+          const fiveMinutes = 5 * 60 * 1000; // 5 minutes
           
-          if (now - timestamp < fifteenMinutes) {
+          if (now - timestamp < fiveMinutes) {
             setIsDismissed(true);
           } else {
             sessionStorage.removeItem('proBannerDismissed');

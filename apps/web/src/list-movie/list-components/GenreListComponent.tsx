@@ -36,7 +36,11 @@ const GenreListComponent: React.FC<GenreListComponentProps> = ({
 
   return (
     <>
-      <div className="w-[100%] sm:w-[70%] flex flex-wrap gap-2">
+      <div
+        className="flex w-full flex-wrap gap-2 px-2 pb-4 -mx-2 sm:mx-0 sm:w-[70%] sm:flex-nowrap sm:overflow-x-auto sm:px-0 sm:scrollbar-hide"
+        role="group"
+        aria-label="Filter by genre"
+      >
         {genre?.map((item: Genre, index: number) => (
           <GenreButton
             id={item.id}

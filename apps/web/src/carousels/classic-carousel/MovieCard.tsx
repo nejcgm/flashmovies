@@ -62,7 +62,7 @@ const MovieCard: React.FC<MovieCardProps> = ({
           }}
         />
       )}
-      <div className="max-w-[200px] flex flex-col min-w-[134px] md:min-w-[180px] xl:min-w-[200px] w-full">
+      <div className="max-w-[200px] flex flex-col min-w-[152px] md:min-w-[180px] xl:min-w-[200px] w-full">
         <button
           onClick={handleCardClick}
           className="group relative bottom-[-7px] w-full"

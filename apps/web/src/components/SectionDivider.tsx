@@ -31,7 +31,7 @@ const SectionDivider: React.FC<SectionDividerProps> = ({ title, icon }) => {
   };
 
   return (
-    <div className="my-8 sm:my-12 px-4 sm:px-6">
+    <div className="my-10 sm:my-12 px-4 sm:px-6">
       <div className="flex items-center gap-4">
         <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[#333] to-[#333]" />
         {(title || icon) && (

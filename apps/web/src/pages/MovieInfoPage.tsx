@@ -14,6 +14,7 @@ import MovieSchema from "../SEO/MovieSchema.tsx";
 import BreadcrumbSchema from "../SEO/BreadcrumbSchema.tsx";
 import { DataInfoProps } from "../utils/Interfaces.ts";
 import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
+import { mediaDisplayTitle, mediaYearSuffixSpaced } from "../utils/mediaDisplayTitle";
 
   const MovieInfoPage = () => {
   const navigate = useNavigate();
@@ -92,21 +93,19 @@ import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
     <>
       {info && (
         <Meta
-          title={`${info.title || info.name} ${
-            info.release_date
-              ? `(${new Date(info.release_date).getFullYear()})`
-              : info.first_air_date
-              ? `(${new Date(info.first_air_date).getFullYear()})`
-              : ""
-          } - Flash Movies - Watch Free`}
+          title={`${mediaDisplayTitle(info)}${mediaYearSuffixSpaced(
+            info.release_date,
+            info.first_air_date,
+            info.birthday,
+          )} - Flash Movies - Watch Free`}
           description={
             info.overview
-              ? `${info.overview.slice(0, 150)}... Watch ${
-                  info.title || info.name
-                } free on Flash Movies.`
-              : `Watch ${
-                  info.title || info.name
-                } free on Flash Movies. Stream in HD quality.`
+              ? `${info.overview.slice(0, 150)}... Watch ${mediaDisplayTitle(
+                  info,
+                )} free on Flash Movies.`
+              : `Watch ${mediaDisplayTitle(
+                  info,
+                )} free on Flash Movies. Stream in HD quality.`
           }
           image={
             info.poster_path
@@ -117,22 +116,22 @@ import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
           }
           url={window.location.href}
           keywords={[
-            info.title || info.name || "",
+            mediaDisplayTitle(info) || "",
             ...(info.genres?.map((genre: { name: string }) => genre.name) ||
               []),
             `${type} streaming`,
-            `watch ${info.title || info.name || ""} free`,
+            `watch ${mediaDisplayTitle(info)} free`,
             `${type} online`,
-            `watch ${info.title || info.name || ""} ${
+            `watch ${mediaDisplayTitle(info)} ${
               type === "movie" ? "movie" : "series"
             }`,
-            `watch ${info.title || info.name || ""} ${
+            `watch ${mediaDisplayTitle(info)} ${
               type === "movie" ? "movie" : "series"
             } for free`,
-            `watch ${info.title || info.name || ""} ${
+            `watch ${mediaDisplayTitle(info)} ${
               type === "movie" ? "movie" : "series"
             } for free on flashmovies`,
-            `${info.title || info.name || ""} ${
+            `${mediaDisplayTitle(info)} ${
               type === "movie" ? "movie" : "series"
             } movie info`,
             "free movies",
@@ -164,7 +163,7 @@ import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
               url: `https://flashmovies.xyz/list-items?type=${type}&search=popular&title=popular-${type}s`,
             },
             {
-              name: info.title || info.name || "Content",
+              name: mediaDisplayTitle(info) || "Content",
               url: window.location.href,
             },
           ]}
@@ -172,7 +171,7 @@ import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
       )}
       {info && type !== "person" && (
         <MovieSchema
-          title={info?.title || info?.name || ""}
+          title={mediaDisplayTitle(info)}
           description={info?.overview}
           image={info?.poster_path}
           releaseDate={info?.release_date || info?.first_air_date}
@@ -207,9 +206,9 @@ import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
         <>
           <div className="font-roboto text-white">
             {info !== undefined && (
-              <>
+              <div className="flex flex-col gap-3 sm:gap-0">
                 <TopSection
-                  title={info.title || info.name}
+                  title={mediaDisplayTitle(info)}
                   release={
                     info.release_date || info.first_air_date || info.birthday
                   }
@@ -223,7 +222,7 @@ import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
                 <MediaComponent
                   movieId={info.id}
                   poster={info.poster_path || info.profile_path}
-                  title={info.title || info.name}
+                  title={mediaDisplayTitle(info)}
                   backdrop={
                     info.backdrop_path || credits?.[1]?.file_path || " "
                   }
@@ -237,9 +236,9 @@ import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
                   poster={info.poster_path || info.profile_path}
                   type={type}
                   genres={info.genres}
-                  title={info.title || info.name}
+                  title={mediaDisplayTitle(info)}
                 />
-              </>
+              </div>
             )}
           </div>
 

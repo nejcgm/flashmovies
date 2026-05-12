@@ -2,15 +2,17 @@ import React, { useEffect, useState } from "react";
 import ListItem from "../../list-movie/list-components/ListItem";
 import { fetchSearch, SearchResult } from "../../utils/fetching.js";
 import { useDebounce } from "../../utils/Hooks.js";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MenuButton from "../menu/MenuButton";
 import UserMenu from "../UserMenu";
+import { useUser } from "../../context/UserContext";
 
 const Search = () => {
   const [query, setQuery] = useState<string | undefined>("");
   const [MovieSearch, setMovieSearch] = useState<SearchResult[]>([]);
   const [cardCount, setCardCount] = useState(5);
   const navigate = useNavigate();
+  const { isPro, isLoading: userLoading } = useUser();
 
   const debouncedQuery = useDebounce(query, 300);
 
@@ -91,19 +93,19 @@ const Search = () => {
 
           {query && (
             <div className="relative w-full z-20">
-              <div className="absolute p-3 sm:p-6 bg-[#1F1F1F] w-full flex flex-col gap-2 sm:gap-4 rounded-lg">
+              <div className="absolute z-20 flex w-full flex-col gap-2.5 rounded-lg bg-[#1F1F1F] p-2.5 sm:gap-2 sm:p-3">
                 {MovieSearch?.slice(0, cardCount)?.map(
-                  (item: SearchResult, index: number) => (
+                  (item: SearchResult) => (
                     <ListItem
                       index={null}
-                      poster={item.poster_path || item.profile_path}
+                      poster={item.poster_path || item.profile_path || ""}
                       title={item.title ? item.title : item.name}
                       movieId={item.id}
                       voteCount={item.vote_count}
                       year={item.release_date || item.first_air_date}
-                      type={item.media_type}
+                      type={item.media_type ?? "movie"}
                       rating={null}
-                      key={index}
+                      key={`${item.media_type}-${item.id}`}
                       onCancel={() => {
                         setQuery(undefined);
                       }}
@@ -116,7 +118,7 @@ const Search = () => {
                     onClick={() => {
                       setCardCount((prevValue) => (prevValue === 5 ? 10 : 5));
                     }}
-                    className="text-white text-[14px] font-roboto"
+                    className="mt-0.5 pt-2 text-left text-[14px] font-roboto text-white sm:mt-0 sm:pt-0"
                   >
                     {cardCount == 5 ? "View More" : "view Less"}
                   </button>
@@ -126,8 +128,19 @@ const Search = () => {
           )}
         </div>
 
-        {/* Right side: User/Login + Menu */}
-        <div className="flex items-center ml-1 sm:ml-2">
+        {/* Right side: Pro CTA (free users) + User/Login + Menu */}
+        <div className="flex shrink-0 items-center gap-1 ml-1 sm:ml-2 sm:gap-2">
+          {!userLoading && !isPro && (
+            <Link
+              to="/payments/plans"
+              aria-label="Go Pro — view plans and pricing"
+              className="rounded-md border border-[#f5c518]/45 bg-black/50 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-[#f5c518] transition-colors hover:border-[#f5c518]/80 hover:bg-[#f5c518]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c518] sm:px-2.5 sm:py-1.5 sm:text-xs"
+              title="Ad-free Pro — lifetime"
+            >
+              <span className="sm:hidden">Pro</span>
+              <span className="hidden sm:inline">Go Pro</span>
+            </Link>
+          )}
           <UserMenu />
           <MenuButton />
         </div>

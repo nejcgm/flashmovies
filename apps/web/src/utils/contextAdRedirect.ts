@@ -26,7 +26,9 @@ export const triggerContextAdRedirect = (
 
   newCount += 1;
 
-  const shouldTriggerMain = options.forceFire || newCount % 2 === 0;
+  /** Fire ad on 2 of every 3 clicks (skip each 3rd) */
+  const shouldTriggerMain =
+    options.forceFire || (newCount - 1) % 3 !== 0;
 
   const shouldFireAd = shouldTriggerMain ? options.incrementClick() : false;
 

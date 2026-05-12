@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import MovieCard from "./MovieCard";
 import ChevroneLeft from "../../components/ChevronLeft";
+import ViewAllArrowIcon from "../../components/icons/ViewAllArrowIcon";
 import ChevroneRight from "../../components/ChevronRight";
 import { DataInfoProps } from "../../utils/Interfaces";
 
@@ -9,6 +11,7 @@ interface CarouserProps {
   showTitle: string;
   cardCount: number;
   type: string | null;
+  viewAllTo?: string;
 }
 
 const Carousel: React.FC<CarouserProps> = ({
@@ -16,6 +19,7 @@ const Carousel: React.FC<CarouserProps> = ({
   showTitle,
   cardCount,
   type,
+  viewAllTo,
 }) => {
   const scrollContainer = useRef<HTMLDivElement>(null);
   const [showPrevButton, setShowPrevButton] = useState(false);
@@ -76,8 +80,19 @@ const Carousel: React.FC<CarouserProps> = ({
   return (
     <>
       <div className="max-w-[1250px] relative">
-        <div className="text-[#F5C518] font-roboto font-bold text-[24px] sm:text-[32px] first-letter:uppercase mb-[16px] ml-2 sm:ml-0">
-          {showTitle}
+        <div className="mb-[16px] flex flex-wrap items-end justify-between gap-x-4 gap-y-2 pl-0 pr-0 sm:px-0">
+          <div className="text-[#F5C518] font-roboto font-bold text-[24px] sm:text-[32px] first-letter:uppercase min-w-0 flex-1">
+            {showTitle}
+          </div>
+          {viewAllTo ? (
+            <Link
+              to={viewAllTo}
+              className="inline-flex items-center gap-1.5 shrink-0 text-sm sm:text-base lg:text-lg font-semibold text-[#f5c518] hover:text-white underline-offset-4 hover:underline"
+            >
+              View all
+              <ViewAllArrowIcon className="h-4 w-4 shrink-0 lg:h-5 lg:w-5" />
+            </Link>
+          ) : null}
         </div>
 
       <div className="hidden sm:flex">
@@ -92,8 +107,9 @@ const Carousel: React.FC<CarouserProps> = ({
         )}
         </div>
 
+        <div className="-mx-4 sm:mx-0">
         <div
-          className="flex gap-4 relative w-full overflow-x-auto carousel scrollbar-hide"
+          className="carousel scrollbar-hide relative flex w-full gap-4 overflow-x-auto pl-4 pr-8 sm:pl-0 sm:pr-0"
           ref={scrollContainer}
         >
           {movies.filter((item: DataInfoProps) => item.id != "1439112")
@@ -108,7 +124,7 @@ const Carousel: React.FC<CarouserProps> = ({
                 type={type}
               />
             ))}
-          ;
+        </div>
         </div>
 
         <div className="hidden sm:flex">

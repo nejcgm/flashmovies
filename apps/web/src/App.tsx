@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import MovieInfoPage from "./pages/MovieInfoPage";
 import WatchMoviePage from "./pages/full-movie/WatchMoviePage";
@@ -17,6 +17,11 @@ import LogoutPage from "./pages/auth/logout";
 import AuthLayout from "./layout/AuthLayout";
 import PlansPage from "./pages/payments/plans";
 import RemoveProPage from "./pages/payments/remove-pro";
+
+const ListWithSearchKey: React.FC = () => {
+  const { search } = useLocation();
+  return <List key={search} />;
+};
 
 const App: React.FC = () => {
   return (
@@ -38,7 +43,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/movie-info" element={<MovieInfoPage />} />
           <Route path="/full-movie" element={<WatchMoviePage />} />
-          <Route path="/list-items" element={<List />} />
+          <Route path="/list-items" element={<ListWithSearchKey />} />
           <Route path="/ad-video-player" element={<ExoClickPlayer/>} />
           <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
           <Route path="/pro-plan-terms-and-conditions" element={<ProPlanTermsConditionsPage />} />

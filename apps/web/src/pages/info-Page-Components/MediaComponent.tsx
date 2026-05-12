@@ -68,7 +68,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
         />
       )}
 
-      <div className="flex w-full mt-[24px] gap-2 pr-[6px] sm:pr-[0px]">
+      <div className="mt-5 flex w-full gap-2 sm:mt-6 sm:gap-2">
         <button
          className="hidden lg:flex w-[400px] group bg-no-repeat rounded-lg bg-cover bg-center text-white"
           disabled={type == "person"}
@@ -116,7 +116,7 @@ const HeaderInfo: React.FC<HeaderInfoProps> = ({
               })`,
             }}
           >
-            <div className="flex items-center text-white bg-black/20 w-full h-full p-4">
+            <div className="flex h-full w-full items-center bg-black/20 p-3 text-white sm:p-4">
               {type != "person" && (
                 <div className="flex self-end items-center lg:gap-4 gap-2">
                   <div>

@@ -5,7 +5,9 @@ import React from "react";
 export default function AuthLayout() {
   return (
     <Frame>
-      <Outlet />
+      <div className="w-full px-4 sm:px-[32px]">
+        <Outlet />
+      </div>
     </Frame>
   );
 }

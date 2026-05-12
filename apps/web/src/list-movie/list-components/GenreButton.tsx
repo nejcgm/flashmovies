@@ -30,12 +30,16 @@ const GenreButton: React.FC<GenreButtonProps> = ({
   }, [selected]);
   return (
     <button
+      type="button"
+      aria-pressed={selected}
       onClick={() => {
         setSelected(!selected);
       }}
-      className={`font-roboto py-[4px] px-[8px] sm:py-1 sm:px-3 border-[1px]  ${
-        selected ? `border-white text-white` : `border-[#a0a0a0] text-[#a0a0a0]`
-      } rounded-full text-[12px] sm:text-[14px] `}
+      className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c518] ${
+        selected
+          ? "bg-[#f5c518] text-black"
+          : "bg-white/10 text-gray-200 hover:bg-white/15"
+      }`}
     >
       {name}
     </button>

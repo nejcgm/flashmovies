@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import HeroCard from "./HeroCard";
 import ChevroneLeft from "../../components/ChevronLeft";
+import ViewAllArrowIcon from "../../components/icons/ViewAllArrowIcon";
 import ChevroneRight from "../../components/ChevronRight";
 import UpNext from "./UpNext";
 import { DataInfoProps } from "../../utils/Interfaces";
@@ -10,12 +12,14 @@ interface HeroCarouselProps {
   moviesHero: [];
   cardCount: number;
   showTitle: string;
+  viewAllTo?: string;
 }
 
 const HeroCarousel: React.FC<HeroCarouselProps> = ({
   moviesHero,
   cardCount,
   showTitle,
+  viewAllTo,
 }) => {
   const [count, setCount] = useState(0);
   const scrollContainer = useRef<HTMLDivElement>(null);
@@ -105,11 +109,23 @@ const { handleTouchStart, handleTouchEnd } = useSwipe({
 
   return (
     <>
-      <div className="text-[#F5C518] font-roboto font-bold text-[24px] sm:text-[32px] first-letter:uppercase mb-[16px] ml-2 sm:ml-0">
-        {showTitle}
+      <div className="mb-[16px] flex flex-wrap items-end justify-between gap-x-4 gap-y-2 pl-0 pr-0 sm:px-0">
+        <div className="text-[#F5C518] font-roboto font-bold text-[24px] sm:text-[32px] first-letter:uppercase min-w-0 flex-1">
+          {showTitle}
+        </div>
+        {viewAllTo ? (
+          <Link
+            to={viewAllTo}
+            className="inline-flex items-center gap-1.5 shrink-0 text-sm sm:text-base lg:text-lg font-semibold text-[#f5c518] hover:text-white underline-offset-4 hover:underline"
+          >
+            View all
+            <ViewAllArrowIcon className="h-4 w-4 shrink-0 lg:h-5 lg:w-5" />
+          </Link>
+        ) : null}
       </div>
 
-      <div className="flex pr-[6px] sm:pr-[0px]">
+      <div className="-mx-4 sm:mx-0">
+      <div className="flex">
         <div className=" xl:max-w-[850px] relative lg:max-w-[650px] w-full ">
 
           <div className=" hidden sm:flex">
@@ -174,6 +190,7 @@ const { handleTouchStart, handleTouchEnd } = useSwipe({
             }}
           />
         </div>
+      </div>
       </div>
     </>
   );

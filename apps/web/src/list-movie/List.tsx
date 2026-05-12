@@ -4,12 +4,13 @@ import ListItem from "./list-components/ListItem";
 import Spiner from "../components/Spinner";
 import GenreListComponent from "./list-components/GenreListComponent";
 import BackButton from "../components/BackButton";
-import { fetchSpecific } from "../utils/fetching.ts";
+import { fetchSpecific, fetchTrending, fetchThisYearHighlights } from "../utils/fetching.ts";
 import { formatTitle } from "../utils/helpers.ts";
 import { DataInfoProps, MediaType } from "../utils/Interfaces.ts";
 import Meta from "../SEO/meta.tsx";
 import ItemListSchema from '../SEO/ItemListSchema.tsx';
 import BreadcrumbSchema from '../SEO/BreadcrumbSchema.tsx';
+import { mediaDisplayTitle } from "../utils/mediaDisplayTitle";
 
 const List: React.FC = () => {
   const [listItems, setListItems] = useState<DataInfoProps[]>([]);
@@ -35,21 +36,12 @@ const List: React.FC = () => {
   useEffect(() => {
     setCounter(1);
     setListItems([]);
+    setEndOfList(false);
   }, [genreList]);
 
   useEffect(() => {
     const loadList = async () => {
-      if (search != "discover") {
-        setLoading(true);
-        const data = await fetchSpecific(type, "", search, null, counter);
-        if (data && data.results) {
-          setListItems((prevItems: DataInfoProps[]) => [
-            ...prevItems,
-            ...data.results,
-          ]);
-        }
-        setLoading(false);
-      } else {
+      if (search === "discover") {
         setLoading(true);
         setEndOfList(false);
         const data = await fetchSpecific(search, type, "", genreList, counter);
@@ -61,9 +53,42 @@ const List: React.FC = () => {
           setLoading(false);
         } else {
           setEndOfList(true);
+          setLoading(false);
           return;
         }
+        return;
       }
+
+      setLoading(true);
+      let data: Awaited<ReturnType<typeof fetchSpecific>> = null;
+
+      if (search === "trending_week") {
+        if (type === "movie") {
+          data = await fetchTrending("movie", "week", counter);
+        } else if (type === "tv") {
+          data = await fetchTrending("tv", "week", counter);
+        }
+      } else if (search === "trending_day") {
+        if (type === "movie") {
+          data = await fetchTrending("movie", "day", counter);
+        } else if (type === "tv") {
+          data = await fetchTrending("tv", "day", counter);
+        }
+      } else if (search === "year_highlights" && type === "movie") {
+        data = await fetchThisYearHighlights(counter);
+      } else {
+        data = await fetchSpecific(type, "", search, null, counter);
+      }
+
+      if (data && data.results?.length) {
+        setListItems((prevItems: DataInfoProps[]) => [
+          ...prevItems,
+          ...data.results,
+        ]);
+      } else if (counter > 1) {
+        setEndOfList(true);
+      }
+      setLoading(false);
     };
     loadList();
   }, [type, search, counter, genreList]);
@@ -107,7 +132,7 @@ const List: React.FC = () => {
         }
       url={window.location.href}
         keywords={[
-          ...(listItems.slice(0, 10).map((item: DataInfoProps) => item.title || item.name).filter(Boolean)),
+          ...(listItems.slice(0, 10).map((item: DataInfoProps) => mediaDisplayTitle(item)).filter(Boolean)),
           `${type ? "movies" : "series"} streaming`, `free ${type ? "movies" : "series"}`, `watch ${type ? "movies" : "series"} online`, formatTitle(title) || '', 'flash movies', 'flashmovies', 'flashmovies.xyz'
         ]}
         type="website"
@@ -132,7 +157,7 @@ const List: React.FC = () => {
         description={`Browse and watch ${formatTitle(title)} on Flash Movies. Stream ${type === 'movie' ? 'movies' : 'TV shows'} in HD for free.`}
         url={window.location.href}
         items={listItems.slice(0, 20).map((item: DataInfoProps) => ({
-          name: item.title || item.name || '',
+          name: mediaDisplayTitle(item),
           url: `https://flashmovies.xyz/movie-info?type=${type}&id=${item.id}`,
           image: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : undefined,
           description: item.overview?.slice(0, 150) || ''
@@ -140,10 +165,12 @@ const List: React.FC = () => {
       />
 
       <div className="w-full flex flex-col">
-        <div className="flex flex-col w-[100%] sm:w-[70%] self-center gap-2 sm:gap-4 p-4 bg-[#101010] rounded-lg">
-          <h1 className="font-roboto text-[#f5c518] text-[24px] sm:text-[32px] mb-[18px] sm:mb-[16px] flex gap-1 sm:gap-3 font-semibold">
-            <BackButton />
-            {formatTitle(title)}
+        <div className="flex flex-col w-[100%] sm:w-[70%] self-center gap-2.5 sm:gap-[18px] p-4 bg-[#101010] rounded-lg">
+          <h1 className="font-roboto flex min-w-0 items-center gap-2 text-xl font-semibold leading-snug text-white sm:gap-3 sm:text-2xl md:text-3xl lg:text-4xl">
+            <span className="shrink-0">
+              <BackButton />
+            </span>
+            <span className="min-w-0">{formatTitle(title)}</span>
           </h1>
 
           {search == "discover" && (
@@ -163,7 +190,7 @@ const List: React.FC = () => {
                   index={index}
                   key={item.id}
                   poster={item.poster_path || item.profile_path}
-                  title={item.title || item.name}
+                  title={mediaDisplayTitle(item)}
                   movieId={item.id}
                   voteCount={item.vote_count}
                   year={item.release_date || item.first_air_date}
