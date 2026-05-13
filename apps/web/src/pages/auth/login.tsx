@@ -15,6 +15,17 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { refreshUser } = useUser();
+  const redirect = searchParams.get('redirect');
+  const registerHref =
+    redirect &&
+    redirect.startsWith('/payments/plans') &&
+    redirect.includes('autoCheckout=1')
+      ? `/auth/register?redirect=${encodeURIComponent(
+          '/payments/plans?autoCheckout=1&checkout_origin=register'
+        )}`
+      : redirect
+        ? `/auth/register?redirect=${encodeURIComponent(redirect)}`
+        : '/auth/register';
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -36,7 +47,6 @@ const LoginPage: React.FC = () => {
     try {
       await login(formData);
       await refreshUser();
-      const redirect = searchParams.get('redirect');
       navigate(redirect || '/');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -90,7 +100,7 @@ const LoginPage: React.FC = () => {
       <FormLink
         text="Don't have an account?"
         linkText="Create one"
-        to={searchParams.get('redirect') ? `/auth/register?redirect=${searchParams.get('redirect')}` : '/auth/register'}
+        to={registerHref}
       />
     </AuthFormLayout>
   );

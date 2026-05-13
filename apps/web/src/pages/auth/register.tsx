@@ -15,6 +15,17 @@ const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { refreshUser } = useUser();
+  const redirect = searchParams.get('redirect');
+  const loginHref =
+    redirect &&
+    redirect.startsWith('/payments/plans') &&
+    redirect.includes('autoCheckout=1')
+      ? `/auth/login?redirect=${encodeURIComponent(
+          '/payments/plans?autoCheckout=1&checkout_origin=login'
+        )}`
+      : redirect
+        ? `/auth/login?redirect=${encodeURIComponent(redirect)}`
+        : '/auth/login';
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
@@ -63,7 +74,6 @@ const RegisterPage: React.FC = () => {
         displayName: formData.displayName || undefined,
       });
       await refreshUser();
-      const redirect = searchParams.get('redirect');
       navigate(redirect || '/');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -150,7 +160,7 @@ const RegisterPage: React.FC = () => {
       <FormLink
         text="Already have an account?"
         linkText="Sign in"
-        to="/auth/login"
+        to={loginHref}
       />
     </AuthFormLayout>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { trackLoginToPurchaseClick, trackBeginCheckout } from "../../utils/analytics";
+import { trackBeginCheckout, trackPlansAuthIntent } from "../../utils/analytics";
 import { PageHeader } from "../../components/common";
 import {
   PlanCard,
@@ -13,7 +13,12 @@ import { createCheckoutSession } from "../../client/payments";
 import Spinner from "../../components/Spinner";
 import { useUser } from "../../context/UserContext";
 
-const PLANS_CHECKOUT_REDIRECT = encodeURIComponent("/payments/plans?autoCheckout=1");
+const PLANS_AUTO_CHECKOUT_LOGIN = encodeURIComponent(
+  "/payments/plans?autoCheckout=1&checkout_origin=login"
+);
+const PLANS_AUTO_CHECKOUT_REGISTER = encodeURIComponent(
+  "/payments/plans?autoCheckout=1&checkout_origin=register"
+);
 
 const PlansPage: React.FC = () => {
   const { refreshUser } = useUser();
@@ -41,8 +46,11 @@ const PlansPage: React.FC = () => {
           setIsPro(status.isPro);
 
           if (!status.isPro && searchParams.get("autoCheckout") === "1") {
+            const origin = searchParams.get("checkout_origin");
+            const checkoutSource =
+              origin === "register" ? "after_register" : "after_login";
             setSearchParams({}, { replace: true });
-            trackBeginCheckout("pro_lifetime", "post_login");
+            trackBeginCheckout("pro_lifetime", checkoutSource);
             const { url } = await createCheckoutSession("pro_lifetime");
             window.location.href = url;
             return;
@@ -183,18 +191,19 @@ const PlansPage: React.FC = () => {
               ) : (
                 <div className="space-y-3">
                   <Link
-                    to={`/auth/login?redirect=${PLANS_CHECKOUT_REDIRECT}`}
+                    to={`/auth/login?redirect=${PLANS_AUTO_CHECKOUT_LOGIN}`}
                     className="block w-full py-3 px-4 bg-[#f5c518] hover:bg-yellow-600 text-black 
                            font-semibold rounded-lg text-center transition-all duration-300"
-                    onClick={trackLoginToPurchaseClick}
+                    onClick={() => trackPlansAuthIntent("login")}
                   >
                     Login to Purchase
                   </Link>
                   <p className="text-center text-gray-500 text-sm">
                     Don&apos;t have an account?{" "}
                     <Link
-                      to={`/auth/register?redirect=${PLANS_CHECKOUT_REDIRECT}`}
+                      to={`/auth/register?redirect=${PLANS_AUTO_CHECKOUT_REGISTER}`}
                       className="text-[#f5c518] hover:underline"
+                      onClick={() => trackPlansAuthIntent("register")}
                     >
                       Register
                     </Link>
