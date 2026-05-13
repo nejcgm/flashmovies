@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { register } from '../../client/auth';
 import { useUser } from '../../context/UserContext';
 import {
@@ -13,6 +13,7 @@ import {
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { refreshUser } = useUser();
   const [formData, setFormData] = useState({
     displayName: '',
@@ -62,7 +63,8 @@ const RegisterPage: React.FC = () => {
         displayName: formData.displayName || undefined,
       });
       await refreshUser();
-      navigate('/');
+      const redirect = searchParams.get('redirect');
+      navigate(redirect || '/');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       const message = error.response?.data?.message || 'Registration failed. Please try again.';
@@ -114,6 +116,7 @@ const RegisterPage: React.FC = () => {
           required
           minLength={8}
           autoComplete="new-password"
+          showPasswordToggle
         />
 
         <FormInput
@@ -126,6 +129,7 @@ const RegisterPage: React.FC = () => {
           placeholder="Repeat your password"
           required
           autoComplete="new-password"
+          showPasswordToggle
         />
 
         <FormButton loading={loading} loadingText="Creating account..." className="mt-6">

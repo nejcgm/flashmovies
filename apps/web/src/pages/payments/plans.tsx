@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { trackLoginToPurchaseClick } from "../../utils/analytics";
+import { trackLoginToPurchaseClick, trackBeginCheckout } from "../../utils/analytics";
 import { PageHeader } from "../../components/common";
 import {
   PlanCard,
@@ -9,8 +9,11 @@ import {
 } from "../../components/payments";
 import { isAuthenticated } from "../../client/auth";
 import { getSubscriptionStatus, SubscriptionStatus } from "../../client/user";
+import { createCheckoutSession } from "../../client/payments";
 import Spinner from "../../components/Spinner";
 import { useUser } from "../../context/UserContext";
+
+const PLANS_CHECKOUT_REDIRECT = encodeURIComponent("/payments/plans?autoCheckout=1");
 
 const PlansPage: React.FC = () => {
   const { refreshUser } = useUser();
@@ -36,6 +39,14 @@ const PlansPage: React.FC = () => {
           const status = await getSubscriptionStatus();
           setSubscription(status);
           setIsPro(status.isPro);
+
+          if (!status.isPro && searchParams.get("autoCheckout") === "1") {
+            setSearchParams({}, { replace: true });
+            trackBeginCheckout("pro_lifetime", "post_login");
+            const { url } = await createCheckoutSession("pro_lifetime");
+            window.location.href = url;
+            return;
+          }
         } catch (err) {
           console.error("Failed to get subscription status:", err);
         }
@@ -172,7 +183,7 @@ const PlansPage: React.FC = () => {
               ) : (
                 <div className="space-y-3">
                   <Link
-                    to="/auth/login"
+                    to={`/auth/login?redirect=${PLANS_CHECKOUT_REDIRECT}`}
                     className="block w-full py-3 px-4 bg-[#f5c518] hover:bg-yellow-600 text-black 
                            font-semibold rounded-lg text-center transition-all duration-300"
                     onClick={trackLoginToPurchaseClick}
@@ -182,7 +193,7 @@ const PlansPage: React.FC = () => {
                   <p className="text-center text-gray-500 text-sm">
                     Don&apos;t have an account?{" "}
                     <Link
-                      to="/auth/register"
+                      to={`/auth/register?redirect=${PLANS_CHECKOUT_REDIRECT}`}
                       className="text-[#f5c518] hover:underline"
                     >
                       Register
@@ -197,7 +208,7 @@ const PlansPage: React.FC = () => {
         {/* Additional Info */}
         <div className="mt-12 text-center space-y-3">
           <p className="text-gray-500 text-sm">
-            If you have purchased the pro plan and did not recive it please
+            If you have purchased the pro plan and did not receive it please
             contact us at{" "}
             <a
               href="mailto:flashmovies@proton.me"

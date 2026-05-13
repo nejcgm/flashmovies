@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { login } from '../../client/auth';
 import { useUser } from '../../context/UserContext';
 import {
@@ -13,6 +13,7 @@ import {
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { refreshUser } = useUser();
   const [formData, setFormData] = useState({
     email: '',
@@ -35,7 +36,8 @@ const LoginPage: React.FC = () => {
     try {
       await login(formData);
       await refreshUser();
-      navigate('/');
+      const redirect = searchParams.get('redirect');
+      navigate(redirect || '/');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       const message = error.response?.data?.message || 'Login failed. Please try again.';
@@ -75,6 +77,7 @@ const LoginPage: React.FC = () => {
           placeholder="••••••••"
           required
           autoComplete="current-password"
+          showPasswordToggle
         />
 
         <FormButton loading={loading} loadingText="Signing in...">
@@ -87,7 +90,7 @@ const LoginPage: React.FC = () => {
       <FormLink
         text="Don't have an account?"
         linkText="Create one"
-        to="/auth/register"
+        to={searchParams.get('redirect') ? `/auth/register?redirect=${searchParams.get('redirect')}` : '/auth/register'}
       />
     </AuthFormLayout>
   );

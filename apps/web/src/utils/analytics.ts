@@ -16,12 +16,15 @@ export function trackLoginToPurchaseClick() {
 }
 
 /**
- * Fired when a logged-in user clicks "Get Pro" and the Stripe checkout begins.
+ * Fired when Stripe checkout begins.
+ * source: "button" = user clicked Get Pro directly
+ *         "post_login" = user was redirected here after login/register
  */
-export function trackBeginCheckout(planCode: string) {
+export function trackBeginCheckout(planCode: string, source: "button" | "post_login" = "button") {
   gtag("event", "begin_checkout", {
     event_category: "monetisation",
     event_label: planCode,
+    checkout_source: source,
     currency: "USD",
     value: 9.99,
     items: [{ item_id: planCode, item_name: "Pro Lifetime", price: 9.99 }],

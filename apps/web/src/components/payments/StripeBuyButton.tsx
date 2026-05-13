@@ -18,7 +18,7 @@ export default function StripeBuyButton({
     try {
       setLoading(true);
       setError(null);
-      trackBeginCheckout(planCode);
+      trackBeginCheckout(planCode, "button");
 
       const { url } = await createCheckoutSession(planCode);
       window.location.href = url;
