@@ -7,25 +7,25 @@ const API_PREFIX = '/api/v1';
 const TOKEN_KEY = 'flashmovies_token';
 const USER_KEY = 'flashmovies_user';
 
-export interface User {
+interface User {
   id: number;
   email: string;
   displayName: string | null;
   role?: string;
 }
 
-export interface AuthResponse {
+interface AuthResponse {
   user: User;
   accessToken: string;
 }
 
-export interface RegisterData {
+interface RegisterData {
   email: string;
   password: string;
   displayName?: string;
 }
 
-export interface LoginData {
+interface LoginData {
   email: string;
   password: string;
 }
@@ -35,28 +35,9 @@ export const getToken = (): string | null => {
   return localStorage.getItem(TOKEN_KEY);
 };
 
-// Get stored user
-export const getUser = (): User | null => {
-  const userStr = localStorage.getItem(USER_KEY);
-  if (userStr) {
-    try {
-      return JSON.parse(userStr);
-    } catch {
-      return null;
-    }
-  }
-  return null;
-};
-
 // Check if user is authenticated
 export const isAuthenticated = (): boolean => {
   return !!getToken();
-};
-
-// Check if user has pro role
-export const isPro = (): boolean => {
-  const user = getUser();
-  return user?.role === 'pro' || user?.role === 'admin';
 };
 
 // Store auth data
@@ -114,16 +95,4 @@ export const login = async (data: LoginData): Promise<AuthResponse> => {
   );
   storeAuthData(response.data);
   return response.data;
-};
-
-// Logout user
-export const logout = async (): Promise<void> => {
-  try {
-    await authAxios.post('/public/auth/logout');
-  } catch (error) {
-    // Continue with logout even if API call fails
-    console.error('Logout API call failed:', error);
-  } finally {
-    clearAuthData();
-  }
 };

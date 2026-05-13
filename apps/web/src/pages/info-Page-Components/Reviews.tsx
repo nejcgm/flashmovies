@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchSpecific } from "../../utils/fetching.js";
 import ReviewCard from "./ReviewCard";
-//import { MediaType } from "../../functions/Interfaces.js";
 
 interface ReviewsProps {
   movieId: string | number | null;

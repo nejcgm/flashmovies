@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { getToken, clearAuthData } from '../client/auth';
-import { getCurrentUser, UserProfile, Subscription } from '../client/user';
+import { getCurrentUser, UserProfile, SubscriptionStatus } from '../client/user';
 
 interface UserState {
   isLoggedIn: boolean;
   isPro: boolean;
   user: UserProfile | null;
-  subscription: Subscription | null;
+  subscription: SubscriptionStatus | null;
   isLoading: boolean;
 }
 
@@ -48,8 +48,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
     try {
       const userProfile = await getCurrentUser();
-      const isPro = userProfile.role === 'pro' || userProfile.role === 'admin' || 
-                    (userProfile.subscription?.isActive === true && userProfile.subscription?.planCode === 'pro_lifetime');
+      const isPro =
+        userProfile.role === 'pro' ||
+        userProfile.role === 'admin' ||
+        userProfile.subscription.isPro;
       
       setState({
         isLoggedIn: true,
@@ -112,15 +114,4 @@ export const useUser = (): UserContextType => {
     throw new Error('useUser must be used within a UserProvider');
   }
   return context;
-};
-
-// Convenience hooks
-export const useIsLoggedIn = (): boolean => {
-  const { isLoggedIn } = useUser();
-  return isLoggedIn;
-};
-
-export const useIsPro = (): boolean => {
-  const { isPro } = useUser();
-  return isPro;
 };

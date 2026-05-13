@@ -31,7 +31,7 @@ export const EpisodeSelector = ({
                     setSeasonEpisodes(data.episodes);
                 }
             } catch (error) {
-                console.log("No season selected", error);
+                console.error("Failed to load season episodes:", error);
             } 
         };
         loadSeasonEpisodes();

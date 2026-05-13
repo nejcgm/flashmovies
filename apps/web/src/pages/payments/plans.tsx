@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { trackLoginToPurchaseClick } from "../../utils/analytics";
 import { PageHeader } from "../../components/common";
 import {
   PlanCard,
@@ -174,6 +175,7 @@ const PlansPage: React.FC = () => {
                     to="/auth/login"
                     className="block w-full py-3 px-4 bg-[#f5c518] hover:bg-yellow-600 text-black 
                            font-semibold rounded-lg text-center transition-all duration-300"
+                    onClick={trackLoginToPurchaseClick}
                   >
                     Login to Purchase
                   </Link>

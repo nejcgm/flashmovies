@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import ListItem from "./list-components/ListItem";
-import Spiner from "../components/Spinner";
+import Spinner from "../components/Spinner";
 import GenreListComponent from "./list-components/GenreListComponent";
 import BackButton from "../components/BackButton";
 import { fetchSpecific, fetchTrending, fetchThisYearHighlights } from "../utils/fetching.ts";
@@ -205,7 +205,7 @@ const List: React.FC = () => {
 
           {loading && !endOfList && (
             <div className="flex w-full flex-1 justify-center">
-              <Spiner />
+              <Spinner />
             </div>
           )}
           {endOfList && (

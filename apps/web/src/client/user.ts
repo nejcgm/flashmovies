@@ -1,6 +1,6 @@
 import { authAxios } from './auth';
 
-export interface SubscriptionInfo {
+interface SubscriptionInfo {
   id: number;
   isLifetime: boolean;
   startsAt: string;

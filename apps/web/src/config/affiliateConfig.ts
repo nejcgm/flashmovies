@@ -1,4 +1,4 @@
-export interface AffiliateLink {
+interface AffiliateLink {
   name: string;
   url: string;
   bgColor: string;
@@ -55,60 +55,3 @@ export const getAffiliateLinks = (movieTitle: string): AffiliateLink[] => [
     commission: "8-10% commission"
   }
 ];
-
-/* COMMENTED OUT - TO BE ACTIVATED LATER WHEN APPROVED
-
-// High-converting VPN links (no approval needed)
-export const vpnAffiliateLinks: AffiliateLink[] = [
-  {
-    name: "🔒 NordVPN",
-    url: `https://go.nordvpn.net/aff_c?offer_id=15&aff_id=YOUR_ID&url_id=902`,
-    bgColor: "bg-[#4687ff]",
-    hoverColor: "hover:bg-[#3d7aff]",
-    textColor: "text-white",
-    offer: "73% OFF Deal",
-    commission: "$100+ per signup"
-  },
-  {
-    name: "🎮 ExpressVPN",
-    url: `https://www.expressvpn.com/order?a_fid=YOUR_ID&a_bid=f6b6fbf9`,
-    bgColor: "bg-[#da020e]",
-    hoverColor: "hover:bg-[#c4010c]",
-    textColor: "text-white",
-    offer: "49% OFF + 3 Months",
-    commission: "$77 per signup"
-  }
-];
-
-// Streaming services - Apply through respective programs when available
-export const streamingAffiliateLinks: AffiliateLink[] = [
-  {
-    name: "Netflix",
-    url: `https://netflix.com/search?q=${encodeURIComponent(movieTitle)}&utm_source=flashmovies&utm_medium=affiliate&utm_campaign=movie_search`,
-    bgColor: "bg-[#e50914]",
-    hoverColor: "hover:bg-[#f40612]",
-    textColor: "text-white",
-    offer: "30 Day Free Trial",
-    commission: "$40-50 per signup" 
-  },
-  {
-    name: "Hulu",
-    url: `https://secure.hulu.com/account/signup?utm_source=flashmovies&utm_medium=affiliate&search=${encodeURIComponent(movieTitle)}`,
-    bgColor: "bg-[#1ce783]",
-    hoverColor: "hover:bg-[#17d974]",
-    textColor: "text-black",
-    offer: "$1.99/month",
-    commission: "$25-35 per signup"
-  },
-  {
-    name: "Disney+",
-    url: `https://www.disneyplus.com/sign-up?cid=DSS-Affiliate-flashmovies&search=${encodeURIComponent(movieTitle)}`,
-    bgColor: "bg-[#113ccf]",
-    hoverColor: "hover:bg-[#0f35b8]",
-    textColor: "text-white",
-    offer: "Bundle Available",
-    commission: "$20-30 per signup"
-  }
-];
-
-*/ 

@@ -8,29 +8,13 @@ declare module "*.png" {
   export default value;
 }
 
-declare module "../functions/Functions.js" {
-  export const convertMinutesToHoursAndMinutes: (minutes: number) => string;
-  export const formatTitle: (str: string) => string;
-}
-
-/// <reference types="vite/client" />
-
-interface ImportMetaEnv {
-  readonly VITE_API_KEY: string;
-  readonly VITE_APP_NAME: string;
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
-
-declare module 'react-helmet-async';
+declare module "react-helmet-async";
 
 declare global {
   interface Window {
     prerenderReady: boolean;
+    gtag?: (command: string, action: string, parameters?: Record<string, unknown>) => void;
   }
 }
 
 export {};
-

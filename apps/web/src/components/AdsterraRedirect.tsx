@@ -3,12 +3,6 @@ import { useAdTracker } from '../context/AdTrackerContext';
 import { getAdsterraConfig } from '../config/adsterraConfig';
 import { useUser } from '../context/UserContext';
 
-declare global {
-  interface Window {
-    gtag?: (command: string, action: string, parameters?: Record<string, unknown>) => void;
-  }
-}
-
 interface AdsterraRedirectProps {
   enabled?: boolean;
 }

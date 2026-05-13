@@ -6,7 +6,7 @@ import {
 } from "../utils/fetching.js";
 import { DataInfoProps } from "../utils/Interfaces";
 
-export type GenreSpotlightMedia = "movie" | "tv";
+type GenreSpotlightMedia = "movie" | "tv";
 
 /** TMDB movie genre ids — /genre/movie/list */
 const MOVIE_GENRES: readonly { id: number; label: string }[] = [

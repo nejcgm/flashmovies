@@ -8,7 +8,7 @@ const linkClassDefault =
 const linkClassProminent =
   'group flex w-full max-w-none flex-row flex-wrap items-center justify-center gap-x-3 gap-y-2.5 rounded-xl border-2 border-[#f5c518]/45 bg-black/40 px-4 py-3.5 text-center transition-all hover:border-[#f5c518]/75 hover:bg-black/55 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c518] sm:gap-x-4 sm:gap-y-2 sm:rounded-2xl sm:px-8 sm:py-5 sm:bg-gradient-to-r sm:from-black/45 sm:via-amber-400/12 sm:to-black/45 md:gap-x-5 md:px-10 md:py-5 md:shadow-lg md:shadow-black/30';
 
-export interface ProPlansPromoStripProps {
+interface ProPlansPromoStripProps {
   className?: string;
   onClick?: () => void;
   /** When false, nothing is rendered (e.g. hide on person pages). */

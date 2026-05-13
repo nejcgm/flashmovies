@@ -82,7 +82,6 @@ export function useLocaleStorageList(
   maxItems = 20
 ) {
   const [data, setData] = useState<[]>([]);
-  // @ts-expect-error - import.meta.env is not typed
   const apiKey = import.meta.env.VITE_API_KEY;
 
   useEffect(() => {

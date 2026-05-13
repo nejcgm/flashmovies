@@ -13,11 +13,10 @@ interface ContextAdRedirectOptions {
 
 let globalCallCountAd = 0;
 let newCount = 0;
-//const navigate = useNavigate();
 
-export const triggerContextAdRedirect = (
+function triggerContextAdRedirect(
   options: ContextAdRedirectOptions
-): void => {
+): void {
   if (options.isPro) {
     return;
   }
@@ -111,32 +110,4 @@ export const triggerContextAdRedirectDirect = (
     ...options,
     incrementClick,
   });
-};
-
-export const redirectForAdVideo = (options: {
-  setVideoAd: () => void;
-  reloadPage?: () => void;
-  navigateBack?: () => void;
-}) => {
-  options.setVideoAd();
-
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", "ad_redirect_click", {
-      event_category: "monetization",
-      event_label: "ad_video_click",
-      click_type: ClickTypeEnum.AD_VIDEO,
-    });
-  }
-  options.reloadPage?.();
-  options.navigateBack?.();
-};
-
-export const disablePopupScript = (options: {
-  isInCooldown: boolean;
-}) => {
-  const isInCooldown = options.isInCooldown;
-  if (isInCooldown) {
-    return true;
-  }
-  return false;
 };

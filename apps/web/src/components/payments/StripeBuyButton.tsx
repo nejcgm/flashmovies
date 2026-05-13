@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createCheckoutSession } from "../../client/payments";
+import { trackBeginCheckout } from "../../utils/analytics";
 
 interface StripeBuyButtonProps {
   className?: string;
@@ -17,6 +18,7 @@ export default function StripeBuyButton({
     try {
       setLoading(true);
       setError(null);
+      trackBeginCheckout(planCode);
 
       const { url } = await createCheckoutSession(planCode);
       window.location.href = url;

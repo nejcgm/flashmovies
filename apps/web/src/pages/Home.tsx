@@ -43,7 +43,6 @@ const Home = () => {
   const [trendingTv, setTrendingTv] = useState<[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { isPro } = useUser();
-  console.log("isPro", isPro)
 
   const heroPage = 2;
   const classicPage = 1;

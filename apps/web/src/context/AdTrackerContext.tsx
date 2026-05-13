@@ -13,13 +13,8 @@ interface AdTrackerContextType {
   state: AdTrackerState;
   incrementClick: () => boolean;
   isInCooldown: () => boolean;
-  getCooldownRemaining: () => number;
-  reset: () => void;
-  setVideoAd: () => void;
   incrementAffiliateClick: () => boolean;
   isAffiliateInCooldown: () => boolean;
-  getAffiliateCooldownRemaining: () => number;
-  resetAffiliate: () => void;
 }
 
 const AdTrackerContext = createContext<AdTrackerContextType | undefined>(undefined);
@@ -126,30 +121,6 @@ export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
     return state.isInCooldown;
   };
 
-  const getCooldownRemaining = (): number => {
-    if (!state.isInCooldown) return 0;
-    const remaining = state.cooldownEndTime - Date.now();
-    return Math.max(0, remaining);
-  };
-
-  const reset = () => {
-    setState(prev => ({
-      ...prev,
-      globalClickCount: 0,
-      isInCooldown: false,
-      cooldownEndTime: 0
-    }));
-  };
-
-  const setVideoAd = () => {
-    setState(prev => ({
-      ...prev,
-      globalClickCount: 0,
-      isInCooldown: true,
-      cooldownEndTime: Date.now() + 30 * 60 * 1000
-    }));
-  };
-
   const incrementAffiliateClick = (): boolean => {
     if (state.affiliateIsInCooldown) {
       return false;
@@ -188,32 +159,12 @@ export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
     return state.affiliateIsInCooldown;
   };
 
-  const getAffiliateCooldownRemaining = (): number => {
-    if (!state.affiliateIsInCooldown) return 0;
-    const remaining = state.affiliateCooldownEndTime - Date.now();
-    return Math.max(0, remaining);
-  };
-
-  const resetAffiliate = () => {
-    setState(prev => ({
-      ...prev,
-      affiliateClickCount: 0,
-      affiliateIsInCooldown: false,
-      affiliateCooldownEndTime: 0
-    }));
-  };
-
   const value: AdTrackerContextType = {
     state,
     incrementClick,
     isInCooldown,
-    getCooldownRemaining,
-    reset,
-    setVideoAd,
     incrementAffiliateClick,
     isAffiliateInCooldown,
-    getAffiliateCooldownRemaining,
-    resetAffiliate,
   };
 
   return (

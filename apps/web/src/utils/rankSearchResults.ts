@@ -1,7 +1,7 @@
 import fuzzysort from "fuzzysort";
 
 /** Header search rows — include artwork & engagement for ranking. */
-export type SearchRankable = {
+type SearchRankable = {
   title?: string;
   name?: string;
   poster_path?: string | null;
