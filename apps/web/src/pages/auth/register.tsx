@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { register } from '../../client/auth';
+import { csTagPage } from '../../SEO/ContentSquare';
 import { useUser } from '../../context/UserContext';
 import {
   AuthFormLayout,
@@ -12,6 +13,7 @@ import {
 } from '../../components/forms';
 
 const RegisterPage: React.FC = () => {
+  useEffect(() => { csTagPage('Auth - Register'); }, []);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { refreshUser } = useUser();

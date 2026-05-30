@@ -69,7 +69,7 @@ export const ProPlansPromoStrip: React.FC<ProPlansPromoStripProps> = ({
               : 'text-gray-500 line-through decoration-red-500/80 decoration-2 sm:decoration-2'
           }
         >
-          $15
+          $14.99
         </span>{' '}
         <span
           className={
@@ -78,7 +78,7 @@ export const ProPlansPromoStrip: React.FC<ProPlansPromoStripProps> = ({
               : 'text-base font-bold text-white sm:text-lg md:text-lg'
           }
         >
-          $9.99
+          $6.99
         </span>
         <span className={prominent ? 'text-gray-400 sm:text-lg md:text-xl' : 'text-gray-500'}>
           {' '}

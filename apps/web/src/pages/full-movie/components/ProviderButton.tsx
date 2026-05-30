@@ -40,9 +40,9 @@ const ProviderButton = ({
       {showDiscountCallout && (
         <span className="inline-flex items-baseline gap-0.5 rounded border border-amber-500/50 bg-black/35 px-1 py-0.5 sm:px-1.5 shrink-0">
           <span className="text-[8px] sm:text-[9px] font-semibold tabular-nums text-gray-200 line-through decoration-red-500/90 decoration-1">
-            $15
+            $14.99
           </span>
-          <span className="text-[9px] sm:text-[10px] font-bold tabular-nums text-amber-200">$9.99</span>
+          <span className="text-[9px] sm:text-[10px] font-bold tabular-nums text-amber-200">$6.99</span>
         </span>
       )}
     </button>

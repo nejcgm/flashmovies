@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import MainLayout from "./layout/MainLayout";
 import AuthLayout from "./layout/AuthLayout";
 import Analytics from "./SEO/Analytics";
+import ContentSquare from "./SEO/ContentSquare";
 import Spinner from "./components/Spinner";
 
 // Page chunks — loaded only when the route is first visited
@@ -29,6 +30,7 @@ const App: React.FC = () => {
   return (
     <>
       <Analytics />
+      <ContentSquare />
       <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Spinner /></div>}>
         <Routes>
           <Route path="/auth" element={<AuthLayout />}>

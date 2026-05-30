@@ -14,6 +14,7 @@ declare global {
   interface Window {
     prerenderReady: boolean;
     gtag?: (command: string, action: string, parameters?: Record<string, unknown>) => void;
+    _uxa?: unknown[];
   }
 }
 

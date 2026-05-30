@@ -84,8 +84,8 @@ const ProBanner: React.FC = () => {
     return null;
   }
 
-  const compareAtDisplay = '$15';
-  const priceDisplay = '$9.99';
+  const compareAtDisplay = '$14.99';
+  const priceDisplay = '$6.99';
 
   return (
     <>

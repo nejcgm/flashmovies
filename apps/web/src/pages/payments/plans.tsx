@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { trackBeginCheckout, trackPlansAuthIntent } from "../../utils/analytics";
+import { csTagPage } from "../../SEO/ContentSquare";
 import { PageHeader } from "../../components/common";
 import {
   PlanCard,
@@ -21,6 +22,7 @@ const PLANS_AUTO_CHECKOUT_REGISTER = encodeURIComponent(
 );
 
 const PlansPage: React.FC = () => {
+  useEffect(() => { csTagPage('Pricing - Plans'); }, []);
   const { refreshUser } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -113,7 +115,7 @@ const PlansPage: React.FC = () => {
       <div className="max-w-5xl mx-auto">
         <PageHeader
           title="Choose Your Plan"
-          subtitle="Upgrade to Pro for an ad-free experience. One payment, lifetime access."
+          subtitle="Upgrade to Pro for an ad-free experience. One payment of $6.99 — lifetime access."
         />
 
         {/* Payment Status */}
@@ -151,8 +153,8 @@ const PlansPage: React.FC = () => {
           <div className="order-1 md:order-2 h-full">
             <PlanCard
               name="Pro"
-              price={9.99}
-              compareAtPrice={15}
+              price={6.99}
+              compareAtPrice={14.99}
               description="Removes all ads"
               features={lifetimeFeatures}
               isLifetime

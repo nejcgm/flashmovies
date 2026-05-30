@@ -31,13 +31,13 @@ export function trackBeginCheckout(planCode: string, source: CheckoutSource) {
     event_label: planCode,
     checkout_source: source,
     currency: "USD",
-    value: 9.99,
+    value: 6.99,
     items: [
       {
         item_id: planCode,
         item_name: "Pro Lifetime",
         item_category: "subscription",
-        price: 9.99,
+        price: 6.99,
         quantity: 1,
       },
     ],
