@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAdTracker } from '../context/AdTrackerContext';
 import { getAdsterraConfig } from '../config/adsterraConfig';
 import { useUser } from '../context/UserContext';
+import { useProUpsell } from '../context/ProUpsellContext';
 
 interface AdsterraRedirectProps {
   enabled?: boolean;
@@ -12,6 +13,7 @@ const AdsterraRedirect: React.FC<AdsterraRedirectProps> = ({
 }) => {
   const { incrementAffiliateClick, isAffiliateInCooldown, state } = useAdTracker();
   const { isPro, isLoading } = useUser();
+  const { openProUpsell } = useProUpsell();
   const [isReady, setIsReady] = useState(false);
   const [localCooldownEndTime, setLocalCooldownEndTime] = useState(0);
   const adsterraConfig = getAdsterraConfig();
@@ -52,6 +54,8 @@ const AdsterraRedirect: React.FC<AdsterraRedirectProps> = ({
 
         window.open(adsterraConfig.affiliateUrl[state.affiliateClickCount], '_blank', 'noopener');
 
+        openProUpsell('ad_redirect');
+
         // Set local cooldown after first click
         if (state.affiliateClickCount === 0) {
           const localCooldownDuration = adsterraConfig.adsterraRedirect.localCooldownMinutes * 60 * 1000;
@@ -67,7 +71,7 @@ const AdsterraRedirect: React.FC<AdsterraRedirectProps> = ({
       clearInterval(cooldownTimer);
       document.removeEventListener('click', handleClick, true);
     };
-  }, [enabled, isReady, incrementAffiliateClick, isAffiliateInCooldown, adsterraConfig, state.affiliateClickCount, localCooldownEndTime, isPro, isLoading]);
+  }, [enabled, isReady, incrementAffiliateClick, isAffiliateInCooldown, adsterraConfig, state.affiliateClickCount, localCooldownEndTime, isPro, isLoading, openProUpsell]);
 
   return null;
 };

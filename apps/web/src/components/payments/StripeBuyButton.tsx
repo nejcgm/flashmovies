@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createCheckoutSession } from "../../client/payments";
+import { PRO_PRICE } from "../../config/proCheckoutPaths";
 import { trackBeginCheckout } from "../../utils/analytics";
 
 interface StripeBuyButtonProps {
@@ -55,7 +56,7 @@ export default function StripeBuyButton({
                    font-semibold rounded-lg text-center transition-all duration-300
                    disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? "Starting checkout..." : "Get Pro"}
+        {loading ? "Starting checkout..." : `Get Pro — $${PRO_PRICE.toFixed(2)}`}
       </button>
     </div>
   );

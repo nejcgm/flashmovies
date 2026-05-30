@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
+import { PRO_COMPARE_AT, PRO_PRICE } from '../../config/proCheckoutPaths';
 
 const linkClassDefault =
   'group flex w-full max-w-none flex-row flex-wrap items-center justify-center gap-x-2 gap-y-2 rounded-lg border border-[#f5c518]/35 bg-black/35 px-3 py-2.5 text-center transition-all hover:border-[#f5c518]/60 hover:bg-black/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c518] sm:gap-x-3 sm:gap-y-1 sm:rounded-xl sm:px-5 sm:py-3 sm:bg-gradient-to-r sm:from-black/45 sm:via-amber-400/10 sm:to-black/45 md:gap-x-3 md:px-6 md:py-3 md:shadow-md md:shadow-black/20';
@@ -44,7 +45,7 @@ export const ProPlansPromoStrip: React.FC<ProPlansPromoStripProps> = ({
             : 'text-[11px] font-semibold text-[#f5c518] sm:text-sm md:text-sm md:font-bold'
         }
       >
-        No Ads with pro
+        Go ad-free with Pro
       </span>
       <span
         className={
@@ -69,7 +70,7 @@ export const ProPlansPromoStrip: React.FC<ProPlansPromoStripProps> = ({
               : 'text-gray-500 line-through decoration-red-500/80 decoration-2 sm:decoration-2'
           }
         >
-          $14.99
+          ${PRO_COMPARE_AT.toFixed(2)}
         </span>{' '}
         <span
           className={
@@ -78,7 +79,7 @@ export const ProPlansPromoStrip: React.FC<ProPlansPromoStripProps> = ({
               : 'text-base font-bold text-white sm:text-lg md:text-lg'
           }
         >
-          $6.99
+          ${PRO_PRICE.toFixed(2)}
         </span>
         <span className={prominent ? 'text-gray-400 sm:text-lg md:text-xl' : 'text-gray-500'}>
           {' '}

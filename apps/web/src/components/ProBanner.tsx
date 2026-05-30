@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import { PRO_COMPARE_AT, PRO_PRICE } from '../config/proCheckoutPaths';
 
 const ProBanner: React.FC = () => {
   const { isPro, isLoggedIn, isLoading } = useUser();
@@ -84,8 +85,8 @@ const ProBanner: React.FC = () => {
     return null;
   }
 
-  const compareAtDisplay = '$14.99';
-  const priceDisplay = '$6.99';
+  const compareAtDisplay = `$${PRO_COMPARE_AT.toFixed(2)}`;
+  const priceDisplay = `$${PRO_PRICE.toFixed(2)}`;
 
   return (
     <>
@@ -126,14 +127,11 @@ const ProBanner: React.FC = () => {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="text-white font-bold text-sm sm:text-base">
-                        {isLoggedIn ? 'Upgrade to Pro' : 'Go Ad-Free with Pro'}
+                        {isLoggedIn ? 'Upgrade to Pro' : 'Watch ad-free forever'}
                       </h3>
-                      <span className="px-2 py-0.5 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide rounded-full bg-emerald-600 text-white">
-                        Limited offer
-                      </span>
                     </div>
                     <p className="text-gray-400 text-xs sm:text-sm mt-0.5 line-clamp-2 sm:line-clamp-none">
-                      No ads, premium servers, full comment viewing, best quality
+                      {priceDisplay} one-time — premium servers, no ads, full reviews
                     </p>
                     <p className="mt-1.5 flex items-center gap-1.5 text-[10px] sm:text-[11px] text-gray-500">
                       <svg

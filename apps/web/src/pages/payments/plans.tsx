@@ -11,15 +11,14 @@ import {
 import { isAuthenticated } from "../../client/auth";
 import { getSubscriptionStatus, SubscriptionStatus } from "../../client/user";
 import { createCheckoutSession } from "../../client/payments";
+import {
+  PLANS_AUTO_CHECKOUT_LOGIN,
+  PLANS_AUTO_CHECKOUT_REGISTER,
+  PRO_COMPARE_AT,
+  PRO_PRICE,
+} from "../../config/proCheckoutPaths";
 import Spinner from "../../components/Spinner";
 import { useUser } from "../../context/UserContext";
-
-const PLANS_AUTO_CHECKOUT_LOGIN = encodeURIComponent(
-  "/payments/plans?autoCheckout=1&checkout_origin=login"
-);
-const PLANS_AUTO_CHECKOUT_REGISTER = encodeURIComponent(
-  "/payments/plans?autoCheckout=1&checkout_origin=register"
-);
 
 const PlansPage: React.FC = () => {
   useEffect(() => { csTagPage('Pricing - Plans'); }, []);
@@ -85,12 +84,11 @@ const PlansPage: React.FC = () => {
   }, [searchParams, setSearchParams, refreshUser]);
 
   const lifetimeFeatures = [
-    { text: "Remove all on site ads forever", included: true, emphasized: true },
-    { text: "Access to premium streaming servers", included: true },
+    { text: "Watch ad-free forever", included: true, emphasized: true },
+    { text: "Premium streaming servers (ad-free, best quality)", included: true },
     { text: "Full comment viewing everywhere", included: true },
+    { text: "One-time payment — not a subscription", included: true },
     { text: "Early access to new features", included: true },
-    { text: "No recurring payments", included: true },
-    { text: "Cleaner experience", included: true },
   ];
 
   const freeFeatures = [
@@ -115,7 +113,7 @@ const PlansPage: React.FC = () => {
       <div className="max-w-5xl mx-auto">
         <PageHeader
           title="Choose Your Plan"
-          subtitle="Upgrade to Pro for an ad-free experience. One payment of $6.99 — lifetime access."
+          subtitle={`Watch ad-free forever — $${PRO_PRICE.toFixed(2)} one-time. Premium servers & full reviews included.`}
         />
 
         {/* Payment Status */}
@@ -153,9 +151,9 @@ const PlansPage: React.FC = () => {
           <div className="order-1 md:order-2 h-full">
             <PlanCard
               name="Pro"
-              price={6.99}
-              compareAtPrice={14.99}
-              description="Removes all ads"
+              price={PRO_PRICE}
+              compareAtPrice={PRO_COMPARE_AT}
+              description="Watch ad-free forever"
               features={lifetimeFeatures}
               isLifetime
               highlighted={!isPro}
@@ -189,25 +187,28 @@ const PlansPage: React.FC = () => {
                   )}
                 </div>
               ) : isLoggedIn ? (
-                <StripeBuyButton className="w-full" />
+                <StripeBuyButton className="w-full"/>
               ) : (
                 <div className="space-y-3">
                   <Link
-                    to={`/auth/login?redirect=${PLANS_AUTO_CHECKOUT_LOGIN}`}
+                    to={`/auth/register?redirect=${PLANS_AUTO_CHECKOUT_REGISTER}`}
                     className="block w-full py-3 px-4 bg-[#f5c518] hover:bg-yellow-600 text-black 
                            font-semibold rounded-lg text-center transition-all duration-300"
-                    onClick={() => trackPlansAuthIntent("login")}
+                    onClick={() => trackPlansAuthIntent("register")}
                   >
-                    Login to Purchase
+                    Get Pro — ${PRO_PRICE.toFixed(2)} lifetime
                   </Link>
                   <p className="text-center text-gray-500 text-sm">
-                    Don&apos;t have an account?{" "}
+                    Create a free account — checkout takes about 30 seconds.
+                  </p>
+                  <p className="text-center text-gray-500 text-sm">
+                    Already have an account?{" "}
                     <Link
-                      to={`/auth/register?redirect=${PLANS_AUTO_CHECKOUT_REGISTER}`}
+                      to={`/auth/login?redirect=${PLANS_AUTO_CHECKOUT_LOGIN}`}
                       className="text-[#f5c518] hover:underline"
-                      onClick={() => trackPlansAuthIntent("register")}
+                      onClick={() => trackPlansAuthIntent("login")}
                     >
-                      Register
+                      Sign in
                     </Link>
                   </p>
                 </div>
@@ -218,6 +219,12 @@ const PlansPage: React.FC = () => {
 
         {/* Additional Info */}
         <div className="mt-12 text-center space-y-3">
+          {!isPro && (
+            <p className="text-gray-400 text-sm">
+              One-time payment, not a subscription. Pay exactly $
+              {PRO_PRICE.toFixed(2)} at Stripe checkout.
+            </p>
+          )}
           <p className="text-gray-500 text-sm">
             If you have purchased the pro plan and did not receive it please
             contact us at{" "}

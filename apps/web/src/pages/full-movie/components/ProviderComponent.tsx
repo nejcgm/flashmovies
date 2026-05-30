@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import ProviderButton from "./ProviderButton";
 import { STREAMING_PROVIDERS } from "../../../config/streamingProviders";
 import { useUser } from "../../../context/UserContext";
+import { useProUpsell } from "../../../context/ProUpsellContext";
 
 interface ProviderComponentProps {
   newProvider: (
@@ -26,7 +26,7 @@ const ProviderComponent = ({
   description,
 }: ProviderComponentProps) => {
   const { isPro } = useUser();
-  const navigate = useNavigate();
+  const { openProUpsell } = useProUpsell();
 
   const providers = STREAMING_PROVIDERS.map((provider) => ({
     name: provider.name,
@@ -74,7 +74,7 @@ const ProviderComponent = ({
   ) => {
     // If non-pro user clicks premium provider, redirect to plans page
     if (isPremium && !isPro) {
-      navigate('/payments/plans');
+      openProUpsell('premium_server');
       return;
     }
 

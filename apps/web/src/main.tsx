@@ -7,6 +7,7 @@ import AdsterraRedirect from './components/AdsterraRedirect';
 import { getAdsterraConfig } from './config/adsterraConfig';
 import { AdTrackerProvider } from './context/AdTrackerContext';
 import { UserProvider } from './context/UserContext';
+import { ProUpsellProvider } from './context/ProUpsellContext';
 import { HelmetProvider } from 'react-helmet-async';
 // import { Snowfall } from 'react-snowfall';
 function Root() {
@@ -16,6 +17,7 @@ function Root() {
     <HelmetProvider>
     <UserProvider>
     <AdTrackerProvider>
+    <ProUpsellProvider>
       {/* <Snowfall
         snowflakeCount={100}
         speed={[0.9, 1.7]}
@@ -25,6 +27,7 @@ function Root() {
       /> */}
       <AdsterraRedirect enabled={adsterraConfig.enabled} />
       <App />
+    </ProUpsellProvider>
     </AdTrackerProvider>
     </UserProvider>
     </HelmetProvider>

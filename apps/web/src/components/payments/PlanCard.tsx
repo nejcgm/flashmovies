@@ -47,7 +47,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
           <h3 className="text-xl font-bold text-white">{name}</h3>
           {isLifetime && <Badge variant="primary">Lifetime</Badge>}
           {compareAtPrice != null && compareAtPrice > price && (
-            <Badge variant="success">Limited offer</Badge>
+            <Badge variant="success">Best value</Badge>
           )}
         </div>
         {description && <p className="text-gray-400 text-sm">{description}</p>}
@@ -71,7 +71,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
               </div>
               <div className="text-center">
                 <span
-                  className="relative inline-block text-4xl sm:text-5xl font-bold tabular-nums text-gray-200"
+                  className="relative inline-block text-4xl sm:text-4xl font-bold tabular-nums text-gray-200"
                   aria-label={`Previously ${formatPrice(compareAtPrice)}`}
                 >
                   {formatPrice(compareAtPrice)}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   fetchSpecific,
   fetchTrending,
@@ -14,6 +15,7 @@ import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
 import AffiliateLinks from "../components/AffiliateLinks.tsx";
 import { ProPlansPromoStrip } from "../components/common/ProPlansPromoStrip";
 import SectionDivider from "../components/SectionDivider";
+import { PRO_PRICE } from "../config/proCheckoutPaths";
 import { useUser } from "../context/UserContext";
 
 const LIST_MORE = {
@@ -152,11 +154,14 @@ const Home = () => {
           />
 
           {!isPro && (
-            <div className="text-center text-xs sm:text-sm px-3 text-gray-500 mt-4 sm:mt-8">
-              Ads can be a pain, but they are our only way to maintain the server.
-              Your patience is highly appreciated and we hope our service can be
-              worth it.
-            </div>
+            <p className="text-center text-xs sm:text-sm px-3 text-gray-400 mt-4 sm:mt-8">
+              <Link
+                to="/payments/plans"
+                className="text-[#f5c518] hover:underline font-medium"
+              >
+                Tired of ads? Go Pro — ${PRO_PRICE.toFixed(2)} lifetime, no recurring fees →
+              </Link>
+            </p>
           )}
 
           <SectionDivider title="Movies" icon="movie" />
