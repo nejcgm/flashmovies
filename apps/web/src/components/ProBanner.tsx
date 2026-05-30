@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { ChessQueen } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import { PRO_COMPARE_AT, PRO_PRICE } from '../config/proCheckoutPaths';
 
@@ -112,17 +113,7 @@ const ProBanner: React.FC = () => {
                     className="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#f5c518]/45 bg-black/25 text-[#f5c518] sm:h-12 sm:w-12"
                     aria-hidden
                   >
-                    <svg
-                      className="h-5 w-5 sm:h-6 sm:w-6"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M2 18V14.5l3-5.5 3.5 3L12 7l3.5 5 3.5-3 3 5.5V18H2Z" />
-                    </svg>
+                    <ChessQueen className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.5} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
