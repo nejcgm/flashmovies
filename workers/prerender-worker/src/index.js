@@ -63,6 +63,10 @@ function htmlResponse(page, env, cacheStatus) {
   return new Response(html, { status: page.status, headers });
 }
 
+function withoutBody(response) {
+  return new Response(null, { status: response.status, headers: response.headers });
+}
+
 function withKind(page, kind) {
   return { ...page, kind };
 }
@@ -190,6 +194,7 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
 
   if (route.kind === "list") {
     let data = null;
+    let listFailed = false;
     try {
       const result = await fetchTmdbList(
         route.type,
@@ -197,14 +202,19 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
         env.TMDB_API_KEY,
         fetchImpl,
       );
-      data = result.data;
+      if (result.status === 204) {
+        data = null;
+      } else if (!result.data) {
+        listFailed = true;
+      } else {
+        data = result.data;
+      }
     } catch {
-      data = null;
+      listFailed = true;
     }
-    return withKind(
-      listPage({ route, data, canonical, siteOrigin: origin }),
-      "list",
-    );
+    const page = listPage({ route, data, canonical, siteOrigin: origin });
+    if (listFailed) page.ttl = 120;
+    return withKind(page, "list");
   }
 
   return withKind(notFoundPage({ canonical, siteOrigin: origin }), "not-found");
@@ -276,6 +286,9 @@ export async function handleRequest(request, env, ctx, deps = {}) {
     if (hit) {
       const headers = new Headers(hit.headers);
       headers.set("x-crawler-cache", "HIT");
+      if (request.method === "HEAD") {
+        return new Response(null, { status: hit.status, headers });
+      }
       return new Response(hit.body, { status: hit.status, headers });
     }
   }
@@ -290,7 +303,7 @@ export async function handleRequest(request, env, ctx, deps = {}) {
   }
 
   if (request.method === "HEAD") {
-    return new Response(null, { status: response.status, headers: response.headers });
+    return withoutBody(response);
   }
 
   return response;

@@ -17,6 +17,15 @@ describe("routes", () => {
     assert.equal(tv.type, "tv");
     assert.equal(tv.id, "1396");
 
+    const blocked = parseRoute(
+      new URL("https://flashmovies.xyz/movie-info?type=movie&id=1439112"),
+    );
+    assert.equal(blocked.kind, "not-found");
+    const blockedWatch = parseRoute(
+      new URL("https://flashmovies.xyz/full-movie?type=movie&id=1439112"),
+    );
+    assert.equal(blockedWatch.kind, "not-found");
+
     const person = parseRoute(new URL("https://flashmovies.xyz/movie-info?type=person&id=287"));
     assert.equal(person.kind, "detail");
     assert.equal(person.type, "person");

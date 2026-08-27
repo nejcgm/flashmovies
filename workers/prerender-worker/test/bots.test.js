@@ -25,6 +25,20 @@ describe("bot user-agents", () => {
     });
   }
 
+  it("does not treat in-app browsers as crawlers", () => {
+    const inApp = [
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 300.0.0.20.109",
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Snapchat/12.0.0.0",
+      "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 Line/13.0.0",
+      "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 KAKAOTALK/10.0.0",
+      "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Viber/20.0.0.0",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Norton",
+    ];
+    for (const ua of inApp) {
+      assert.equal(isBotUserAgent(ua), false, ua);
+    }
+  });
+
   it("does not treat a normal Chrome UA as a crawler", () => {
     const chrome =
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";

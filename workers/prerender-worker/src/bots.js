@@ -71,21 +71,17 @@ export const BOT_AGENTS = [
   "applenewsbot",
   "pagespeed",
 
-  // Social / unfurl
+  // Social / unfurl crawlers only — do not use tokens that appear in
+  // in-app browsers (Instagram, Snapchat, LINE, KakaoTalk, Viber).
+  // Instagram link previews already match facebookexternalhit.
   "facebot",
   "facebookbot",
   "facebookcatalog",
   "meta-externalagent",
   "meta-externalfetcher",
-  "instagram",
   "slack-imgproxy",
-  "pinterest/",
   "iframely",
   "pocketparser",
-  "viber",
-  "line/",
-  "kakaotalk",
-  "snapchat",
 
   // AI crawlers
   "gptbot",
@@ -127,9 +123,6 @@ export const BOT_AGENTS = [
   "virustotal",
   "sucuri",
   "siteadvisor",
-  "norton",
-  "mcafee",
-  "bitdefender",
   "quttera",
   "urlvoid",
   "gridinsoft",

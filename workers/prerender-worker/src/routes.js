@@ -63,6 +63,20 @@ const BYPASS_EXACT = new Set([
   "/verify.html",
 ]);
 
+/**
+ * Same hidden title the SPA 404s (MovieInfoPage / WatchMoviePage) and
+ * strips from search and carousels. Do not emit indexable crawler HTML.
+ */
+export const BLOCKED_MOVIE_ID = "1439112";
+
+/**
+ * @param {string | null | undefined} type
+ * @param {string | number | null | undefined} id
+ */
+export function isBlockedTitle(type, id) {
+  return type === "movie" && String(id) === BLOCKED_MOVIE_ID;
+}
+
 const DETAIL_PATHS = new Set(["/movie-info", "/full-movie"]);
 const LIST_PATHS = new Set(["/list-items"]);
 const STATIC_PAGES = {
@@ -147,6 +161,9 @@ export function parseRoute(url) {
     const type = asMediaType(url.searchParams.get("type"));
     const id = url.searchParams.get("id");
     if (!type || !isTmdbId(id)) {
+      return { kind: "not-found", pathname };
+    }
+    if (isBlockedTitle(type, id)) {
       return { kind: "not-found", pathname };
     }
     if (pathname === "/full-movie" && type === "person") {

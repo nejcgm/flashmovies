@@ -8,6 +8,7 @@ import {
   assertsSiteCopy,
 } from "./copy.js";
 import { tmdbImageUrl } from "./tmdb.js";
+import { isBlockedTitle } from "./routes.js";
 
 /**
  * @typedef {object} PageModel
@@ -284,7 +285,9 @@ export function listPage({ route, data, canonical, siteOrigin }) {
   const description = assertsSiteCopy(
     `Watch ${listName} free online on Flash Movies — free movies and TV shows in HD.`,
   );
-  const results = Array.isArray(data?.results) ? data.results.slice(0, 20) : [];
+  const results = Array.isArray(data?.results)
+    ? data.results.filter((item) => !isBlockedTitle(route.type, item.id)).slice(0, 20)
+    : [];
   const firstImage =
     tmdbImageUrl(results[0]?.poster_path || results[0]?.profile_path, "w500") ||
     `${siteOrigin}${DEFAULT_IMAGE_PATH}`;

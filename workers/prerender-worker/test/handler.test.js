@@ -137,6 +137,77 @@ describe("worker request handling", () => {
     assert.equal(response.headers.get("x-flash-crawler"), null);
   });
 
+  it("returns 404 crawler HTML for the SPA-hidden movie id", async () => {
+    const response = await handleRequest(
+      new Request("https://flashmovies.xyz/movie-info?type=movie&id=1439112", {
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        },
+      }),
+      env,
+      {},
+      {
+        fetch: async () => {
+          throw new Error("blocked titles must not hit TMDB");
+        },
+        cache: memoryCache(),
+      },
+    );
+    const html = await response.text();
+    assert.equal(response.status, 404);
+    assert.match(html, /noindex/);
+    assert.match(html, /Page not found/);
+    assert.doesNotMatch(html, /application\/ld\+json.*"@type":"Movie"/);
+  });
+
+  it("caches failed list TMDB fetches for two minutes, not six hours", async () => {
+    const response = await handleRequest(
+      new Request(
+        "https://flashmovies.xyz/list-items?type=movie&search=popular&title=popular-movies",
+        {
+          headers: {
+            "user-agent":
+              "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+          },
+        },
+      ),
+      env,
+      {},
+      {
+        fetch: async () => new Response("nope", { status: 503 }),
+        cache: memoryCache(),
+      },
+    );
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("cache-control"), "public, max-age=120");
+  });
+
+  it("HEAD cache hits do not include a body", async () => {
+    const cache = memoryCache();
+    const headers = {
+      "user-agent":
+        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    };
+    const get = await handleRequest(
+      new Request("https://flashmovies.xyz/", { headers }),
+      env,
+      {},
+      { fetch: async () => { throw new Error("no origin"); }, cache },
+    );
+    assert.ok((await get.text()).length > 0);
+
+    const head = await handleRequest(
+      new Request("https://flashmovies.xyz/", { method: "HEAD", headers }),
+      env,
+      {},
+      { fetch: async () => { throw new Error("cache hit must not refetch"); }, cache },
+    );
+    assert.equal(head.status, 200);
+    assert.equal(head.headers.get("x-crawler-cache"), "HIT");
+    assert.equal(await head.text(), "");
+  });
+
   it("returns TMDB-backed crawler HTML for Googlebot on a movie URL", async () => {
     const fetchImpl = async (input, init = {}) => {
       const url = typeof input === "string" ? input : input.url;
