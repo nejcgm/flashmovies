@@ -1,4 +1,4 @@
-import { resolveCatalogIdsFromExports } from "./sitemap-tmdb-export.js";
+import { resolveCatalogIdsFromExports } from "./tmdb-export.js";
 
 /** Same hidden title the SPA and prerender worker exclude from indexable pages. */
 export const BLOCKED_MOVIE_ID = 1439112;

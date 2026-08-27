@@ -1,13 +1,14 @@
 /**
  * Validates sitemap index + child urlsets (structure, counts, limits).
- * Usage: node validate-sitemaps.js [publicDir]
+ * Usage: node scripts/sitemap/validate.js [publicDir]
  */
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const publicDir = path.resolve(__dirname, process.argv[2] || "public");
+const WEB_ROOT = path.resolve(__dirname, "../..");
+const publicDir = path.resolve(WEB_ROOT, process.argv[2] || "public");
 const sitemapsDir = path.join(publicDir, "sitemaps");
 const indexPath = path.join(publicDir, "sitemap.xml");
 

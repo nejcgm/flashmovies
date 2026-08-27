@@ -95,7 +95,7 @@ import { mediaDisplayTitle, mediaYearSuffixSpaced } from "../utils/mediaDisplayT
             info.release_date,
             info.first_air_date,
             info.birthday,
-          )} - Flash Movies - Watch Free`}
+          )} — Watch Free Online | Flash Movies`}
           description={
             info.overview
               ? `${info.overview.slice(0, 150)}... Watch ${mediaDisplayTitle(

@@ -3,6 +3,7 @@ import {
   DEFAULT_IMAGE_PATH,
   HOME_BODY,
   HOME_DESCRIPTION,
+  HOME_FAQ,
   HOME_TITLE,
   SITE_NAME,
   assertsSiteCopy,
@@ -32,6 +33,7 @@ import { isBlockedTitle } from "./routes.js";
  * @property {Array<{ href: string, text: string }>} [links]
  * @property {Array<{ title: string, links: Array<{ href: string, text: string }> }>} [navSections]
  * @property {object[]} jsonLd
+ * @property {Array<{ question: string, answer: string }>} [faq]
  * @property {string} [twitterCard]
  * @property {string} [ogImageWidth]
  * @property {string} [ogImageHeight]
@@ -51,6 +53,34 @@ function imageDimensions(imageUrl) {
     return { width: "500", height: "750" };
   }
   return { width: "1200", height: "630" };
+}
+
+/**
+ * @param {Array<{ question: string, answer: string }>} items
+ */
+function faqPageJsonLd(items) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: answer,
+      },
+    })),
+  };
+}
+
+function detailPageTitle(type, isWatchPage, titled) {
+  if (type === "person") {
+    return `${titled} — ${SITE_NAME}`;
+  }
+  if (isWatchPage) {
+    return `Watch ${titled} Free Online — ${SITE_NAME}`;
+  }
+  return `${titled} — Watch Free Online | ${SITE_NAME}`;
 }
 
 function websiteJsonLd(siteOrigin, description) {
@@ -95,7 +125,8 @@ export function homePage({ canonical, siteOrigin, featuredSections = [] }) {
     heading: HOME_TITLE,
     paragraphs,
     navSections: featuredSections,
-    jsonLd: [websiteJsonLd(siteOrigin, description)],
+    faq: HOME_FAQ,
+    jsonLd: [websiteJsonLd(siteOrigin, description), faqPageJsonLd(HOME_FAQ)],
   };
 }
 
@@ -260,7 +291,7 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
 
   return {
     status: 200,
-    title: `${titled} — ${SITE_NAME}`,
+    title: detailPageTitle(type, isWatchPage, titled),
     description: assertsSiteCopy(description),
     canonical,
     image,
@@ -365,6 +396,20 @@ export function notFoundPage({ canonical, siteOrigin }) {
 /**
  * @param {Array<{ title: string, links: Array<{ href: string, text: string }> }>} sections
  */
+/**
+ * @param {Array<{ question: string, answer: string }>} faq
+ */
+function renderFaq(faq) {
+  if (!faq?.length) return "";
+  const items = faq
+    .map(
+      (item) =>
+        `      <section>\n        <h3>${escapeHtml(item.question)}</h3>\n        <p>${escapeHtml(item.answer)}</p>\n      </section>`,
+    )
+    .join("\n");
+  return `\n    <section aria-labelledby="home-faq">\n      <h2 id="home-faq">Frequently asked questions</h2>\n${items}\n    </section>`;
+}
+
 function renderNavSections(sections) {
   return sections
     .map((section) => {
@@ -404,6 +449,7 @@ export function renderHtml(page, siteOrigin) {
     ? `\n    <nav aria-label="Related titles">\n      <ul>\n${links}\n      </ul>\n    </nav>`
     : "";
   const siteNav = renderNavSections(crawlerMenuSections());
+  const faqSection = renderFaq(page.faq);
 
   return `<!doctype html>
 <html lang="en">
@@ -443,7 +489,7 @@ export function renderHtml(page, siteOrigin) {
       <h1>${escapeHtml(page.heading)}</h1>
     </header>
     <main>
-${paragraphs}${mainNavSections}${pageLinksNav}
+${paragraphs}${faqSection}${mainNavSections}${pageLinksNav}
     </main>
     <footer>
       <nav aria-label="Site menu">

@@ -1,4 +1,4 @@
-// generate-sitemap-index.js
+// scripts/sitemap/generate-index.js
 import {
   createWriteStream,
   existsSync,
@@ -9,14 +9,15 @@ import {
 } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { resolveSitemapCatalogIds } from "./sitemap-tmdb-ids.js";
+import { resolveSitemapCatalogIds } from "./lib/tmdb-ids.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const WEB_ROOT = path.resolve(__dirname, "../..");
 const SITEMAP_URL_LIMIT = 45000;
 
 function loadLocalEnvFile() {
-  const envPath = path.resolve(__dirname, ".env");
+  const envPath = path.resolve(WEB_ROOT, ".env");
   if (!existsSync(envPath)) return;
   for (const line of readFileSync(envPath, "utf8").split("\n")) {
     const trimmed = line.trim();
@@ -49,7 +50,7 @@ async function generateSitemapIndex() {
   );
 
   // Create sitemaps directory
-  const sitemapsDir = path.resolve(__dirname, "public", "sitemaps");
+  const sitemapsDir = path.resolve(WEB_ROOT, "public", "sitemaps");
   if (!existsSync(sitemapsDir)) {
     mkdirSync(sitemapsDir, { recursive: true });
   }
@@ -364,7 +365,7 @@ async function generateSitemapIndex() {
 
   // Create sitemap index
   const indexStream = createWriteStream(
-    path.resolve(__dirname, "public", "sitemap.xml")
+    path.resolve(WEB_ROOT, "public", "sitemap.xml")
   );
 
   indexStream.write('<?xml version="1.0" encoding="UTF-8"?>\n');

@@ -33,8 +33,9 @@ const Meta = ({
 
   const [savedTitle, setSavedTitle] = useState<string>()
   // Default values for dynamic content
-  const defaultTitle = "Flash Movies - Free Movie Streaming";
-  const defaultDescription = "Watch free movies and TV shows online on Flash Movies. Stream the latest movies and popular TV series in HD for free, anytime and anywhere.";
+  const defaultTitle = "Flash Movies — Watch Free Movies & TV Shows Online";
+  const defaultDescription =
+    "Flash Movies (flashmovies.xyz) is a free movie and TV streaming website. Watch movies and TV shows online in HD — browse popular and trending titles, explore details and cast, and start watching with no subscription required.";
   const defaultKeywords = [
     "flash movies", "flashmovies", "flashmovies.xyz", "flash",
     "free movies", "movie streaming", "watch movies online on flashmovies", "watch tv shows online on flashmovies",

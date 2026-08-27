@@ -27,6 +27,8 @@ describe("crawler HTML", () => {
     assert.match(html, /Trending movies this week/);
     assert.match(html, /Browse shows by genre/);
     assert.match(html, /Frequently asked questions/);
+    assert.match(html, /Is Flash Movies free\?/);
+    assert.match(html, /"@type":"FAQPage"/);
     assert.match(html, /aria-label="Site menu"/);
     assert.doesNotMatch(html, /Affiliate Site Verification/i);
     assert.doesNotMatch(html, /<script type="module"/);
@@ -46,7 +48,7 @@ describe("crawler HTML", () => {
     assert.equal(page.canonical, "https://flashmovies.xyz/movie-info?type=movie&id=550");
     assert.match(page.image, /image\.tmdb\.org\/t\/p\/w500\/jSziioSwPVrOy9Yow3XhWIBDjq1\.jpg/);
     assert.equal(page.ogType, "video.movie");
-    assert.match(html, /<title>Fight Club \(1999\) — Flash Movies<\/title>/);
+    assert.match(html, /<title>Fight Club \(1999\) — Watch Free Online \| Flash Movies<\/title>/);
     assert.match(html, /property="og:image"/);
     assert.match(html, /name="twitter:title"/);
     assert.match(html, /"@type":"Movie"/);
@@ -64,6 +66,8 @@ describe("crawler HTML", () => {
     });
     const html = renderHtml(page, "https://flashmovies.xyz");
     assert.equal(page.status, 200);
+    assert.match(page.title, /Watch Fight Club \(1999\) Free Online — Flash Movies/);
+    assert.match(html, /<title>Watch Fight Club \(1999\) Free Online — Flash Movies<\/title>/);
     assert.match(html, /Fight Club \(1999\)/);
     assert.match(html, /full-movie\?type=movie/);
   });

@@ -18,6 +18,32 @@ export const HOME_BODY = [
   "Use the sections below to browse movies, TV, and popular actors. Find a new release, a binge-worthy series, or a classic worth watching tonight.",
 ];
 
+/** @typedef {{ question: string, answer: string }} FaqItem */
+
+/** @type {FaqItem[]} */
+export const HOME_FAQ = [
+  {
+    question: "Is Flash Movies free?",
+    answer:
+      "Yes. Flash Movies is free to use — browse movies and TV shows, open title pages, and start watching online without a subscription. A Pro plan is optional for ad-free streaming and premium servers.",
+  },
+  {
+    question: "How do I watch movies online on Flash Movies?",
+    answer:
+      "Pick a movie or TV show from the homepage lists or search, open its title page for details and cast, then use the watch link to stream in HD in your browser. No account is required for free viewing.",
+  },
+  {
+    question: "Do I need to register to watch TV shows?",
+    answer:
+      "No registration is required to browse or watch free content on Flash Movies. You can create an account if you want to save preferences or upgrade to Pro.",
+  },
+  {
+    question: "What can I watch on flashmovies.xyz?",
+    answer:
+      "Flash Movies offers popular and trending movies, TV series, genre lists, top-rated picks, new releases, and actor filmographies — all with full title pages and HD streaming links.",
+  },
+];
+
 const BLOCKED_COPY_RE = /Affiliate Site Verification/i;
 
 /**

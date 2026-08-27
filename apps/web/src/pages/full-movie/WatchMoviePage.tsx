@@ -88,7 +88,7 @@ const WatchMoviePage = () => {
             info.release_date,
             info.first_air_date,
             info.birthday,
-          )} - Flash Movies - Watch Free`}
+          )} Free Online — Flash Movies`}
           description={
             info.overview
               ? `Stream ${displayName} in HD. ${info.overview.slice(0, 100)}... Watch free on Flash Movies.`

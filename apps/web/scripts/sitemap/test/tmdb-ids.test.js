@@ -5,7 +5,7 @@ import {
   mergeUniqueIds,
   resolveSitemapCatalogIds,
   tmdbAuthorization,
-} from "./sitemap-tmdb-ids.js";
+} from "../lib/tmdb-ids.js";
 
 describe("sitemap TMDB ids", () => {
   it("normalizes bearer tokens", () => {

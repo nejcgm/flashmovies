@@ -19,9 +19,7 @@ export default [
   {languageOptions: { globals: globals.browser }},
   {
     files: [
-      "generate-sitemap-index.js",
-      "sitemap-tmdb-ids.js",
-      "sitemap-tmdb-ids.test.js",
+      "scripts/sitemap/**/*.js",
     ],
     languageOptions: { globals: globals.node },
   },

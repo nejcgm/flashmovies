@@ -3,9 +3,10 @@ import { createReadStream, existsSync, mkdirSync, writeFileSync } from "node:fs"
 import { createInterface } from "node:readline";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { BLOCKED_MOVIE_ID } from "./sitemap-tmdb-ids.js";
+import { BLOCKED_MOVIE_ID } from "./tmdb-ids.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const WEB_ROOT = path.resolve(__dirname, "../../..");
 const EXPORT_BASE = "https://files.tmdb.org/p/exports";
 
 /** @typedef {{ id: number, popularity: number }} ExportEntry */
@@ -45,7 +46,7 @@ export function exportDownloadUrl(kind, date = new Date()) {
  * @param {string} [options.cacheDir]
  */
 export function exportCachePath(kind, options = {}) {
-  const cacheDir = options.cacheDir || path.resolve(__dirname, ".cache", "tmdb-exports");
+  const cacheDir = options.cacheDir || path.resolve(WEB_ROOT, ".cache", "tmdb-exports");
   return path.join(cacheDir, exportFileName(kind, options.date));
 }
 
@@ -165,7 +166,7 @@ export function exportDatesToTry(start = new Date()) {
  */
 async function resolveExportFile(kind, options = {}) {
   const fetchImpl = options.fetchImpl || fetch;
-  const cacheDir = options.cacheDir || path.resolve(__dirname, ".cache", "tmdb-exports");
+  const cacheDir = options.cacheDir || path.resolve(WEB_ROOT, ".cache", "tmdb-exports");
   const dates = options.datesToTry || (options.date ? [options.date] : exportDatesToTry());
 
   let lastError;

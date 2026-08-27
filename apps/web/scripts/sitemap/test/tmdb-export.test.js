@@ -7,8 +7,8 @@ import {
   personExportRowPasses,
   topIdsByPopularity,
   tvExportRowPasses,
-} from "./sitemap-tmdb-export.js";
-import { BLOCKED_MOVIE_ID } from "./sitemap-tmdb-ids.js";
+} from "../lib/tmdb-export.js";
+import { BLOCKED_MOVIE_ID } from "../lib/tmdb-ids.js";
 
 describe("sitemap TMDB export", () => {
   it("builds export urls from utc date", () => {
