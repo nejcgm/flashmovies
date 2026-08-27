@@ -1,13 +1,52 @@
 // generate-sitemap-index.js
-import { createWriteStream, mkdirSync, existsSync } from "fs";
+import {
+  createWriteStream,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  unlinkSync,
+} from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { resolveSitemapCatalogIds } from "./sitemap-tmdb-ids.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const SITEMAP_URL_LIMIT = 45000;
+
+function loadLocalEnvFile() {
+  const envPath = path.resolve(__dirname, ".env");
+  if (!existsSync(envPath)) return;
+  for (const line of readFileSync(envPath, "utf8").split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const separator = trimmed.indexOf("=");
+    if (separator <= 0) continue;
+    const key = trimmed.slice(0, separator).trim();
+    if (process.env[key]) continue;
+    let value = trimmed.slice(separator + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    process.env[key] = value;
+  }
+}
 
 async function generateSitemapIndex() {
   console.log("🚀 Starting sitemap index generation...");
+  loadLocalEnvFile();
+
+  const catalog = await resolveSitemapCatalogIds();
+  const statsSuffix = catalog.stats
+    ? ` | candidates ${catalog.stats.movieCandidates}/${catalog.stats.tvCandidates}/${catalog.stats.personCandidates}`
+    : "";
+  console.log(
+    `🎬 Catalog ids (${catalog.source}${catalog.exportDate ? ` ${catalog.exportDate}` : ""}): ${catalog.movieIds.length} movies, ${catalog.tvIds.length} TV, ${catalog.personIds.length} people${statsSuffix}`,
+  );
 
   // Create sitemaps directory
   const sitemapsDir = path.resolve(__dirname, "public", "sitemaps");
@@ -69,38 +108,110 @@ async function generateSitemapIndex() {
     });
   };
 
-  // 1. Static Pages Sitemap
-  const staticPages = [{ path: "/", priority: 1.0, changefreq: "daily" }];
+  /**
+   * Split large url lists into multiple sitemap files (50k URL limit per file).
+   * @param {string} baseName
+   * @param {object[]} urls
+   */
+  const createChunkedSitemaps = async (
+    baseName,
+    urls,
+    priority = 0.8,
+    changefreq = "weekly",
+  ) => {
+    if (urls.length <= SITEMAP_URL_LIMIT) {
+      return [await createSitemap(`${baseName}.xml`, urls, priority, changefreq)];
+    }
 
-  // 2. Movie Categories Sitemap
+    const chunks = [];
+    for (let index = 0; index < urls.length; index += SITEMAP_URL_LIMIT) {
+      chunks.push(urls.slice(index, index + SITEMAP_URL_LIMIT));
+    }
+
+    const results = [];
+    for (let index = 0; index < chunks.length; index += 1) {
+      const suffix = String(index + 1).padStart(3, "0");
+      results.push(
+        await createSitemap(`${baseName}-${suffix}.xml`, chunks[index], priority, changefreq),
+      );
+    }
+    return results;
+  };
+
+  const pruneStaleSitemaps = (keepFilenames) => {
+    const keep = new Set(keepFilenames);
+    for (const file of readdirSync(sitemapsDir)) {
+      if (!file.endsWith(".xml") || keep.has(file)) continue;
+      unlinkSync(path.resolve(sitemapsDir, file));
+      console.log(`🗑️  Removed stale sitemap ${file}`);
+    }
+  };
+
+  // 1. Static Pages Sitemap
+  const highlightYear = new Date().getFullYear();
+  const staticPages = [
+    { path: "/", priority: 1.0, changefreq: "daily" },
+    {
+      path: "/frequently-asked-questions",
+      priority: 0.6,
+      changefreq: "monthly",
+    },
+    {
+      path: "/terms-and-conditions",
+      priority: 0.4,
+      changefreq: "yearly",
+    },
+  ];
+
+  // 2. Movie Categories Sitemap (mirrors menu)
   const movieCategories = [
+    {
+      path: "/list-items?type=movie&search=trending_week&title=trending-movies-this-week",
+      priority: 0.9,
+    },
+    {
+      path: `/list-items?type=movie&search=year_highlights&title=this-years-movie-highlights-${highlightYear}`,
+      priority: 0.9,
+    },
     {
       path: "/list-items?type=movie&search=top_rated&title=top-rated-movies",
       priority: 0.9,
-    },
-    {
-      path: "/list-items?type=movie&search=popular&title=most-popular-movies",
-      priority: 0.9,
-    },
-    {
-      path: "/list-items?type=movie&search=now_playing&title=now-playing-movies",
-      priority: 0.8,
     },
     {
       path: "/list-items?type=movie&search=upcoming&title=upcoming-movies",
       priority: 0.8,
     },
     {
+      path: "/list-items?type=movie&search=now_playing&title=now-playing-movies",
+      priority: 0.8,
+    },
+    {
+      path: "/list-items?type=movie&search=popular&title=most-popular-movies",
+      priority: 0.9,
+    },
+    {
       path: "/list-items?type=movie&search=discover&title=browse-movies-by-genre",
       priority: 0.7,
     },
+    {
+      path: "/list-items?type=movie&search=trending_day&title=trending-movies-today",
+      priority: 0.8,
+    },
   ];
 
-  // 3. TV Categories Sitemap
+  // 3. TV Categories Sitemap (mirrors menu)
   const tvCategories = [
+    {
+      path: "/list-items?type=tv&search=trending_week&title=trending-tv-this-week",
+      priority: 0.9,
+    },
     {
       path: "/list-items?type=tv&search=top_rated&title=top-rated-shows",
       priority: 0.9,
+    },
+    {
+      path: "/list-items?type=tv&search=on_the_air&title=on-the-air",
+      priority: 0.8,
     },
     {
       path: "/list-items?type=tv&search=popular&title=most-popular-shows",
@@ -111,12 +222,12 @@ async function generateSitemapIndex() {
       priority: 0.8,
     },
     {
-      path: "/list-items?type=tv&search=on_the_air&title=on-the-air",
-      priority: 0.8,
-    },
-    {
       path: "/list-items?type=tv&search=discover&title=browse-shows-by-genre",
       priority: 0.7,
+    },
+    {
+      path: "/list-items?type=tv&search=trending_day&title=trending-tv-today",
+      priority: 0.8,
     },
   ];
 
@@ -128,22 +239,10 @@ async function generateSitemapIndex() {
     },
   ];
 
-  // 7. Popular Movie Pages
-  const popularMovieIds = [
-    //top rated 50
-    278, 238, 240, 424, 389, 129, 155, 19404, 497, 496243, 122, 680, 372058, 13,
-    429, 157336, 346, 769, 12477, 637, 550, 11216, 667257, 14537, 598, 40096,
-    120, 539, 803796, 510, 696374, 311, 121, 324857, 255709, 4935, 1891, 704264,
-    378064, 770156, 423, 724089, 244786, 807, 761053, 27205, 1058694, 12493,
-    567, 274,
-    //popular 50
-    755898, 1234821, 1195631, 1241470, 1185528, 1106289, 1087192, 1311031,
-    1319895, 1285247, 1155281, 1078605, 986206, 980477, 1071585, 552524,
-    1307078, 1061474, 617126, 1225572, 1011477, 1100988, 803796, 1119878,
-    1339166, 936108, 541671, 1393382, 1263256, 574475, 7451, 1124619, 812455,
-    715253, 648878, 1188423, 1181540, 986056, 13499, 1125257, 575265, 1452176,
-    1365103, 1280461, 1315986, 911430, 1175942, 1374534, 1403735, 715287,
-  ];
+  // Detail pages — ids refreshed from TMDB when VITE_API_KEY is set
+  const popularMovieIds = catalog.movieIds;
+  const popularTvIds = catalog.tvIds;
+  const popularCelebrityIds = catalog.personIds;
 
   const movieInfoPages = popularMovieIds.map((id) => ({
     path: `/movie-info?type=movie&id=${id}`,
@@ -155,20 +254,6 @@ async function generateSitemapIndex() {
     priority: 0.6,
   }));
 
-  // 8. Popular TV Pages
-  const popularTvIds = [
-    //top rated 40
-    1396, 94605, 219246, 209867, 246, 37854, 131378, 220542, 31911, 94954,
-    60059, 60625, 87108, 92685, 1429, 46298, 85077, 70785, 42705, 1398, 85937,
-    240411, 42573, 62741, 72637, 95557, 13916, 95269, 65930, 89456, 31132,
-    80040, 57706, 77696, 1430, 127532, 60863, 100, 259666, 82728,
-    //popular 40
-    119051, 157239, 121876, 79744, 194766, 2734, 93405, 1416, 1405, 1622,
-    227114, 256911, 1399, 196890, 244808, 1434, 4614, 2288, 292035, 549, 4057,
-    207484, 456, 1396, 34307, 764, 1408, 240411, 279060, 207468, 1431, 65334,
-    60625, 46952, 60585, 1402, 66732, 44217, 18165, 2224,
-  ];
-
   const tvInfoPages = popularTvIds.map((id) => ({
     path: `/movie-info?type=tv&id=${id}`,
     priority: 0.7,
@@ -179,25 +264,81 @@ async function generateSitemapIndex() {
     priority: 0.6,
   }));
 
-  // 9. Celebrity/People Pages - Expanded list
-  const popularCelebrityIds = [
-    2231916, 974169, 53, 1253360, 18897, 976, 2604515, 1892, 1325949, 33022,
-    1836114, 11701, 1222077, 4095744, 1879666, 115440, 1466, 1903006, 64, 29523,
-    934159, 4783, 556356, 936970, 3371804, 568141, 31, 3455931, 91671, 6886,
-    572043, 1397778, 8783, 2189618, 3486663, 7497, 6161, 88029, 1812, 1356210,
-    11678, 30613, 27740, 77335, 14984, 1253353, 21089, 18352, 4886, 10882, 4174,
-    15286, 9273, 15831, 4764, 3092, 6677, 66896, 1590797, 17605, 3136, 1030513,
-    8874, 9807, 23680, 57027, 11702, 202032, 51875, 2963, 418, 1772, 59254, 501,
-    4095689, 8785, 1920, 3392, 3489, 221773,
-  ];
-
   const celebrityPages = popularCelebrityIds.map((id) => ({
     path: `/movie-info?type=person&id=${id}`,
     priority: 0.7,
   }));
 
+  const movieGenres = [
+    [28, "action-movies"],
+    [12, "adventure-movies"],
+    [16, "animation-movies"],
+    [35, "comedy-movies"],
+    [80, "crime-movies"],
+    [99, "documentary-movies"],
+    [18, "drama-movies"],
+    [10751, "family-movies"],
+    [14, "fantasy-movies"],
+    [36, "history-movies"],
+    [27, "horror-movies"],
+    [10402, "music-movies"],
+    [9648, "mystery-movies"],
+    [10749, "romance-movies"],
+    [878, "science-fiction-movies"],
+    [53, "thriller-movies"],
+    [10752, "war-movies"],
+    [37, "western-movies"],
+  ].map(([id, title]) => ({
+    path: `/list-items?type=movie&search=discover&with_genres=${id}&title=${title}`,
+    priority: 0.6,
+  }));
+
+  const tvGenres = [
+    [10759, "action-and-adventure-shows"],
+    [16, "animation-shows"],
+    [35, "comedy-shows"],
+    [80, "crime-shows"],
+    [99, "documentary-shows"],
+    [18, "drama-shows"],
+    [10751, "family-shows"],
+    [9648, "mystery-shows"],
+    [10765, "sci-fi-and-fantasy-shows"],
+    [37, "western-shows"],
+  ].map(([id, title]) => ({
+    path: `/list-items?type=tv&search=discover&with_genres=${id}&title=${title}`,
+    priority: 0.6,
+  }));
+
+  const yearBasedPages = [];
+  for (let year = highlightYear; year >= 2015; year -= 1) {
+    yearBasedPages.push({
+      path: `/list-items?type=movie&search=discover&primary_release_year=${year}&title=${year}-movies`,
+      priority: 0.5,
+    });
+    yearBasedPages.push({
+      path: `/list-items?type=tv&search=discover&first_air_date_year=${year}&title=${year}-tv-shows`,
+      priority: 0.5,
+    });
+  }
+
+  const ratingBands = [
+    ["8", "10", "highly-rated"],
+    ["7", "8", "good-rated"],
+    ["6", "7", "decent-rated"],
+  ];
+  const ratingBasedPages = ratingBands.flatMap(([gte, lte, label]) => [
+    {
+      path: `/list-items?type=movie&search=discover&vote_average.gte=${gte}&vote_average.lte=${lte}&title=${label}-movies`,
+      priority: 0.4,
+    },
+    {
+      path: `/list-items?type=tv&search=discover&vote_average.gte=${gte}&vote_average.lte=${lte}&title=${label}-tv-shows`,
+      priority: 0.4,
+    },
+  ]);
+
   // Create individual sitemaps
-  const sitemapResults = await Promise.all([
+  const sitemapGroups = await Promise.all([
     createSitemap("static.xml", staticPages, 1.0, "daily"),
     createSitemap("movie-categories.xml", movieCategories, 0.9, "daily"),
     createSitemap("tv-categories.xml", tvCategories, 0.9, "daily"),
@@ -205,14 +346,21 @@ async function generateSitemapIndex() {
       "celebrity-categories.xml",
       celebrityCategories,
       0.8,
-      "weekly"
+      "weekly",
     ),
-    createSitemap("celebrities.xml", celebrityPages, 0.7, "weekly"),
-    createSitemap("movie-info.xml", movieInfoPages, 0.7, "weekly"),
-    createSitemap("movie-watch.xml", movieWatchPages, 0.6, "weekly"),
-    createSitemap("tv-info.xml", tvInfoPages, 0.7, "weekly"),
-    createSitemap("tv-watch.xml", tvWatchPages, 0.6, "weekly"),
+    createSitemap("movie-genres.xml", movieGenres, 0.6, "weekly"),
+    createSitemap("tv-genres.xml", tvGenres, 0.6, "weekly"),
+    createSitemap("year-based.xml", yearBasedPages, 0.5, "monthly"),
+    createSitemap("rating-based.xml", ratingBasedPages, 0.4, "monthly"),
+    createChunkedSitemaps("celebrities", celebrityPages, 0.7, "weekly"),
+    createChunkedSitemaps("movie-info", movieInfoPages, 0.7, "weekly"),
+    createChunkedSitemaps("movie-watch", movieWatchPages, 0.6, "weekly"),
+    createChunkedSitemaps("tv-info", tvInfoPages, 0.7, "weekly"),
+    createChunkedSitemaps("tv-watch", tvWatchPages, 0.6, "weekly"),
   ]);
+
+  const sitemapResults = sitemapGroups.flat();
+  pruneStaleSitemaps(sitemapResults.map((result) => result.filename));
 
   // Create sitemap index
   const indexStream = createWriteStream(

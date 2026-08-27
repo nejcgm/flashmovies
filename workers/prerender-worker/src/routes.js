@@ -2,6 +2,8 @@
  * Static extensions the live prerender-worker skipped (IGNORE_EXTENSIONS).
  * Crawler HTML is never generated for these; they pass through to origin.
  */
+import { LIST_FILTER_PARAM_ORDER, parseListFilters } from "./list-filters.js";
+
 export const IGNORE_EXTENSIONS = [
   ".js",
   ".css",
@@ -144,6 +146,7 @@ function asMediaType(value) {
  * @property {string | null} [id]
  * @property {string | null} [listSearch]
  * @property {string | null} [listTitle]
+ * @property {import("./list-filters.js").ListFilters} [listFilters]
  */
 
 /**
@@ -179,7 +182,14 @@ export function parseRoute(url) {
     if (!type || !listSearch) {
       return { kind: "not-found", pathname };
     }
-    return { kind: "list", pathname, type, listSearch, listTitle };
+    return {
+      kind: "list",
+      pathname,
+      type,
+      listSearch,
+      listTitle,
+      listFilters: parseListFilters(url),
+    };
   }
 
   const staticKind = STATIC_PAGES[pathname];
@@ -206,6 +216,20 @@ export function canonicalUrl(requestUrl, siteOrigin) {
     const type = params.get("type");
     const id = params.get("id");
     return `${origin}${path}?type=${encodeURIComponent(type || "")}&id=${encodeURIComponent(id || "")}`;
+  }
+
+  if (LIST_PATHS.has(path)) {
+    const ordered = new URLSearchParams();
+    const type = params.get("type");
+    const search = params.get("search");
+    const title = params.get("title");
+    if (type) ordered.set("type", type);
+    if (search) ordered.set("search", search);
+    for (const key of LIST_FILTER_PARAM_ORDER) {
+      if (params.has(key)) ordered.set(key, params.get(key) || "");
+    }
+    if (title) ordered.set("title", title);
+    return `${origin}${path}?${ordered.toString()}`;
   }
 
   const qs = params.toString();

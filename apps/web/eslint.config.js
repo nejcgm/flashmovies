@@ -18,6 +18,14 @@ export default [
   {files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"]},
   {languageOptions: { globals: globals.browser }},
   {
+    files: [
+      "generate-sitemap-index.js",
+      "sitemap-tmdb-ids.js",
+      "sitemap-tmdb-ids.test.js",
+    ],
+    languageOptions: { globals: globals.node },
+  },
+  {
     settings: {
       react: { version: "detect" },
     },

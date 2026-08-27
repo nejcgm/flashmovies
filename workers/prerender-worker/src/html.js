@@ -7,6 +7,13 @@ import {
   SITE_NAME,
   assertsSiteCopy,
 } from "./copy.js";
+import { crawlerMenuSections } from "./menu.js";
+import {
+  homeFeaturedParagraph,
+  homePageDescription,
+  listPageDescription,
+  listPageParagraphs,
+} from "./list-copy.js";
 import { tmdbImageUrl } from "./tmdb.js";
 import { isBlockedTitle } from "./routes.js";
 
@@ -23,6 +30,7 @@ import { isBlockedTitle } from "./routes.js";
  * @property {string} heading
  * @property {string[]} paragraphs
  * @property {Array<{ href: string, text: string }>} [links]
+ * @property {Array<{ title: string, links: Array<{ href: string, text: string }> }>} [navSections]
  * @property {object[]} jsonLd
  * @property {string} [twitterCard]
  * @property {string} [ogImageWidth]
@@ -69,8 +77,12 @@ function websiteJsonLd(siteOrigin, description) {
 /**
  * @param {object} opts
  */
-export function homePage({ canonical, siteOrigin }) {
-  const description = assertsSiteCopy(HOME_DESCRIPTION);
+export function homePage({ canonical, siteOrigin, featuredSections = [] }) {
+  const description = homePageDescription();
+  const featuredParagraph = homeFeaturedParagraph(featuredSections);
+  const paragraphs = featuredParagraph
+    ? [...HOME_BODY, featuredParagraph]
+    : HOME_BODY;
   return {
     status: 200,
     title: HOME_TITLE,
@@ -81,12 +93,8 @@ export function homePage({ canonical, siteOrigin }) {
     ogType: "website",
     robots: "index, follow",
     heading: HOME_TITLE,
-    paragraphs: HOME_BODY,
-    links: [
-      { href: "/list-items?type=movie&search=popular&title=popular-movies", text: "Watch popular movies free" },
-      { href: "/list-items?type=tv&search=popular&title=popular-tv-shows", text: "Watch popular TV free" },
-      { href: "/list-items?type=person&search=popular&title=most-popular-actors", text: "Popular actors" },
-    ],
+    paragraphs,
+    navSections: featuredSections,
     jsonLd: [websiteJsonLd(siteOrigin, description)],
   };
 }
@@ -161,8 +169,8 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
         280,
       )
     : isWatchPage
-      ? `Watch ${titled} free online in HD on Flash Movies — free ${kindLabel} streaming with no subscription.`
-      : `Watch ${titled} free online on Flash Movies — free movies and TV in HD.`;
+      ? `Watch ${titled} free online in HD on Flash Movies — stream this ${kindLabel} with full play links.`
+      : `Watch ${titled} online on Flash Movies — movies and TV in HD.`;
 
   const poster = tmdbImageUrl(data.poster_path || data.profile_path, "w500");
   const backdrop = tmdbImageUrl(data.backdrop_path, "w1280");
@@ -176,8 +184,8 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
     overview
       ? truncate(overview, 600)
       : isWatchPage
-        ? `Stream ${titled} free on Flash Movies — watch online in HD with no subscription.`
-        : `${titled} is available to watch free on Flash Movies.`,
+        ? `Stream ${titled} online on Flash Movies — watch in HD from the full title page.`
+        : `${titled} is available to watch online on Flash Movies.`,
     type === "person"
       ? [data.known_for_department && `Known for: ${data.known_for_department}`, data.place_of_birth && `Born: ${data.place_of_birth}`]
           .filter(Boolean)
@@ -185,7 +193,7 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
       : [
           genres.length ? `Genres: ${genres.join(", ")}` : "",
           data.vote_average ? `TMDB rating: ${Number(data.vote_average).toFixed(1)}/10` : "",
-          !isWatchPage && type !== "person" ? "Watch free in HD on Flash Movies." : "",
+          !isWatchPage && type !== "person" ? "Watch online in HD on Flash Movies." : "",
         ]
           .filter(Boolean)
           .join(". "),
@@ -259,17 +267,17 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
     imageAlt: titled,
     ogType,
     robots: "index, follow",
-    heading: isWatchPage && type !== "person" ? `Watch ${titled} free` : titled,
+    heading: isWatchPage && type !== "person" ? `Watch ${titled} online` : titled,
     paragraphs,
     links: [
       ...(type !== "person"
         ? [
             isWatchPage
               ? { href: `/movie-info?type=${type}&id=${route.id}`, text: `${display} details` }
-              : { href: watchUrl, text: `Watch ${display} free` },
+              : { href: watchUrl, text: `Watch ${display} free online` },
           ]
         : [{ href: infoUrl.replace(siteOrigin, "") || infoUrl, text: `${display} profile` }]),
-      { href: "/", text: "Free movies & TV — Flash Movies home" },
+      { href: "/", text: "Flash Movies — watch movies & TV online" },
     ],
     jsonLd,
   };
@@ -282,27 +290,17 @@ export function listPage({ route, data, canonical, siteOrigin }) {
   const listName =
     formatListTitle(route.listTitle) ||
     `${route.type === "tv" ? "TV" : route.type === "person" ? "People" : "Movie"} list`;
-  const description = assertsSiteCopy(
-    `Watch ${listName} free online on Flash Movies — free movies and TV shows in HD.`,
-  );
   const results = Array.isArray(data?.results)
     ? data.results.filter((item) => !isBlockedTitle(route.type, item.id)).slice(0, 20)
     : [];
+  const description = listPageDescription({ route, listName, results });
   const firstImage =
     tmdbImageUrl(results[0]?.poster_path || results[0]?.profile_path, "w500") ||
     `${siteOrigin}${DEFAULT_IMAGE_PATH}`;
 
-  const paragraphs = [
-    `${listName} on Flash Movies — watch free movies and TV shows online in HD.`,
-    results.length
-      ? `Titles include ${results
-          .slice(0, 8)
-          .map((item) => mediaDisplayTitle(item))
-          .join(", ")} — stream free on Flash Movies.`
-      : "",
-  ].filter(Boolean);
+  const paragraphs = listPageParagraphs({ route, listName, results });
 
-  const links = results.slice(0, 12).map((item) => ({
+  const links = results.slice(0, 20).map((item) => ({
     href: `/movie-info?type=${route.type}&id=${item.id}`,
     text: mediaDisplayTitle(item),
   }));
@@ -354,14 +352,31 @@ export function notFoundPage({ canonical, siteOrigin }) {
   return genericPage({
     status: 404,
     title: `Page not found — ${SITE_NAME}`,
-    description: "This page was not found on Flash Movies — free movies and TV online.",
+    description: "This page was not found on Flash Movies — browse movies and TV to watch online.",
     canonical,
     siteOrigin,
     robots: "noindex, nofollow",
     heading: "Page not found",
     paragraphs: ["The page you requested is not available on Flash Movies."],
-    links: [{ href: "/", text: "Watch free movies & TV — home" }],
+    links: [{ href: "/", text: "Watch movies & TV online — home" }],
   });
+}
+
+/**
+ * @param {Array<{ title: string, links: Array<{ href: string, text: string }> }>} sections
+ */
+function renderNavSections(sections) {
+  return sections
+    .map((section) => {
+      const items = section.links
+        .map(
+          (link) =>
+            `          <li><a href="${escapeHtml(link.href)}">${escapeHtml(link.text)}</a></li>`,
+        )
+        .join("\n");
+      return `      <section>\n        <h2>${escapeHtml(section.title)}</h2>\n        <ul>\n${items}\n        </ul>\n      </section>`;
+    })
+    .join("\n");
 }
 
 /**
@@ -382,6 +397,13 @@ export function renderHtml(page, siteOrigin) {
   const links = (page.links || [])
     .map((l) => `      <li><a href="${escapeHtml(l.href)}">${escapeHtml(l.text)}</a></li>`)
     .join("\n");
+  const mainNavSections = page.navSections?.length
+    ? `\n    <nav aria-label="Browse Flash Movies">\n${renderNavSections(page.navSections)}\n    </nav>`
+    : "";
+  const pageLinksNav = links
+    ? `\n    <nav aria-label="Related titles">\n      <ul>\n${links}\n      </ul>\n    </nav>`
+    : "";
+  const siteNav = renderNavSections(crawlerMenuSections());
 
   return `<!doctype html>
 <html lang="en">
@@ -421,9 +443,13 @@ export function renderHtml(page, siteOrigin) {
       <h1>${escapeHtml(page.heading)}</h1>
     </header>
     <main>
-${paragraphs}
-${links ? `    <nav>\n      <ul>\n${links}\n      </ul>\n    </nav>` : ""}
+${paragraphs}${mainNavSections}${pageLinksNav}
     </main>
+    <footer>
+      <nav aria-label="Site menu">
+${siteNav}
+      </nav>
+    </footer>
   </body>
 </html>
 `;

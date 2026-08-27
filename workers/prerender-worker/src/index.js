@@ -10,6 +10,7 @@
  */
 import { hasPrerenderLoopHeader, isCrawlerRequest } from "./bots.js";
 import { HOME_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "./copy.js";
+import { fetchHomeSections } from "./home-sections.js";
 import {
   detailPage,
   genericPage,
@@ -82,7 +83,15 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
   const route = parseRoute(url);
 
   if (route.kind === "home") {
-    return withKind(homePage({ canonical, siteOrigin: origin }), "home");
+    let featuredSections = [];
+    try {
+      featuredSections = await fetchHomeSections(env.TMDB_API_KEY, fetchImpl);
+    } catch {
+      featuredSections = [];
+    }
+    const page = homePage({ canonical, siteOrigin: origin, featuredSections });
+    if (!featuredSections.length) page.ttl = 120;
+    return withKind(page, "home");
   }
 
   if (route.kind === "terms") {
@@ -201,6 +210,7 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
         route.listSearch,
         env.TMDB_API_KEY,
         fetchImpl,
+        route.listFilters || {},
       );
       if (result.status === 204) {
         data = null;

@@ -71,39 +71,62 @@ export async function fetchTmdbDetails(type, id, apiKey, fetchImpl = fetch) {
  * apps/web/src/utils/fetching.ts). Returns null when there is no cheap list.
  * @param {"movie" | "tv" | "person"} type
  * @param {string} search
+ * @param {import("./list-filters.js").ListFilters} [filters]
  */
-export function tmdbListPath(type, search) {
+export function tmdbListPath(type, search, filters = {}) {
+  let path = null;
+
   if (search === "trending_week") {
-    if (type === "person") return null;
-    return `trending/${type}/week`;
-  }
-  if (search === "trending_day") {
-    if (type === "person") return null;
-    return `trending/${type}/day`;
-  }
-  if (search === "year_highlights" && type === "movie") {
+    if (type !== "person") path = `trending/${type}/week`;
+  } else if (search === "trending_day") {
+    if (type !== "person") path = `trending/${type}/day`;
+  } else if (search === "year_highlights" && type === "movie") {
     const year = new Date().getFullYear();
-    return `discover/movie?include_adult=false&include_video=false&primary_release_year=${year}&vote_count.gte=200&sort_by=vote_average.desc`;
-  }
-  if (search === "discover") {
+    path = `discover/movie?include_adult=false&include_video=false&primary_release_year=${year}&vote_count.gte=200&sort_by=vote_average.desc`;
+  } else if (search === "discover") {
     const extras =
       type === "movie"
         ? "include_adult=false&include_video=false"
         : "include_adult=false";
-    return `discover/${type}?${extras}&sort_by=popularity.desc`;
+    path = `discover/${type}?${extras}&sort_by=popularity.desc`;
+  } else {
+    const allowed = new Set([
+      "popular",
+      "top_rated",
+      "upcoming",
+      "now_playing",
+      "on_the_air",
+      "airing_today",
+    ]);
+    if (allowed.has(search)) {
+      path = `${type}/${search}`;
+    }
   }
-  const allowed = new Set([
-    "popular",
-    "top_rated",
-    "upcoming",
-    "now_playing",
-    "on_the_air",
-    "airing_today",
-  ]);
-  if (allowed.has(search)) {
-    return `${type}/${search}`;
+
+  if (!path) return null;
+
+  if (search === "discover" && filters) {
+    const discoverParts = [];
+    if (filters.withGenres) discoverParts.push(`with_genres=${filters.withGenres}`);
+    if (filters.primaryReleaseYear && type === "movie") {
+      discoverParts.push(`primary_release_year=${filters.primaryReleaseYear}`);
+    }
+    if (filters.firstAirDateYear && type === "tv") {
+      discoverParts.push(`first_air_date_year=${filters.firstAirDateYear}`);
+    }
+    if (filters.voteAverageGte) {
+      discoverParts.push(`vote_average.gte=${filters.voteAverageGte}`);
+    }
+    if (filters.voteAverageLte) {
+      discoverParts.push(`vote_average.lte=${filters.voteAverageLte}`);
+    }
+    if (discoverParts.length) {
+      const joiner = path.includes("?") ? "&" : "?";
+      path = `${path}${joiner}${discoverParts.join("&")}`;
+    }
   }
-  return null;
+
+  return path;
 }
 
 /**
@@ -111,9 +134,10 @@ export function tmdbListPath(type, search) {
  * @param {string} search
  * @param {string} apiKey
  * @param {typeof fetch} fetchImpl
+ * @param {import("./list-filters.js").ListFilters} [filters]
  */
-export async function fetchTmdbList(type, search, apiKey, fetchImpl = fetch) {
-  const path = tmdbListPath(type, search);
+export async function fetchTmdbList(type, search, apiKey, fetchImpl = fetch, filters = {}) {
+  const path = tmdbListPath(type, search, filters);
   if (!path) return { status: 204, data: null };
   const joiner = path.includes("?") ? "&" : "?";
   const response = await fetchTmdb(`${path}${joiner}page=1`, apiKey, fetchImpl);

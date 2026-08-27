@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { homePage, detailPage, renderHtml } from "../src/html.js";
 import { HOME_DESCRIPTION, HOME_TITLE } from "../src/copy.js";
+import { homePageDescription } from "../src/list-copy.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const fightClub = JSON.parse(
@@ -21,12 +22,12 @@ describe("crawler HTML", () => {
 
     assert.equal(page.title, HOME_TITLE);
     assert.equal(page.description, HOME_DESCRIPTION);
-    assert.match(html, /<link rel="canonical" href="https:\/\/flashmovies\.xyz\/">/);
-    assert.match(html, /property="og:title"/);
-    assert.match(html, /name="twitter:card"/);
-    assert.match(html, /application\/ld\+json/);
-    assert.match(html, /Watch Free Movies/i);
     assert.match(html, /free movie and TV streaming website/i);
+    assert.match(html, /browse popular and trending titles/i);
+    assert.match(html, /Trending movies this week/);
+    assert.match(html, /Browse shows by genre/);
+    assert.match(html, /Frequently asked questions/);
+    assert.match(html, /aria-label="Site menu"/);
     assert.doesNotMatch(html, /Affiliate Site Verification/i);
     assert.doesNotMatch(html, /<script type="module"/);
   });
@@ -41,7 +42,7 @@ describe("crawler HTML", () => {
     const html = renderHtml(page, "https://flashmovies.xyz");
 
     assert.match(page.title, /Fight Club \(1999\)/);
-    assert.match(page.description, /Watch Fight Club \(1999\) free/i);
+    assert.match(page.description, /Watch Fight Club \(1999\) free on Flash Movies/i);
     assert.equal(page.canonical, "https://flashmovies.xyz/movie-info?type=movie&id=550");
     assert.match(page.image, /image\.tmdb\.org\/t\/p\/w500\/jSziioSwPVrOy9Yow3XhWIBDjq1\.jpg/);
     assert.equal(page.ogType, "video.movie");
@@ -51,7 +52,7 @@ describe("crawler HTML", () => {
     assert.match(html, /"@type":"Movie"/);
     assert.match(html, /David Fincher/);
     assert.doesNotMatch(html, /Affiliate Site Verification/i);
-    assert.match(html, /Watch Fight Club \(1999\) free/);
+    assert.match(html, /Watch Fight Club \(1999\) free on Flash Movies/);
   });
 
   it("renders TMDB-backed HTML for /full-movie?type=movie&id=550 (not a 404)", () => {

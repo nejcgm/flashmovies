@@ -11,6 +11,33 @@ const fightClub = JSON.parse(
   readFileSync(join(__dirname, "fixtures", "tmdb-movie-550.json"), "utf8"),
 );
 
+function tmdbListResult(items = [{ id: 550, title: "Fight Club", poster_path: "/x.jpg" }]) {
+  return new Response(JSON.stringify({ results: items }), {
+    headers: { "content-type": "application/json" },
+  });
+}
+
+/**
+ * @param {object} [options]
+ * @param {typeof fetch} [options.onUnexpected]
+ */
+function mockTmdbFetch(options = {}) {
+  const { onUnexpected } = options;
+  return async (input, init = {}) => {
+    const url = typeof input === "string" ? input : input.url;
+    if (url.includes("api.themoviedb.org/3/movie/550")) {
+      return new Response(JSON.stringify(fightClub), {
+        headers: { "content-type": "application/json" },
+      });
+    }
+    if (url.includes("api.themoviedb.org")) {
+      return tmdbListResult();
+    }
+    if (onUnexpected) return onUnexpected(input, init);
+    throw new Error(`unexpected fetch ${url}`);
+  };
+}
+
 function memoryCache() {
   const store = new Map();
   return {
@@ -193,7 +220,7 @@ describe("worker request handling", () => {
       new Request("https://flashmovies.xyz/", { headers }),
       env,
       {},
-      { fetch: async () => { throw new Error("no origin"); }, cache },
+      { fetch: mockTmdbFetch({ onUnexpected: () => { throw new Error("no origin"); } }), cache },
     );
     assert.ok((await get.text()).length > 0);
 
@@ -241,26 +268,62 @@ describe("worker request handling", () => {
     assert.doesNotMatch(html, /Affiliate Site Verification/);
   });
 
-  it("serves homepage free streaming copy to crawlers and caches the document", async () => {
+  it("serves homepage TMDB sections and menu links to crawlers", async () => {
     const cache = memoryCache();
     const request = new Request("https://flashmovies.xyz/", {
       headers: { "user-agent": "Twitterbot/1.0" },
     });
 
-    const first = await handleRequest(request, env, {}, { fetch: async () => {
-      throw new Error("homepage crawler HTML must not hit origin or TMDB");
-    }, cache });
+    const first = await handleRequest(request, env, {}, {
+      fetch: mockTmdbFetch({ onUnexpected: () => { throw new Error("homepage must not hit origin"); } }),
+      cache,
+    });
     const html = await first.text();
     assert.match(html, /Watch Free Movies/i);
     assert.match(html, /free movie and TV streaming website/i);
+    assert.match(html, /Trending movies this week/);
+    assert.match(html, /Fight Club/);
+    assert.match(html, /Browse movies by genre/);
+    assert.match(html, /aria-label="Site menu"/);
     assert.doesNotMatch(html, /Affiliate Site Verification/);
     assert.equal(first.headers.get("x-crawler-cache"), "MISS");
 
-    const second = await handleRequest(request, env, {}, { fetch: async () => {
-      throw new Error("cache hit must not refetch");
-    }, cache });
+    const second = await handleRequest(request, env, {}, {
+      fetch: async () => { throw new Error("cache hit must not refetch"); },
+      cache,
+    });
     assert.equal(second.headers.get("x-crawler-cache"), "HIT");
-    assert.match(await second.text(), /Watch free movies/i);
+    const cachedHtml = await second.text();
+    assert.match(cachedHtml, /Fight Club/);
+    assert.match(cachedHtml, /Trending TV this week/);
+  });
+
+  it("serves genre-filtered discover lists to crawlers", async () => {
+    let tmdbUrl = "";
+    const fetchImpl = async (input) => {
+      const url = typeof input === "string" ? input : input.url;
+      tmdbUrl = url;
+      return tmdbListResult([{ id: 603, title: "The Matrix", poster_path: "/m.jpg" }]);
+    };
+
+    const response = await handleRequest(
+      new Request(
+        "https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=28&title=action-movies",
+        {
+          headers: {
+            "user-agent":
+              "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+          },
+        },
+      ),
+      env,
+      {},
+      { fetch: fetchImpl, cache: memoryCache() },
+    );
+    const html = await response.text();
+    assert.match(tmdbUrl, /with_genres=28/);
+    assert.match(html, /The Matrix/);
+    assert.match(html, /Action Movies/i);
   });
 
   it("accepts VITE_API_KEY values with or without a Bearer prefix", () => {

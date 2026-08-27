@@ -19,11 +19,18 @@ const List: React.FC = () => {
   const search = searchParams.get("search");
   const type = searchParams.get("type") as MediaType;
   const title: string | null = searchParams.get("title");
+  const withGenresParam = searchParams.get("with_genres");
 
   const [counter, setCounter] = useState(1);
   const [loading, setLoading] = useState(false);
   const lastItemRef = useRef<HTMLDivElement | null>(null);
-  const [genreList, setGenreList] = useState<number[]>([]);
+  const [genreList, setGenreList] = useState<number[]>(() => {
+    if (!withGenresParam) return [];
+    return withGenresParam
+      .split(",")
+      .map((value) => Number.parseInt(value, 10))
+      .filter((id) => Number.isFinite(id) && id > 0);
+  });
   const [endOfList, setEndOfList] = useState(false);
 
   useEffect(() => {

@@ -41,6 +41,14 @@ describe("routes", () => {
     assert.equal(parseRoute(new URL("https://flashmovies.xyz/")).kind, "home");
     assert.equal(parseRoute(new URL("https://flashmovies.xyz/frequently-asked-questions")).kind, "faq");
     assert.equal(parseRoute(new URL("https://flashmovies.xyz/unknown-page")).kind, "not-found");
+
+    const genreList = parseRoute(
+      new URL(
+        "https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=28&title=action-movies",
+      ),
+    );
+    assert.equal(genreList.kind, "list");
+    assert.equal(genreList.listFilters?.withGenres, "28");
   });
 
   it("bypasses SPA assets and sitemaps", () => {
@@ -65,6 +73,14 @@ describe("routes", () => {
     assert.equal(
       canonicalUrl(url, "https://flashmovies.xyz"),
       "https://flashmovies.xyz/movie-info?type=movie&id=550",
+    );
+
+    const listUrl = new URL(
+      "https://flashmovies.xyz/list-items?title=action-movies&search=discover&type=movie&with_genres=28",
+    );
+    assert.equal(
+      canonicalUrl(listUrl, "https://flashmovies.xyz"),
+      "https://flashmovies.xyz/list-items?type=movie&search=discover&with_genres=28&title=action-movies",
     );
   });
 });
