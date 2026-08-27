@@ -11,7 +11,7 @@
     "deploy:sitemap": "npm run build:sitemap-index && firebase deploy --only hosting",
     "build:sitemap": "npm run generate:sitemap",
     "generate:sitemap": "node scripts/sitemap/generate-index.js",
-    "test:sitemap": "node --test scripts/sitemap/test/tmdb-ids.test.js scripts/sitemap/test/tmdb-export.test.js && node scripts/sitemap/validate.js",
+    "test:sitemap": "node --test scripts/sitemap/test/tmdb-ids.test.js scripts/sitemap/test/tmdb-export.test.js scripts/sitemap/test/firebase-hosting.test.js && node scripts/sitemap/validate.js",
     "build:sitemap-index": "npm run build && npm run generate:sitemap && npm run sync:sitemap",
     "lint": "eslint .",
     "preview": "vite preview",

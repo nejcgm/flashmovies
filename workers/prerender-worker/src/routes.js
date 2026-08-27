@@ -102,6 +102,30 @@ function normalizePath(pathname) {
 }
 
 /**
+ * Trailing-slash sitemap URLs must 301 to the real XML file.
+ * Firebase Hosting has no file at `/sitemap.xml/`, so the SPA rewrite
+ * would serve index.html; the old XML Content-Type glob still matched,
+ * producing HTML labeled application/xml (GSC "Couldn't fetch").
+ *
+ * @param {URL} url
+ * @param {string} siteOrigin
+ * @returns {string | null} absolute Location, or null if not a slash sitemap
+ */
+export function trailingSlashSitemapRedirect(url, siteOrigin) {
+  const origin = String(siteOrigin || "").replace(/\/+$/, "");
+  const path = url.pathname;
+  const search = url.search || "";
+  if (/^\/sitemap\.xml\/+$/i.test(path)) {
+    return `${origin}/sitemap.xml${search}`;
+  }
+  const child = path.match(/^\/sitemaps\/([^/]+\.xml)\/+$/i);
+  if (child) {
+    return `${origin}/sitemaps/${child[1]}${search}`;
+  }
+  return null;
+}
+
+/**
  * Static files and sitemaps must never be replaced with crawler HTML.
  * @param {URL} url
  */
