@@ -12,3 +12,5 @@ Create your own .env file in root
 add TMDB api Key in .env file
 Example:
 VITE_API_KEY =Bearer APIKEY
+
+Crawler HTML (replaces prerender.io) lives in `workers/prerender-worker`. See that folder's README for wrangler deploy. The worker reuses this same `VITE_API_KEY`.
