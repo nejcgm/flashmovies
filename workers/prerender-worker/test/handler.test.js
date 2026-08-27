@@ -61,6 +61,82 @@ describe("worker request handling", () => {
     assert.equal(response.headers.get("x-flash-crawler"), null);
   });
 
+  it("sets X-Prerender on origin passthrough (loop protection)", async () => {
+    let seen = null;
+    const fetchImpl = async (input) => {
+      seen = input;
+      return new Response("spa", { headers: { "content-type": "text/html" } });
+    };
+    await handleRequest(
+      new Request("https://flashmovies.xyz/", {
+        headers: { "user-agent": "Mozilla/5.0 Chrome/120.0.0.0" },
+      }),
+      env,
+      {},
+      { fetch: fetchImpl, cache: memoryCache() },
+    );
+    assert.equal(seen.headers.get("X-Prerender"), "1");
+    assert.doesNotMatch(seen.url, /service\.prerender\.io/);
+  });
+
+  it("does not 404 Googlebot on /full-movie (live worker bug)", async () => {
+    const fetchImpl = async (input, init = {}) => {
+      const url = typeof input === "string" ? input : input.url;
+      assert.doesNotMatch(url, /service\.prerender\.io/);
+      if (url.includes("api.themoviedb.org/3/movie/550")) {
+        return new Response(JSON.stringify(fightClub), {
+          headers: { "content-type": "application/json" },
+        });
+      }
+      throw new Error(`unexpected fetch ${url}`);
+    };
+
+    const response = await handleRequest(
+      new Request("https://flashmovies.xyz/full-movie?type=movie&id=550", {
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        },
+      }),
+      env,
+      {},
+      { fetch: fetchImpl, cache: memoryCache() },
+    );
+
+    const html = await response.text();
+    assert.equal(response.status, 200);
+    assert.notEqual(html, "Not Found");
+    assert.match(html, /<title>Fight Club \(1999\) — Flash Movies<\/title>/);
+    assert.match(html, /rel="canonical" href="https:\/\/flashmovies\.xyz\/full-movie\?type=movie&amp;id=550"/);
+  });
+
+  it("passes X-Prerender + Googlebot through to origin instead of prerender.io", async () => {
+    let originHits = 0;
+    const fetchImpl = async (input) => {
+      originHits += 1;
+      const url = typeof input === "string" ? input : input.url;
+      assert.doesNotMatch(url, /service\.prerender\.io/);
+      return new Response("spa-origin", { headers: { "content-type": "text/html" } });
+    };
+
+    const response = await handleRequest(
+      new Request("https://flashmovies.xyz/full-movie?type=movie&id=550", {
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+          "X-Prerender": "1",
+        },
+      }),
+      env,
+      {},
+      { fetch: fetchImpl, cache: memoryCache() },
+    );
+
+    assert.equal(originHits, 1);
+    assert.equal(await response.text(), "spa-origin");
+    assert.equal(response.headers.get("x-flash-crawler"), null);
+  });
+
   it("returns TMDB-backed crawler HTML for Googlebot on a movie URL", async () => {
     const fetchImpl = async (input, init = {}) => {
       const url = typeof input === "string" ? input : input.url;

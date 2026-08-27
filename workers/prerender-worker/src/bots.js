@@ -1,14 +1,51 @@
 /**
- * Crawler / preview User-Agents that should receive first-party HTML
- * instead of the empty Vite SPA shell.
+ * Crawler User-Agents that receive first-party HTML instead of the SPA shell.
  *
- * Matching is case-insensitive substring. Keep this list explicit —
- * do not match the generic word "bot" (too many false positives).
+ * Starts from the live `prerender-worker` BOT_AGENTS list (prerender.io
+ * Cloudflare worker) and keeps the extra AI / social / scanner agents
+ * already needed for this catalog. Matching is case-insensitive substring.
+ *
+ * Do not match the generic word "bot" (too many false positives).
  */
-export const BOT_UA_PATTERNS = [
-  // Search
+export const BOT_AGENTS = [
+  // Live prerender-worker / prerender.io Cloudflare list
   "googlebot",
+  "yahoo! slurp",
+  "bingbot",
+  "yandex",
+  "baiduspider",
+  "facebookexternalhit",
+  "twitterbot",
+  "rogerbot",
+  "linkedinbot",
+  "embedly",
+  "quora link preview",
+  "showyoubot",
+  "outbrain",
+  "pinterest/0.",
+  "developers.google.com/+/web/snippet",
+  "slackbot",
+  "vkshare",
+  "w3c_validator",
+  "redditbot",
+  "applebot",
+  "whatsapp",
+  "flipboard",
+  "tumblr",
+  "bitlybot",
+  "skypeuripreview",
+  "nuzzel",
+  "discordbot",
+  "google page speed",
+  "qwantify",
+  "pinterestbot",
+  "bitrix link preview",
+  "xing-contenttabreceiver",
+  "chrome-lighthouse",
+  "telegrambot",
   "google-inspectiontool",
+
+  // Additional search / preview agents
   "google-extended",
   "storebot-google",
   "adsbot-google",
@@ -19,49 +56,31 @@ export const BOT_UA_PATTERNS = [
   "duplexweb-google",
   "google-cloudvertexbot",
   "google-safety",
-  "bingbot",
   "bingpreview",
   "msnbot",
   "adidxbot",
   "slurp",
   "duckduckbot",
   "duckassistbot",
-  "baiduspider",
   "yandexbot",
   "yandeximages",
   "seznambot",
-  "qwantify",
   "sogou",
   "exabot",
   "mojeekbot",
-  "applebot",
   "applenewsbot",
+  "pagespeed",
 
   // Social / unfurl
-  "facebookexternalhit",
   "facebot",
   "facebookbot",
   "facebookcatalog",
   "meta-externalagent",
   "meta-externalfetcher",
   "instagram",
-  "twitterbot",
-  "linkedinbot",
-  "slackbot",
   "slack-imgproxy",
-  "discordbot",
-  "whatsapp",
-  "telegrambot",
-  "skypeuripreview",
-  "vkshare",
-  "pinterestbot",
   "pinterest/",
-  "redditbot",
-  "tumblr",
-  "embedly",
   "iframely",
-  "quora link preview",
-  "outbrain",
   "pocketparser",
   "viber",
   "line/",
@@ -121,16 +140,15 @@ export const BOT_UA_PATTERNS = [
   "censys",
   "securitytrails",
 
-  // Preview / lighthouse-style (still need real meta, not the SPA stub)
-  "chrome-lighthouse",
-  "pagespeed",
+  // Preview / lighthouse-style
   "gtmetrix",
   "pingdom",
   "uptimerobot",
   "statuscake",
-  "w3c_validator",
-  "prerender",
 ];
+
+/** @deprecated use BOT_AGENTS — kept so existing tests can import either name */
+export const BOT_UA_PATTERNS = BOT_AGENTS;
 
 /**
  * @param {string | null | undefined} userAgent
@@ -139,7 +157,7 @@ export const BOT_UA_PATTERNS = [
 export function isBotUserAgent(userAgent) {
   if (!userAgent) return false;
   const ua = userAgent.toLowerCase();
-  return BOT_UA_PATTERNS.some((pattern) => ua.includes(pattern));
+  return BOT_AGENTS.some((pattern) => ua.includes(pattern));
 }
 
 /**
@@ -152,10 +170,21 @@ export function hasEscapedFragment(url) {
 }
 
 /**
+ * Incoming `X-Prerender` means this request is already a worker/origin
+ * subrequest. Do not generate crawler HTML again (loop protection from
+ * the live prerender-worker).
+ * @param {Request} request
+ */
+export function hasPrerenderLoopHeader(request) {
+  return Boolean(request.headers.get("X-Prerender"));
+}
+
+/**
  * @param {Request} request
  * @returns {boolean}
  */
 export function isCrawlerRequest(request) {
+  if (hasPrerenderLoopHeader(request)) return false;
   const url = new URL(request.url);
   if (hasEscapedFragment(url)) return true;
   return isBotUserAgent(request.headers.get("user-agent"));

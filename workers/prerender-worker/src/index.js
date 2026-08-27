@@ -1,4 +1,14 @@
-import { isCrawlerRequest } from "./bots.js";
+/**
+ * First-party crawler HTML for Flash Movies.
+ *
+ * Replaces the live prerender-worker script that proxied bots to
+ * service.prerender.io. That script also 404'd any bot URL containing
+ * `/full-movie` — this worker does not.
+ *
+ * Loop protection: origin subrequests set `X-Prerender`; incoming requests
+ * with that header pass through to origin.
+ */
+import { hasPrerenderLoopHeader, isCrawlerRequest } from "./bots.js";
 import { HOME_DESCRIPTION, SITE_NAME } from "./copy.js";
 import {
   detailPage,
@@ -202,13 +212,39 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
   return withKind(notFoundPage({ canonical, siteOrigin: origin }), "not-found");
 }
 
+function isFlashMoviesHost(hostname) {
+  const host = String(hostname || "").toLowerCase();
+  return host === "flashmovies.xyz" || host === "www.flashmovies.xyz";
+}
+
 /**
  * Pass human (and static-asset) traffic to the SPA origin unchanged.
- * With Workers Routes, fetch(request) hits the origin, not this worker again.
+ * Sets `X-Prerender` so a loop back into this worker skips crawler HTML
+ * (same header the live prerender-worker used).
+ *
+ * On `*.workers.dev` (no zone route yet) fetch the real SPA origin instead
+ * of workers.dev, which 404s.
+ *
  * @param {Request} request
+ * @param {object} env
+ * @param {typeof fetch} fetchImpl
  */
-export function fetchOrigin(request, fetchImpl = fetch) {
-  return fetchImpl(request);
+export function fetchOrigin(request, env, fetchImpl = fetch) {
+  const headers = new Headers(request.headers);
+  headers.set("X-Prerender", "1");
+
+  const url = new URL(request.url);
+  if (isFlashMoviesHost(url.hostname)) {
+    return fetchImpl(new Request(request, { headers, redirect: "manual" }));
+  }
+
+  return fetchImpl(
+    new Request(`${siteOrigin(env)}${url.pathname}${url.search}`, {
+      method: request.method,
+      headers,
+      redirect: "manual",
+    }),
+  );
 }
 
 /**
@@ -222,12 +258,18 @@ export async function handleRequest(request, env, ctx, deps = {}) {
   const cache = deps.cache || (typeof caches !== "undefined" ? caches.default : null);
 
   if (request.method !== "GET" && request.method !== "HEAD") {
-    return fetchOrigin(request, fetchImpl);
+    return fetchOrigin(request, env, fetchImpl);
+  }
+
+  // Loop protection: this is already a worker→origin subrequest.
+  // Pass the request through as-is (same as the live prerender-worker).
+  if (hasPrerenderLoopHeader(request)) {
+    return fetchImpl(request);
   }
 
   const url = new URL(request.url);
   if (shouldBypass(url) || !isCrawlerRequest(request)) {
-    return fetchOrigin(request, fetchImpl);
+    return fetchOrigin(request, env, fetchImpl);
   }
 
   const cacheKey = crawlerCacheKey(url);

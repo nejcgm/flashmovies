@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { BOT_UA_PATTERNS, hasEscapedFragment, isBotUserAgent, isCrawlerRequest } from "../src/bots.js";
+import { BOT_AGENTS, hasEscapedFragment, hasPrerenderLoopHeader, isBotUserAgent, isCrawlerRequest } from "../src/bots.js";
 
 describe("bot user-agents", () => {
   const bots = [
@@ -64,9 +64,36 @@ describe("bot user-agents", () => {
     ];
     for (const name of required) {
       assert.ok(
-        BOT_UA_PATTERNS.includes(name),
-        `missing ${name} in BOT_UA_PATTERNS`,
+        BOT_AGENTS.includes(name),
+        `missing ${name} in BOT_AGENTS`,
       );
     }
+  });
+
+  it("reuses the live prerender-worker BOT_AGENTS entries", () => {
+    const fromLiveWorker = [
+      "googlebot",
+      "yahoo! slurp",
+      "bingbot",
+      "rogerbot",
+      "showyoubot",
+      "google-inspectiontool",
+      "chrome-lighthouse",
+      "pinterestbot",
+    ];
+    for (const name of fromLiveWorker) {
+      assert.ok(BOT_AGENTS.includes(name), `missing live-list agent ${name}`);
+    }
+  });
+
+  it("does not treat X-Prerender loop-protection requests as crawlers", () => {
+    const request = new Request("https://flashmovies.xyz/full-movie?type=movie&id=550", {
+      headers: {
+        "user-agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        "X-Prerender": "1",
+      },
+    });
+    assert.equal(hasPrerenderLoopHeader(request), true);
+    assert.equal(isCrawlerRequest(request), false);
   });
 });

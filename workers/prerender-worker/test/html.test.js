@@ -54,4 +54,17 @@ describe("crawler HTML", () => {
     assert.doesNotMatch(html, /Watch Free/i);
     assert.doesNotMatch(html, /stream in HD/i);
   });
+
+  it("renders TMDB-backed HTML for /full-movie?type=movie&id=550 (not a 404)", () => {
+    const page = detailPage({
+      route: { kind: "detail", pathname: "/full-movie", type: "movie", id: "550" },
+      data: fightClub,
+      canonical: "https://flashmovies.xyz/full-movie?type=movie&id=550",
+      siteOrigin: "https://flashmovies.xyz",
+    });
+    const html = renderHtml(page, "https://flashmovies.xyz");
+    assert.equal(page.status, 200);
+    assert.match(html, /Fight Club \(1999\)/);
+    assert.match(html, /full-movie\?type=movie/);
+  });
 });

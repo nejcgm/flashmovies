@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { canonicalUrl, parseRoute, shouldBypass } from "../src/routes.js";
+import { canonicalUrl, IGNORE_EXTENSIONS, parseRoute, shouldBypass } from "../src/routes.js";
 
 describe("routes", () => {
   it("parses movie, TV, and person detail URLs", () => {
@@ -40,6 +40,13 @@ describe("routes", () => {
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/sitemaps/movie-info.xml")), true);
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/flash-movies-logo.png")), true);
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/movie-info?type=movie&id=550")), false);
+    assert.equal(shouldBypass(new URL("https://flashmovies.xyz/full-movie?type=movie&id=550")), false);
+  });
+
+  it("reuses the live IGNORE_EXTENSIONS suffixes", () => {
+    for (const ext of [".js", ".css", ".png", ".woff2", ".webp", ".xml"]) {
+      assert.ok(IGNORE_EXTENSIONS.includes(ext), `missing ${ext}`);
+    }
   });
 
   it("builds a stable canonical without _escaped_fragment_", () => {

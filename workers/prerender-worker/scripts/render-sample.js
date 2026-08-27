@@ -16,6 +16,7 @@ import { renderHtml } from "../src/html.js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const siteOrigin = "https://flashmovies.xyz";
 const movieUrl = new URL(`${siteOrigin}/movie-info?type=movie&id=550`);
+const watchUrl = new URL(`${siteOrigin}/full-movie?type=movie&id=550`);
 
 const apiKey = process.env.TMDB_API_KEY || process.env.VITE_API_KEY;
 if (!apiKey) {
@@ -23,18 +24,22 @@ if (!apiKey) {
   process.exit(1);
 }
 
-const page = await buildCrawlerPage(movieUrl, {
-  SITE_ORIGIN: siteOrigin,
-  TMDB_API_KEY: apiKey,
-});
-const html = renderHtml(page, siteOrigin);
-
 const outDir = join(__dirname, "..", "examples");
 mkdirSync(outDir, { recursive: true });
-const outFile = join(outDir, "movie-info-550.html");
-writeFileSync(outFile, html);
 
-console.log(`Wrote ${outFile}`);
-console.log(`title: ${page.title}`);
-console.log(`canonical: ${page.canonical}`);
-console.log(`image: ${page.image}`);
+async function writeSample(url, filename) {
+  const page = await buildCrawlerPage(url, {
+    SITE_ORIGIN: siteOrigin,
+    TMDB_API_KEY: apiKey,
+  });
+  const html = renderHtml(page, siteOrigin);
+  const outFile = join(outDir, filename);
+  writeFileSync(outFile, html);
+  console.log(`Wrote ${outFile}`);
+  console.log(`title: ${page.title}`);
+  console.log(`canonical: ${page.canonical}`);
+  console.log(`status: ${page.status}`);
+}
+
+await writeSample(movieUrl, "movie-info-550.html");
+await writeSample(watchUrl, "full-movie-550.html");

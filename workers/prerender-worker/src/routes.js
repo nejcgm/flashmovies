@@ -1,31 +1,59 @@
-const STATIC_EXTENSIONS = new Set([
+/**
+ * Static extensions the live prerender-worker skipped (IGNORE_EXTENSIONS).
+ * Crawler HTML is never generated for these; they pass through to origin.
+ */
+export const IGNORE_EXTENSIONS = [
   ".js",
   ".css",
-  ".map",
+  ".xml",
+  ".less",
   ".png",
   ".jpg",
   ".jpeg",
   ".gif",
-  ".svg",
+  ".pdf",
+  ".doc",
+  ".txt",
   ".ico",
-  ".webp",
+  ".rss",
+  ".zip",
+  ".mp3",
+  ".rar",
+  ".exe",
+  ".wmv",
+  ".avi",
+  ".ppt",
+  ".mpg",
+  ".mpeg",
+  ".tif",
+  ".wav",
+  ".mov",
+  ".psd",
+  ".ai",
+  ".xls",
+  ".mp4",
+  ".m4a",
+  ".swf",
+  ".dat",
+  ".dmg",
+  ".iso",
+  ".flv",
+  ".m4v",
+  ".torrent",
   ".woff",
   ".woff2",
   ".ttf",
+  ".otf",
   ".eot",
-  ".json",
-  ".xml",
-  ".txt",
+  ".svg",
+  ".webp",
+  ".avif",
   ".webmanifest",
-  ".pdf",
-]);
-
-const BYPASS_PREFIXES = [
-  "/assets/",
-  "/sitemaps/",
-  "/src/",
-  "/api/",
+  ".map",
+  ".json",
 ];
+
+const BYPASS_PREFIXES = ["/assets/", "/sitemaps/", "/src/", "/api/"];
 
 const BYPASS_EXACT = new Set([
   "/robots.txt",
@@ -63,16 +91,15 @@ function normalizePath(pathname) {
  */
 export function shouldBypass(url) {
   const path = normalizePath(url.pathname).toLowerCase();
-  if (BYPASS_EXACT.has(path) || BYPASS_EXACT.has(url.pathname.toLowerCase())) {
+  const rawPath = url.pathname.toLowerCase();
+  if (BYPASS_EXACT.has(path) || BYPASS_EXACT.has(rawPath)) {
     return true;
   }
-  if (BYPASS_PREFIXES.some((prefix) => url.pathname.toLowerCase().startsWith(prefix))) {
+  if (BYPASS_PREFIXES.some((prefix) => rawPath.startsWith(prefix))) {
     return true;
   }
-  const dot = path.lastIndexOf(".");
-  if (dot > path.lastIndexOf("/")) {
-    const ext = path.slice(dot);
-    if (STATIC_EXTENSIONS.has(ext)) return true;
+  if (IGNORE_EXTENSIONS.some((ext) => rawPath.endsWith(ext))) {
+    return true;
   }
   // Google / Bing HTML verification files, etc.
   if (/^\/google[a-z0-9]+\.html$/i.test(path)) return true;
@@ -106,6 +133,10 @@ function asMediaType(value) {
  */
 
 /**
+ * `/full-movie` is a first-class catalog page (sitemap + SPA). The live
+ * prerender-worker 404'd any bot URL containing `/full-movie` — do not
+ * restore that. Valid movie/TV ids here are detail pages, same as /movie-info.
+ *
  * @param {URL} url
  * @returns {ParsedRoute}
  */
