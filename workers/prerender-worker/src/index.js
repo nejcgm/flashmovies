@@ -42,10 +42,11 @@ function ttlFor(page, env) {
  * the origin SPA document in Cloudflare's cache.
  * @param {URL} url
  */
-export function crawlerCacheKey(url) {
+export function crawlerCacheKey(url, env = {}) {
   const copy = new URL(url.toString());
   copy.searchParams.delete("_escaped_fragment_");
-  return new Request(`${CACHE_HOST}${copy.pathname}${copy.search}`, {
+  const version = String(env.CACHE_KEY_VERSION || "1").trim() || "1";
+  return new Request(`${CACHE_HOST}/v${version}${copy.pathname}${copy.search}`, {
     method: "GET",
   });
 }
@@ -290,7 +291,7 @@ export async function handleRequest(request, env, ctx, deps = {}) {
     return fetchOrigin(request, env, fetchImpl);
   }
 
-  const cacheKey = crawlerCacheKey(url);
+  const cacheKey = crawlerCacheKey(url, env);
   if (cache) {
     const hit = await cache.match(cacheKey);
     if (hit) {

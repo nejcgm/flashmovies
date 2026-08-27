@@ -14,13 +14,11 @@ account_id = "d4d5dea420b3c5c51f6e9a5a85820759"
 #   Route: www.flashmovies.xyz/*
 # Failure mode: Fail open (proceed).
 #
-# Do not deploy these routes until you are ready to cut over. Uncomment
-# after `npx wrangler login` if this account owns the zone:
-#
-# routes = [
-#   { pattern = "flashmovies.xyz/*", zone_name = "flashmovies.xyz" },
-#   { pattern = "www.flashmovies.xyz/*", zone_name = "flashmovies.xyz" },
-# ]
+# Zone routes — crawlers on flashmovies.xyz hit this worker (humans still get SPA).
+routes = [
+  { pattern = "flashmovies.xyz/*", zone_name = "flashmovies.xyz" },
+  { pattern = "www.flashmovies.xyz/*", zone_name = "flashmovies.xyz" },
+]
 
 [vars]
 SITE_ORIGIN = "https://flashmovies.xyz"
@@ -29,6 +27,8 @@ SITE_NAME = "Flash Movies"
 CACHE_TTL_SECONDS = "21600"
 # Homepage and other static catalog pages: 24 hours
 HOME_CACHE_TTL_SECONDS = "86400"
+# Bump when crawler HTML shape changes (invalidates Cache API entries).
+CACHE_KEY_VERSION = "2"
 
 # TMDB_API_KEY is a secret (same string as apps/web VITE_API_KEY):
 #   npx wrangler secret put TMDB_API_KEY
