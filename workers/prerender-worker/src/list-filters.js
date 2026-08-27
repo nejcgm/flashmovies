@@ -72,10 +72,3 @@ export function discoverFilterQuery(filters) {
   if (filters.voteAverageLte) parts.push(`vote_average.lte=${filters.voteAverageLte}`);
   return parts.join("&");
 }
-
-/**
- * @param {ListFilters} filters
- */
-export function hasListFilters(filters) {
-  return Boolean(discoverFilterQuery(filters));
-}

@@ -59,13 +59,6 @@ export class UsersService {
     };
   }
 
-  async updateStripeCustomerId(userId: number, customerId: string) {
-    await this.pool.query(
-      'UPDATE users SET stripe_customer_id = $1 WHERE id = $2',
-      [customerId, userId],
-    );
-  }
-
   async upgradeToProRole(userId: number) {
     const proRoleResult = await this.pool.query(
       "SELECT id FROM lookup_values WHERE category = 'user_role' AND code = 'pro'",
