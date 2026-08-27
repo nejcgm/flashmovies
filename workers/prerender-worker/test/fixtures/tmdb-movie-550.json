@@ -1,0 +1,25 @@
+{
+  "id": 550,
+  "title": "Fight Club",
+  "original_title": "Fight Club",
+  "overview": "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy. Their concept catches on, with underground \"fight clubs\" forming in every town, until an eccentric gets in the way and ignites an out-of-control spiral toward oblivion.",
+  "release_date": "1999-10-15",
+  "poster_path": "/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg",
+  "backdrop_path": "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+  "vote_average": 8.437,
+  "vote_count": 32713,
+  "runtime": 139,
+  "imdb_id": "tt0137523",
+  "genres": [
+    { "id": 18, "name": "Drama" },
+    { "id": 53, "name": "Thriller" }
+  ],
+  "credits": {
+    "cast": [
+      { "name": "Edward Norton" },
+      { "name": "Brad Pitt" },
+      { "name": "Helena Bonham Carter" }
+    ],
+    "crew": [{ "job": "Director", "name": "David Fincher" }]
+  }
+}

@@ -1,0 +1,3 @@
+# Same value as apps/web VITE_API_KEY (TMDB v4 read token).
+# Include the "Bearer " prefix if that is how VITE_API_KEY is stored.
+TMDB_API_KEY=Bearer YOUR_TMDB_READ_ACCESS_TOKEN
