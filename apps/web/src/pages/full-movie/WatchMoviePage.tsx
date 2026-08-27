@@ -5,8 +5,6 @@ import BackButton from "../../components/BackButton";
 import ShareButton from "../../components/ShareButton.js";
 import ProviderComponent from "./components/ProviderComponent.js";
 import Meta from "../../SEO/meta.tsx";
-import MovieSchema from "../../SEO/MovieSchema.tsx";
-import BreadcrumbSchema from "../../SEO/BreadcrumbSchema.tsx";
 import { EpisodeSelector } from "./components/EpisodeSelector.tsx";
 import { DataInfoProps, Episode } from "../../utils/Interfaces.ts";
 import { ProPlansPromoStrip } from "../../components/common/ProPlansPromoStrip";
@@ -119,41 +117,6 @@ const WatchMoviePage = () => {
             "HD streaming, flashmovies, flashmovies.xyz",
           ].filter(Boolean)}
           type={type === "movie" ? "video.movie" : "video.tv_show"}
-        />
-      )}
-
-      {info && (
-        <BreadcrumbSchema
-          items={[
-            { name: "Home", url: "https://flashmovies.xyz/" },
-            {
-              name: type === "movie" ? "Movies" : "TV Shows",
-              url: `https://flashmovies.xyz/list-items?type=${type}&search=popular&title=popular-${type}s`,
-            },
-            {
-              name: displayName || "Content",
-              url: `https://flashmovies.xyz/movie-info?type=${type}&id=${movieId}`,
-            },
-            {
-              name: `Watch ${displayName || "Content"}`,
-              url: window.location.href,
-            },
-          ]}
-        />
-      )}
-
-      {info && (
-        <MovieSchema
-          title={displayName}
-          description={info?.overview}
-          image={info?.poster_path}
-          releaseDate={info?.release_date || info?.first_air_date}
-          genre={info?.genres?.map((g: { name: string }) => g.name) || []}
-          rating={info?.vote_average}
-          ratingCount={info?.vote_count}
-          duration={info?.runtime}
-          type={type === "movie" ? "movie" : "tv"}
-          url={window.location.href}
         />
       )}
 

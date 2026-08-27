@@ -8,8 +8,6 @@ import { fetchSpecific, fetchTrending, fetchThisYearHighlights } from "../utils/
 import { formatTitle } from "../utils/helpers.ts";
 import { DataInfoProps, MediaType } from "../utils/Interfaces.ts";
 import Meta from "../SEO/meta.tsx";
-import ItemListSchema from '../SEO/ItemListSchema.tsx';
-import BreadcrumbSchema from '../SEO/BreadcrumbSchema.tsx';
 import { mediaDisplayTitle } from "../utils/mediaDisplayTitle";
 
 const List: React.FC = () => {
@@ -143,32 +141,6 @@ const List: React.FC = () => {
           `${type ? "movies" : "series"} streaming`, `free ${type ? "movies" : "series"}`, `watch ${type ? "movies" : "series"} online`, formatTitle(title) || '', 'flash movies', 'flashmovies', 'flashmovies.xyz'
         ]}
         type="website"
-      />
-
-      <BreadcrumbSchema 
-        items={[
-          { name: "Home", url: "https://flashmovies.xyz/" },
-          { 
-            name: type === 'movie' ? 'Movies' : type === 'tv' ? 'TV Shows' : 'People', 
-            url: `https://flashmovies.xyz/list-items?type=${type}&search=popular&title=popular-${type}s` 
-          },
-          { 
-            name: formatTitle(title) || 'Browse', 
-            url: window.location.href 
-          }
-        ]}
-      />
-
-      <ItemListSchema 
-        listName={formatTitle(title) || `${type === 'movie' ? 'Movies' : 'TV Shows'}`}
-        description={`Browse and watch ${formatTitle(title)} on Flash Movies. Stream ${type === 'movie' ? 'movies' : 'TV shows'} in HD for free.`}
-        url={window.location.href}
-        items={listItems.slice(0, 20).map((item: DataInfoProps) => ({
-          name: mediaDisplayTitle(item),
-          url: `https://flashmovies.xyz/movie-info?type=${type}&id=${item.id}`,
-          image: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : undefined,
-          description: item.overview?.slice(0, 150) || ''
-        }))}
       />
 
       <div className="w-full flex flex-col">

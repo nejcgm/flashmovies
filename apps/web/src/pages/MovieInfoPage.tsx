@@ -10,8 +10,6 @@ import TopSection from "./info-Page-Components/TopSection.jsx";
 import MovieSpecificDescription from "./info-Page-Components/MovieSpecificDescription.jsx";
 
 import Meta from "../SEO/meta.tsx";
-import MovieSchema from "../SEO/MovieSchema.tsx";
-import BreadcrumbSchema from "../SEO/BreadcrumbSchema.tsx";
 import { DataInfoProps } from "../utils/Interfaces.ts";
 import { useLocaleStorageList } from "../utils/toLocaleStorageList.ts";
 import { mediaDisplayTitle, mediaYearSuffixSpaced } from "../utils/mediaDisplayTitle";
@@ -149,53 +147,6 @@ import { mediaDisplayTitle, mediaYearSuffixSpaced } from "../utils/mediaDisplayT
         />
       )}
 
-      {info && (
-        <BreadcrumbSchema
-          items={[
-            { name: "Home", url: "https://flashmovies.xyz/" },
-            {
-              name:
-                type === "movie"
-                  ? "Movies"
-                  : type === "tv"
-                  ? "TV Shows"
-                  : "People",
-              url: `https://flashmovies.xyz/list-items?type=${type}&search=popular&title=popular-${type}s`,
-            },
-            {
-              name: mediaDisplayTitle(info) || "Content",
-              url: window.location.href,
-            },
-          ]}
-        />
-      )}
-      {info && type !== "person" && (
-        <MovieSchema
-          title={mediaDisplayTitle(info)}
-          description={info?.overview}
-          image={info?.poster_path}
-          releaseDate={info?.release_date || info?.first_air_date}
-          genre={info?.genres?.map((g: { name: string }) => g.name) || []}
-          director={
-            credits
-              ?.filter(
-                (credit: { job?: string; name: string }) =>
-                  credit.job === "Director"
-              )
-              .map((credit: { name: string }) => credit.name) || []
-          }
-          actor={
-            credits
-              ?.slice(0, 10)
-              .map((credit: { name: string }) => credit.name) || []
-          }
-          rating={info?.vote_average}
-          ratingCount={info?.vote_count}
-          duration={info?.runtime}
-          type={type === "movie" ? "movie" : "tv"}
-          url={window.location.href}
-        />
-      )}
       {loading && (
         <div className="flex w-full justify-center">
           <Spinner />

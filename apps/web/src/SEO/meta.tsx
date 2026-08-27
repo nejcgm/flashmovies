@@ -109,53 +109,6 @@ const Meta = ({
       {/* Additional SEO tags */}
       <meta name="format-detection" content="telephone=no" />
       <meta name="referrer" content="origin-when-cross-origin" />
-
-      {/* Structured Data for Movie/TV Site */}
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": siteName,
-          "alternateName": ["FlashMovies", "Flash Movies", "flashmovies.xyz"],
-          "url": url,
-          "description": description,
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": {
-              "@type": "EntryPoint",
-              "urlTemplate": `${url}/list-items?search={search_term_string}`
-            },
-            "query-input": "required name=search_term_string"
-          },
-          "sameAs": [
-            // Add your social media URLs here when available
-            // "https://twitter.com/flashmovies",
-            // "https://facebook.com/flashmovies"
-          ],
-          "mainEntity": {
-            "@type": "Organization",
-            "name": siteName,
-            "alternateName": ["FlashMovies", "Flash Movies"],
-            "url": url,
-            "logo": {
-              "@type": "ImageObject",
-              "url": `${url}/flash-movies-logo.png`,
-              "width": "400",
-              "height": "400"
-            },
-            "description": "Free movie and TV show streaming platform offering HD streaming of popular movies and TV series",
-            "foundingDate": "2024",
-            "serviceType": ["Movie Streaming", "TV Show Streaming", "Entertainment"],
-            "areaServed": "Worldwide",
-            "knowsAbout": ["Movies", "TV Shows", "Entertainment", "Streaming"],
-            "contactPoint": {
-              "@type": "ContactPoint",
-              "contactType": "Customer Service",
-              "availableLanguage": "English"
-            }
-          }
-        })}
-      </script>
     </Helmet>
   );
 };
