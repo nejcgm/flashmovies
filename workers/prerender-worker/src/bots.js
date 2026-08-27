@@ -140,9 +140,6 @@ export const BOT_AGENTS = [
   "statuscake",
 ];
 
-/** @deprecated use BOT_AGENTS — kept so existing tests can import either name */
-export const BOT_UA_PATTERNS = BOT_AGENTS;
-
 /**
  * @param {string | null | undefined} userAgent
  * @returns {boolean}

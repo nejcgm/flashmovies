@@ -1,6 +1,5 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": ["generate-sitemap-index.js"],
-  "ignore": ["src/declaration.d.ts"],
-  "ignoreDependencies": ["react-snowfall"]
+  "ignore": ["src/declaration.d.ts"]
 }

@@ -30,6 +30,3 @@ export function assertsSiteCopy(text) {
   }
   return text;
 }
-
-/** @deprecated Use assertsSiteCopy */
-export const assertsCatalogCopy = assertsSiteCopy;
