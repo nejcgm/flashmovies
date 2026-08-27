@@ -9,7 +9,7 @@
  * with that header pass through to origin.
  */
 import { hasPrerenderLoopHeader, isCrawlerRequest } from "./bots.js";
-import { HOME_DESCRIPTION, SITE_NAME } from "./copy.js";
+import { HOME_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "./copy.js";
 import {
   detailPage,
   genericPage,
@@ -85,14 +85,11 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
     return withKind(
       genericPage({
         title: `Terms and Conditions — ${SITE_NAME}`,
-        description:
-          "Terms for using Flash Movies, a movie and TV discovery catalog.",
+        description: `Terms for using ${SITE_NAME}, a free movie and TV streaming website.`,
         canonical,
         siteOrigin: origin,
         heading: "Terms and Conditions",
-        paragraphs: [
-          "Flash Movies is a movie and TV discovery catalog. By using the site you agree to the terms published on this page.",
-        ],
+        paragraphs: [SITE_TAGLINE, "By using the site you agree to the terms published on this page."],
         links: [{ href: "/", text: "Flash Movies home" }],
       }),
       "terms",
@@ -103,7 +100,7 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
     return withKind(
       genericPage({
         title: `Pro plan terms — ${SITE_NAME}`,
-        description: "Pro plan terms for the Flash Movies catalog.",
+        description: `Pro plan terms for ${SITE_NAME} — ad-free streaming and premium servers.`,
         canonical,
         siteOrigin: origin,
         heading: "Pro plan terms",
@@ -118,13 +115,13 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
     return withKind(
       genericPage({
         title: `Frequently asked questions — ${SITE_NAME}`,
-        description:
-          "FAQ about Flash Movies, a movie and TV discovery catalog. We do not host full movies.",
+        description: `FAQ about ${SITE_NAME} — free movies and TV shows online in HD.`,
         canonical,
         siteOrigin: origin,
         heading: "Frequently asked questions",
         paragraphs: [
-          "Flash Movies is a movie and TV discovery catalog. Browse titles, details, cast, and similar works. The site does not host or play full movies from its own servers.",
+          SITE_TAGLINE,
+          "Browse and watch movies and TV shows online for free. Upgrade to Pro for an ad-free experience and premium streaming servers.",
         ],
         links: [{ href: "/", text: "Flash Movies home" }],
       }),
@@ -146,7 +143,7 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
         robots: "noindex, nofollow",
         heading: title,
         paragraphs: [
-          "This page is part of the Flash Movies catalog app and is not a movie listing.",
+          "Sign in, register, or manage your Flash Movies account and Pro plan.",
         ],
         links: [{ href: "/", text: "Flash Movies home" }],
       }),
@@ -172,16 +169,17 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
         return withKind(notFoundPage({ canonical, siteOrigin: origin }), "not-found");
       }
     } catch {
-      // Fall through to a short generic catalog page rather than the SPA stub.
+      // Fall through to a short generic page rather than the SPA stub.
     }
     const fallback = genericPage({
-      title: `Title ${route.id} — ${SITE_NAME}`,
-      description: `Catalog details for this ${route.type} on Flash Movies, a movie and TV discovery catalog.`,
+      title: `${route.type === "movie" ? "Movie" : route.type === "tv" ? "TV show" : "Title"} ${route.id} — ${SITE_NAME}`,
+      description: `Watch this ${route.type} free online on Flash Movies — free movies and TV in HD.`,
       canonical,
       siteOrigin: origin,
-      heading: "Catalog details",
+      heading: "Watch free on Flash Movies",
       paragraphs: [
-        "Movie and TV details are loaded from TMDB for crawlers. This listing is part of the Flash Movies discovery catalog.",
+        SITE_TAGLINE,
+        "Title details are loaded from TMDB for search engines. Open the page in your browser to start watching.",
       ],
       links: [{ href: "/", text: "Flash Movies home" }],
     });

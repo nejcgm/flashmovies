@@ -170,7 +170,7 @@ describe("worker request handling", () => {
     assert.doesNotMatch(html, /Affiliate Site Verification/);
   });
 
-  it("serves homepage catalog copy to crawlers and caches the document", async () => {
+  it("serves homepage free streaming copy to crawlers and caches the document", async () => {
     const cache = memoryCache();
     const request = new Request("https://flashmovies.xyz/", {
       headers: { "user-agent": "Twitterbot/1.0" },
@@ -180,8 +180,8 @@ describe("worker request handling", () => {
       throw new Error("homepage crawler HTML must not hit origin or TMDB");
     }, cache });
     const html = await first.text();
-    assert.match(html, /Movie and TV Discovery Catalog/);
-    assert.doesNotMatch(html, /Free Movie Streaming/);
+    assert.match(html, /Watch Free Movies/i);
+    assert.match(html, /free movie and TV streaming website/i);
     assert.doesNotMatch(html, /Affiliate Site Verification/);
     assert.equal(first.headers.get("x-crawler-cache"), "MISS");
 
@@ -189,7 +189,7 @@ describe("worker request handling", () => {
       throw new Error("cache hit must not refetch");
     }, cache });
     assert.equal(second.headers.get("x-crawler-cache"), "HIT");
-    assert.match(await second.text(), /discovery catalog/i);
+    assert.match(await second.text(), /Watch free movies/i);
   });
 
   it("accepts VITE_API_KEY values with or without a Bearer prefix", () => {

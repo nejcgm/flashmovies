@@ -12,7 +12,7 @@ const fightClub = JSON.parse(
 );
 
 describe("crawler HTML", () => {
-  it("describes the homepage as a discovery catalog, not a streaming site", () => {
+  it("describes the homepage as a free movie and TV streaming site", () => {
     const page = homePage({
       canonical: "https://flashmovies.xyz/",
       siteOrigin: "https://flashmovies.xyz",
@@ -25,9 +25,9 @@ describe("crawler HTML", () => {
     assert.match(html, /property="og:title"/);
     assert.match(html, /name="twitter:card"/);
     assert.match(html, /application\/ld\+json/);
+    assert.match(html, /Watch Free Movies/i);
+    assert.match(html, /free movie and TV streaming website/i);
     assert.doesNotMatch(html, /Affiliate Site Verification/i);
-    assert.doesNotMatch(html, /Free Movie Streaming/i);
-    assert.doesNotMatch(html, /watch latest movies in HD for free/i);
     assert.doesNotMatch(html, /<script type="module"/);
   });
 
@@ -41,7 +41,7 @@ describe("crawler HTML", () => {
     const html = renderHtml(page, "https://flashmovies.xyz");
 
     assert.match(page.title, /Fight Club \(1999\)/);
-    assert.match(page.description, /ticking-time-bomb insomniac/i);
+    assert.match(page.description, /Watch Fight Club \(1999\) free/i);
     assert.equal(page.canonical, "https://flashmovies.xyz/movie-info?type=movie&id=550");
     assert.match(page.image, /image\.tmdb\.org\/t\/p\/w500\/jSziioSwPVrOy9Yow3XhWIBDjq1\.jpg/);
     assert.equal(page.ogType, "video.movie");
@@ -51,8 +51,7 @@ describe("crawler HTML", () => {
     assert.match(html, /"@type":"Movie"/);
     assert.match(html, /David Fincher/);
     assert.doesNotMatch(html, /Affiliate Site Verification/i);
-    assert.doesNotMatch(html, /Watch Free/i);
-    assert.doesNotMatch(html, /stream in HD/i);
+    assert.match(html, /Watch Fight Club \(1999\) free/);
   });
 
   it("renders TMDB-backed HTML for /full-movie?type=movie&id=550 (not a 404)", () => {

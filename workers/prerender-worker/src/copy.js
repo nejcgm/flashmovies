@@ -1,25 +1,31 @@
 export const SITE_NAME = "Flash Movies";
 export const DEFAULT_IMAGE_PATH = "/flash-movies-logo.png";
 
-export const HOME_TITLE = "Flash Movies — Movie and TV Discovery Catalog";
+/** Reusable one-liner for static / fallback crawler pages. */
+export const SITE_TAGLINE =
+  "Flash Movies is a free movie and TV website — watch films and series online in HD with no subscription.";
+
+export const HOME_TITLE = "Flash Movies — Watch Free Movies & TV Shows Online";
 export const HOME_DESCRIPTION =
-  "Flash Movies is a movie and TV discovery catalog. Browse films, series, and people — titles, details, cast, and similar works in one place.";
+  "Watch free movies and TV shows online in HD on Flash Movies. Stream popular films, trending series, and new releases at no cost.";
 
 export const HOME_BODY = [
-  "Flash Movies (flashmovies.xyz) is a catalog for discovering movies, TV shows, and people.",
-  "Explore popular and trending titles, read overviews, and browse cast and similar works. This site is a discovery catalog — it does not host or play full movies.",
+  "Flash Movies (flashmovies.xyz) is a free movie and TV streaming website.",
+  "Watch movies and TV shows online in HD — browse popular and trending titles, explore details and cast, and start watching with no subscription required.",
 ];
 
-const STREAMING_CLAIM_RE =
-  /free movie streaming|watch latest movies in hd for free|stream the latest movies|watch free movies and tv shows online/i;
+const BLOCKED_COPY_RE = /Affiliate Site Verification/i;
 
 /**
- * Guardrail so homepage/generic copy cannot regress into streaming claims.
+ * Guardrail so crawler HTML never includes the hidden affiliate stub from index.html.
  * @param {string} text
  */
-export function assertsCatalogCopy(text) {
-  if (STREAMING_CLAIM_RE.test(text)) {
-    throw new Error("Crawler copy must not imply free HD movie streaming");
+export function assertsSiteCopy(text) {
+  if (BLOCKED_COPY_RE.test(text)) {
+    throw new Error("Crawler copy must not include affiliate verification stub text");
   }
   return text;
 }
+
+/** @deprecated Use assertsSiteCopy */
+export const assertsCatalogCopy = assertsSiteCopy;

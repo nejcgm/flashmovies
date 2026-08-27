@@ -5,7 +5,7 @@ import {
   HOME_DESCRIPTION,
   HOME_TITLE,
   SITE_NAME,
-  assertsCatalogCopy,
+  assertsSiteCopy,
 } from "./copy.js";
 import { tmdbImageUrl } from "./tmdb.js";
 
@@ -56,6 +56,7 @@ function websiteJsonLd(siteOrigin, description) {
       "@type": "Organization",
       name: SITE_NAME,
       url: siteOrigin,
+      description: "Free movies and TV shows online in HD.",
       logo: {
         "@type": "ImageObject",
         url: `${siteOrigin}${DEFAULT_IMAGE_PATH}`,
@@ -68,7 +69,7 @@ function websiteJsonLd(siteOrigin, description) {
  * @param {object} opts
  */
 export function homePage({ canonical, siteOrigin }) {
-  const description = assertsCatalogCopy(HOME_DESCRIPTION);
+  const description = assertsSiteCopy(HOME_DESCRIPTION);
   return {
     status: 200,
     title: HOME_TITLE,
@@ -81,9 +82,9 @@ export function homePage({ canonical, siteOrigin }) {
     heading: HOME_TITLE,
     paragraphs: HOME_BODY,
     links: [
-      { href: "/list-items?type=movie&search=popular&title=popular-movies", text: "Popular movies" },
-      { href: "/list-items?type=tv&search=popular&title=popular-tv-shows", text: "Popular TV shows" },
-      { href: "/list-items?type=person&search=popular&title=most-popular-actors", text: "Popular people" },
+      { href: "/list-items?type=movie&search=popular&title=popular-movies", text: "Watch popular movies free" },
+      { href: "/list-items?type=tv&search=popular&title=popular-tv-shows", text: "Watch popular TV free" },
+      { href: "/list-items?type=person&search=popular&title=most-popular-actors", text: "Popular actors" },
     ],
     jsonLd: [websiteJsonLd(siteOrigin, description)],
   };
@@ -103,7 +104,7 @@ export function genericPage({
   paragraphs,
   links = [],
 }) {
-  const desc = assertsCatalogCopy(description);
+  const desc = assertsSiteCopy(description);
   return {
     status,
     title,
@@ -144,6 +145,7 @@ function castNames(credits, limit = 8) {
  */
 export function detailPage({ route, data, canonical, siteOrigin }) {
   const type = route.type;
+  const isWatchPage = route.pathname === "/full-movie";
   const display = mediaDisplayTitle(data);
   const year = yearFromDate(data.release_date || data.first_air_date || data.birthday);
   const titled = year ? `${display} (${year})` : display;
@@ -151,8 +153,15 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
   const kindLabel = type === "tv" ? "TV series" : type === "person" ? "person" : "movie";
 
   const description = overview
-    ? truncate(`${overview} ${titled} in the Flash Movies ${kindLabel} catalog.`, 280)
-    : `${titled} — details and catalog information on Flash Movies, a movie and TV discovery catalog.`;
+    ? truncate(
+        isWatchPage
+          ? `Watch ${titled} free online in HD on Flash Movies. ${overview}`
+          : `Watch ${titled} free on Flash Movies. ${overview}`,
+        280,
+      )
+    : isWatchPage
+      ? `Watch ${titled} free online in HD on Flash Movies — free ${kindLabel} streaming with no subscription.`
+      : `Watch ${titled} free online on Flash Movies — free movies and TV in HD.`;
 
   const poster = tmdbImageUrl(data.poster_path || data.profile_path, "w500");
   const backdrop = tmdbImageUrl(data.backdrop_path, "w1280");
@@ -163,7 +172,11 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
   const actors = castNames(data.credits);
 
   const paragraphs = [
-    overview ? truncate(overview, 600) : `${titled} is listed in the Flash Movies catalog.`,
+    overview
+      ? truncate(overview, 600)
+      : isWatchPage
+        ? `Stream ${titled} free on Flash Movies — watch online in HD with no subscription.`
+        : `${titled} is available to watch free on Flash Movies.`,
     type === "person"
       ? [data.known_for_department && `Known for: ${data.known_for_department}`, data.place_of_birth && `Born: ${data.place_of_birth}`]
           .filter(Boolean)
@@ -171,12 +184,14 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
       : [
           genres.length ? `Genres: ${genres.join(", ")}` : "",
           data.vote_average ? `TMDB rating: ${Number(data.vote_average).toFixed(1)}/10` : "",
+          !isWatchPage && type !== "person" ? "Watch free in HD on Flash Movies." : "",
         ]
           .filter(Boolean)
           .join(". "),
   ].filter(Boolean);
 
   const infoUrl = `${siteOrigin}/movie-info?type=${type}&id=${route.id}`;
+  const watchUrl = `/full-movie?type=${type}&id=${route.id}`;
   const jsonLd = [];
 
   if (type === "person") {
@@ -237,17 +252,23 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
   return {
     status: 200,
     title: `${titled} — ${SITE_NAME}`,
-    description: assertsCatalogCopy(description),
+    description: assertsSiteCopy(description),
     canonical,
     image,
     imageAlt: titled,
     ogType,
     robots: "index, follow",
-    heading: titled,
+    heading: isWatchPage && type !== "person" ? `Watch ${titled} free` : titled,
     paragraphs,
     links: [
-      { href: infoUrl.replace(siteOrigin, "") || infoUrl, text: `${display} catalog page` },
-      { href: "/", text: "Flash Movies home" },
+      ...(type !== "person"
+        ? [
+            isWatchPage
+              ? { href: `/movie-info?type=${type}&id=${route.id}`, text: `${display} details` }
+              : { href: watchUrl, text: `Watch ${display} free` },
+          ]
+        : [{ href: infoUrl.replace(siteOrigin, "") || infoUrl, text: `${display} profile` }]),
+      { href: "/", text: "Free movies & TV — Flash Movies home" },
     ],
     jsonLd,
   };
@@ -259,9 +280,9 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
 export function listPage({ route, data, canonical, siteOrigin }) {
   const listName =
     formatListTitle(route.listTitle) ||
-    `${route.type === "tv" ? "TV" : route.type === "person" ? "People" : "Movie"} catalog`;
-  const description = assertsCatalogCopy(
-    `Browse ${listName} in the Flash Movies catalog of movies, TV shows, and people.`,
+    `${route.type === "tv" ? "TV" : route.type === "person" ? "People" : "Movie"} list`;
+  const description = assertsSiteCopy(
+    `Watch ${listName} free online on Flash Movies — free movies and TV shows in HD.`,
   );
   const results = Array.isArray(data?.results) ? data.results.slice(0, 20) : [];
   const firstImage =
@@ -269,12 +290,12 @@ export function listPage({ route, data, canonical, siteOrigin }) {
     `${siteOrigin}${DEFAULT_IMAGE_PATH}`;
 
   const paragraphs = [
-    `${listName} on Flash Movies, a movie and TV discovery catalog.`,
+    `${listName} on Flash Movies — watch free movies and TV shows online in HD.`,
     results.length
-      ? `Titles in this list include ${results
+      ? `Titles include ${results
           .slice(0, 8)
           .map((item) => mediaDisplayTitle(item))
-          .join(", ")}.`
+          .join(", ")} — stream free on Flash Movies.`
       : "",
   ].filter(Boolean);
 
@@ -330,13 +351,13 @@ export function notFoundPage({ canonical, siteOrigin }) {
   return genericPage({
     status: 404,
     title: `Page not found — ${SITE_NAME}`,
-    description: "This page is not in the Flash Movies movie and TV catalog.",
+    description: "This page was not found on Flash Movies — free movies and TV online.",
     canonical,
     siteOrigin,
     robots: "noindex, nofollow",
     heading: "Page not found",
-    paragraphs: ["The requested page does not exist in the Flash Movies catalog."],
-    links: [{ href: "/", text: "Back to Flash Movies" }],
+    paragraphs: ["The page you requested is not available on Flash Movies."],
+    links: [{ href: "/", text: "Watch free movies & TV — home" }],
   });
 }
 
