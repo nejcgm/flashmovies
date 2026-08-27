@@ -55,6 +55,7 @@ describe("crawler HTML", () => {
     assert.match(html, /David Fincher/);
     assert.doesNotMatch(html, /Affiliate Site Verification/i);
     assert.match(html, /Watch Fight Club \(1999\) free on Flash Movies/);
+    assert.match(html, /Watch free online in HD on Flash Movies/);
   });
 
   it("renders TMDB-backed HTML for /full-movie?type=movie&id=550 (not a 404)", () => {
@@ -68,6 +69,7 @@ describe("crawler HTML", () => {
     assert.equal(page.status, 200);
     assert.match(page.title, /Watch Fight Club \(1999\) Free Online — Flash Movies/);
     assert.match(html, /<title>Watch Fight Club \(1999\) Free Online — Flash Movies<\/title>/);
+    assert.match(html, /<h1>Watch Fight Club \(1999\) free online<\/h1>/);
     assert.match(html, /Fight Club \(1999\)/);
     assert.match(html, /full-movie\?type=movie/);
   });

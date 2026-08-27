@@ -201,7 +201,7 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
       )
     : isWatchPage
       ? `Watch ${titled} free online in HD on Flash Movies — stream this ${kindLabel} with full play links.`
-      : `Watch ${titled} online on Flash Movies — movies and TV in HD.`;
+      : `Watch ${titled} free online on Flash Movies — movies and TV in HD.`;
 
   const poster = tmdbImageUrl(data.poster_path || data.profile_path, "w500");
   const backdrop = tmdbImageUrl(data.backdrop_path, "w1280");
@@ -216,7 +216,7 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
       ? truncate(overview, 600)
       : isWatchPage
         ? `Stream ${titled} online on Flash Movies — watch in HD from the full title page.`
-        : `${titled} is available to watch online on Flash Movies.`,
+        : `${titled} is available to watch free online on Flash Movies.`,
     type === "person"
       ? [data.known_for_department && `Known for: ${data.known_for_department}`, data.place_of_birth && `Born: ${data.place_of_birth}`]
           .filter(Boolean)
@@ -224,7 +224,7 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
       : [
           genres.length ? `Genres: ${genres.join(", ")}` : "",
           data.vote_average ? `TMDB rating: ${Number(data.vote_average).toFixed(1)}/10` : "",
-          !isWatchPage && type !== "person" ? "Watch online in HD on Flash Movies." : "",
+          !isWatchPage && type !== "person" ? "Watch free online in HD on Flash Movies." : "",
         ]
           .filter(Boolean)
           .join(". "),
@@ -298,7 +298,7 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
     imageAlt: titled,
     ogType,
     robots: "index, follow",
-    heading: isWatchPage && type !== "person" ? `Watch ${titled} online` : titled,
+    heading: isWatchPage && type !== "person" ? `Watch ${titled} free online` : titled,
     paragraphs,
     links: [
       ...(type !== "person"
