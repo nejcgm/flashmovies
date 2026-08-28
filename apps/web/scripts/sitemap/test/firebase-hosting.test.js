@@ -21,11 +21,12 @@ describe("firebase hosting sitemap config", () => {
     assert.equal(indexSlash.type, 301);
 
     const childSlash = redirects.find(
-      (rule) => rule.regex === "^/sitemaps/([^/]+\\.xml)/$",
+      (rule) => rule.regex === "^/sitemaps/(?P<file>[^/]+\\.xml)/$",
     );
     assert.ok(childSlash, "missing /sitemaps/*.xml/ redirect");
-    assert.equal(childSlash.destination, "/sitemaps/:1");
+    assert.equal(childSlash.destination, "/sitemaps/:file");
     assert.equal(childSlash.type, 301);
+    assert.match(childSlash.regex, /\(\?P<file>/);
   });
 
   it("applies XML Content-Type only to real sitemap files, not trailing slashes", () => {

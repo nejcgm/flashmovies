@@ -9,8 +9,8 @@
         "type": 301
       },
       {
-        "regex": "^/sitemaps/([^/]+\\.xml)/$",
-        "destination": "/sitemaps/:1",
+        "regex": "^/sitemaps/(?P<file>[^/]+\\.xml)/$",
+        "destination": "/sitemaps/:file",
         "type": 301
       }
     ],
