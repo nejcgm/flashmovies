@@ -59,6 +59,69 @@ const env = {
 };
 
 describe("worker request handling", () => {
+  it("301s /sitemap.xml/ to /sitemap.xml without hitting origin or crawler HTML", async () => {
+    const fetchImpl = async () => {
+      throw new Error("trailing-slash sitemaps must not hit origin or TMDB");
+    };
+
+    const response = await handleRequest(
+      new Request("https://flashmovies.xyz/sitemap.xml/", {
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        },
+      }),
+      env,
+      {},
+      { fetch: fetchImpl, cache: memoryCache() },
+    );
+
+    assert.equal(response.status, 301);
+    assert.equal(response.headers.get("location"), "https://flashmovies.xyz/sitemap.xml");
+    assert.equal(response.headers.get("x-flash-crawler"), null);
+    assert.equal(await response.text(), "");
+  });
+
+  it("301s child sitemap trailing slashes and still bypasses canonical sitemap.xml", async () => {
+    let originHits = 0;
+    const fetchImpl = async (input) => {
+      originHits += 1;
+      const url = typeof input === "string" ? input : input.url;
+      assert.match(url, /\/sitemap\.xml$/);
+      return new Response("<?xml version=\"1.0\"?><sitemapindex></sitemapindex>", {
+        headers: { "content-type": "application/xml" },
+      });
+    };
+
+    const slash = await handleRequest(
+      new Request("https://flashmovies.xyz/sitemaps/static.xml/", {
+        headers: { "user-agent": "Mozilla/5.0 Chrome/120.0.0.0" },
+      }),
+      env,
+      {},
+      { fetch: fetchImpl, cache: memoryCache() },
+    );
+    assert.equal(slash.status, 301);
+    assert.equal(slash.headers.get("location"), "https://flashmovies.xyz/sitemaps/static.xml");
+    assert.equal(originHits, 0);
+
+    const canonical = await handleRequest(
+      new Request("https://flashmovies.xyz/sitemap.xml", {
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        },
+      }),
+      env,
+      {},
+      { fetch: fetchImpl, cache: memoryCache() },
+    );
+    assert.equal(originHits, 1);
+    assert.equal(canonical.status, 200);
+    assert.equal(canonical.headers.get("x-flash-crawler"), null);
+    assert.match(await canonical.text(), /sitemapindex/);
+  });
+
   it("passes human browsers through to the SPA origin unchanged", async () => {
     const originHtml = "<!doctype html><title>SPA</title><div id='root'></div>";
     let originHits = 0;

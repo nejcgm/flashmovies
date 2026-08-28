@@ -19,7 +19,12 @@ import {
   notFoundPage,
   renderHtml,
 } from "./html.js";
-import { canonicalUrl, parseRoute, shouldBypass } from "./routes.js";
+import {
+  canonicalUrl,
+  parseRoute,
+  shouldBypass,
+  trailingSlashSitemapRedirect,
+} from "./routes.js";
 import { fetchTmdbDetails, fetchTmdbList } from "./tmdb.js";
 
 const CACHE_HOST = "https://crawler-html.flashmovies.xyz";
@@ -280,13 +285,18 @@ export async function handleRequest(request, env, ctx, deps = {}) {
     return fetchOrigin(request, env, fetchImpl);
   }
 
+  const url = new URL(request.url);
+  const sitemapSlashLocation = trailingSlashSitemapRedirect(url, siteOrigin(env));
+  if (sitemapSlashLocation) {
+    return Response.redirect(sitemapSlashLocation, 301);
+  }
+
   // Loop protection: this is already a worker→origin subrequest.
   // Pass the request through as-is (same as the live prerender-worker).
   if (hasPrerenderLoopHeader(request)) {
     return fetchImpl(request);
   }
 
-  const url = new URL(request.url);
   if (shouldBypass(url) || !isCrawlerRequest(request)) {
     return fetchOrigin(request, env, fetchImpl);
   }

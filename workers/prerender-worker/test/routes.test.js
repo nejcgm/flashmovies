@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { canonicalUrl, IGNORE_EXTENSIONS, parseRoute, shouldBypass } from "../src/routes.js";
+import {
+  canonicalUrl,
+  IGNORE_EXTENSIONS,
+  parseRoute,
+  shouldBypass,
+  trailingSlashSitemapRedirect,
+} from "../src/routes.js";
 
 describe("routes", () => {
   it("parses movie, TV, and person detail URLs", () => {
@@ -54,10 +60,46 @@ describe("routes", () => {
   it("bypasses SPA assets and sitemaps", () => {
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/assets/index-abc.js")), true);
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/sitemap.xml")), true);
+    assert.equal(shouldBypass(new URL("https://flashmovies.xyz/sitemap.xml/")), true);
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/sitemaps/movie-info.xml")), true);
+    assert.equal(shouldBypass(new URL("https://flashmovies.xyz/sitemaps/movie-info.xml/")), true);
+    assert.equal(shouldBypass(new URL("https://flashmovies.xyz/robots.txt")), true);
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/flash-movies-logo.png")), true);
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/movie-info?type=movie&id=550")), false);
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/full-movie?type=movie&id=550")), false);
+  });
+
+  it("301s trailing-slash sitemap URLs to the real XML file", () => {
+    const origin = "https://flashmovies.xyz";
+    assert.equal(
+      trailingSlashSitemapRedirect(new URL("https://flashmovies.xyz/sitemap.xml/"), origin),
+      "https://flashmovies.xyz/sitemap.xml",
+    );
+    assert.equal(
+      trailingSlashSitemapRedirect(
+        new URL("https://flashmovies.xyz/sitemaps/static.xml/"),
+        origin,
+      ),
+      "https://flashmovies.xyz/sitemaps/static.xml",
+    );
+    assert.equal(
+      trailingSlashSitemapRedirect(new URL("https://flashmovies.xyz/sitemap.xml"), origin),
+      null,
+    );
+    assert.equal(
+      trailingSlashSitemapRedirect(
+        new URL("https://flashmovies.xyz/sitemaps/static.xml"),
+        origin,
+      ),
+      null,
+    );
+    assert.equal(
+      trailingSlashSitemapRedirect(
+        new URL("https://flashmovies.xyz/movie-info/?type=movie&id=550"),
+        origin,
+      ),
+      null,
+    );
   });
 
   it("reuses the live IGNORE_EXTENSIONS suffixes", () => {
