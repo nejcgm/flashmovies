@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { DataInfoProps } from "./Interfaces.ts";
+import { DataInfoProps, Genre } from "./Interfaces.ts";
 import { rankSearchResults } from "./rankSearchResults.ts";
 const apiKey: string = import.meta.env.VITE_API_KEY;
 
@@ -115,31 +115,29 @@ export const fetchThisYearHighlights = async (
   return response.data ?? null;
 };
 
-/** Single-genre discover for movie spotlights */
-export const fetchDiscoverMoviesByGenre = async (
-  genreId: number,
-  page: number | string | null = 1
-): Promise<FetchSpecificResponse | null> => {
-  const pageNum =
-    page !== "" && page !== null && page !== undefined ? Number(page) : NaN;
-  const pageQs = Number.isFinite(pageNum) && pageNum > 0 ? `&page=${pageNum}` : "";
-  const url = `https://api.themoviedb.org/3/discover/movie?language=en-US&include_adult=false&include_video=false&with_genres=${genreId}&sort_by=popularity.desc${pageQs}`;
-  const response: AxiosResponse<FetchSpecificResponse> = await axios.request({
+/** TMDB /3/genre/{movie|tv}/list */
+export const fetchGenreList = async (media: "movie" | "tv"): Promise<Genre[]> => {
+  const url = `https://api.themoviedb.org/3/genre/${media}/list?language=en-US`;
+  const response = await axios.request<{ genres: Genre[] }>({
     url,
     ...tmdbRequestOptions,
   });
-  return response.data ?? null;
+  return response.data?.genres ?? [];
 };
 
-/** Single-genre discover for TV spotlights (use TV genre ids from /genre/tv/list) */
-export const fetchDiscoverTvByGenre = async (
-  genreId: number,
+/** Discover by genre ids (comma-separated = AND). Empty list = popular titles with no genre filter. */
+export const fetchDiscoverByGenres = async (
+  media: "movie" | "tv",
+  genreIds: number[],
   page: number | string | null = 1
 ): Promise<FetchSpecificResponse | null> => {
   const pageNum =
     page !== "" && page !== null && page !== undefined ? Number(page) : NaN;
   const pageQs = Number.isFinite(pageNum) && pageNum > 0 ? `&page=${pageNum}` : "";
-  const url = `https://api.themoviedb.org/3/discover/tv?language=en-US&include_adult=false&with_genres=${genreId}&sort_by=popularity.desc${pageQs}`;
+  const genresQs = genreIds.length ? `&with_genres=${genreIds.join(",")}` : "";
+  const movieExtras =
+    media === "movie" ? "&include_adult=false&include_video=false" : "&include_adult=false";
+  const url = `https://api.themoviedb.org/3/discover/${media}?language=en-US${movieExtras}${genresQs}&sort_by=popularity.desc${pageQs}`;
   const response: AxiosResponse<FetchSpecificResponse> = await axios.request({
     url,
     ...tmdbRequestOptions,
