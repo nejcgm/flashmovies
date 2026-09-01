@@ -1,10 +1,9 @@
-import React from 'react';
 
 interface FormErrorProps {
   message: string | null;
 }
 
-const FormError: React.FC<FormErrorProps> = ({ message }) => {
+export function FormError({ message }: FormErrorProps) {
   if (!message) return null;
 
   return (
@@ -14,4 +13,3 @@ const FormError: React.FC<FormErrorProps> = ({ message }) => {
   );
 };
 
-export default FormError;

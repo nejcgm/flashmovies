@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import ProviderButton from "./ProviderButton";
+import { useState, useEffect } from "react";
+import { ProviderButton } from "./";
 import { STREAMING_PROVIDERS } from "../../../config/streamingProviders";
 import { useUser } from "../../../context/UserContext";
 import { useProUpsell } from "../../../context/ProUpsellContext";
@@ -17,14 +17,14 @@ interface ProviderComponentProps {
   description?: string;
 }
 
-const ProviderComponent = ({
+export function ProviderComponent({
   newProvider,
   title,
   movieId,
   type,
   className,
   description,
-}: ProviderComponentProps) => {
+}: ProviderComponentProps) {
   const { isPro } = useUser();
   const { openProUpsell } = useProUpsell();
 
@@ -38,7 +38,6 @@ const ProviderComponent = ({
     isPremium: provider.isPremium || false,
   }));
 
-  // Get the first accessible provider (first non-premium for non-pro users)
   const getDefaultProvider = () => {
     if (isPro) return providers[0];
     return providers.find((p) => !p.isPremium) || providers[0];
@@ -56,7 +55,6 @@ const ProviderComponent = ({
     newProvider(providerUrl, isEpisodeSlugPartOfSlug, params);
   }, [providerUrl, isEpisodeSlugPartOfSlug, params, newProvider]);
 
-  // Update default provider when isPro changes or movieId/type changes
   useEffect(() => {
     const newDefault = isPro ? providers[0] : (providers.find((p) => !p.isPremium) || providers[0]);
     setSelectedProvider(newDefault.name);
@@ -72,7 +70,6 @@ const ProviderComponent = ({
     isPremium: boolean,
     params?: string
   ) => {
-    // If non-pro user clicks premium provider, redirect to plans page
     if (isPremium && !isPro) {
       openProUpsell('premium_server');
       return;
@@ -135,4 +132,3 @@ const ProviderComponent = ({
   );
 };
 
-export default ProviderComponent;

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const useDebounce = (value: string | undefined, delay: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -13,7 +13,6 @@ export const useDebounce = (value: string | undefined, delay: number) => {
 
   return debouncedValue;
 };
-
 
 interface SwipeProps {
   onSwipeLeft?: () => void;

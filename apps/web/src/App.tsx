@@ -1,37 +1,47 @@
-import React, { lazy, Suspense } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
-import MainLayout from "./layout/MainLayout";
-import AuthLayout from "./layout/AuthLayout";
-import Analytics from "./SEO/Analytics";
-import ContentSquare from "./SEO/ContentSquare";
-import Spinner from "./components/Spinner";
+import { Suspense } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
+import { AuthLayout, MainLayout } from "./layout";
+import { Analytics, ContentSquare } from "./SEO";
+import { Spinner } from "./components";
+import { lazyNamed } from "./utils/lazyNamed";
 
-// Page chunks — loaded only when the route is first visited
-const Home = lazy(() => import("./pages/Home"));
-const MovieInfoPage = lazy(() => import("./pages/MovieInfoPage"));
-const WatchMoviePage = lazy(() => import("./pages/full-movie/WatchMoviePage"));
-const List = lazy(() => import("./list-movie/List"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const TermsAndConditionsPage = lazy(() => import("./pages/footer-pages/TermsAndConditionsPage"));
-const ProPlanTermsConditionsPage = lazy(() => import("./pages/footer-pages/ProPlanTermsConditionsPage"));
-const FAQPage = lazy(() => import("./pages/footer-pages/FAQ"));
-const LoginPage = lazy(() => import("./pages/auth/login"));
-const RegisterPage = lazy(() => import("./pages/auth/register"));
-const LogoutPage = lazy(() => import("./pages/auth/logout"));
-const PlansPage = lazy(() => import("./pages/payments/plans"));
-const RemoveProPage = lazy(() => import("./pages/payments/remove-pro"));
+const HomePage = lazyNamed(() => import("./pages"), "HomePage");
+const MovieInfoPage = lazyNamed(() => import("./pages"), "MovieInfoPage");
+const WatchMoviePage = lazyNamed(() => import("./pages"), "WatchMoviePage");
+const ListPage = lazyNamed(() => import("./pages"), "ListPage");
+const NotFoundPage = lazyNamed(() => import("./pages"), "NotFoundPage");
+const TermsAndConditionsPage = lazyNamed(
+  () => import("./pages"),
+  "TermsAndConditionsPage"
+);
+const ProPlanTermsConditionsPage = lazyNamed(
+  () => import("./pages"),
+  "ProPlanTermsConditionsPage"
+);
+const FAQPage = lazyNamed(() => import("./pages"), "FAQPage");
+const LoginPage = lazyNamed(() => import("./pages"), "LoginPage");
+const RegisterPage = lazyNamed(() => import("./pages"), "RegisterPage");
+const LogoutPage = lazyNamed(() => import("./pages"), "LogoutPage");
+const PlansPage = lazyNamed(() => import("./pages"), "PlansPage");
+const RemoveProPage = lazyNamed(() => import("./pages"), "RemoveProPage");
 
-const ListWithSearchKey: React.FC = () => {
+function ListWithSearchKey() {
   const { search } = useLocation();
-  return <List key={search} />;
-};
+  return <ListPage key={search} />;
+}
 
-const App: React.FC = () => {
+export function App() {
   return (
     <>
       <Analytics />
       <ContentSquare />
-      <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Spinner /></div>}>
+      <Suspense
+        fallback={
+          <div className="flex min-h-screen items-center justify-center">
+            <Spinner />
+          </div>
+        }
+      >
         <Routes>
           <Route path="/auth" element={<AuthLayout />}>
             <Route path="/auth/login" element={<LoginPage />} />
@@ -45,19 +55,23 @@ const App: React.FC = () => {
           </Route>
 
           <Route path="/" element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/movie-info" element={<MovieInfoPage />} />
             <Route path="/full-movie" element={<WatchMoviePage />} />
             <Route path="/list-items" element={<ListWithSearchKey />} />
-            <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
-            <Route path="/pro-plan-terms-and-conditions" element={<ProPlanTermsConditionsPage />} />
+            <Route
+              path="/terms-and-conditions"
+              element={<TermsAndConditionsPage />}
+            />
+            <Route
+              path="/pro-plan-terms-and-conditions"
+              element={<ProPlanTermsConditionsPage />}
+            />
             <Route path="/frequently-asked-questions" element={<FAQPage />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
       </Suspense>
     </>
   );
-};
-
-export default App;
+}

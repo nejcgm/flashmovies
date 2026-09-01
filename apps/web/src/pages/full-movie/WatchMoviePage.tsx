@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { Meta } from "../../SEO";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { fetchSpecific } from "../../utils/fetching.js";
-import BackButton from "../../components/BackButton";
-import ShareButton from "../../components/ShareButton.js";
-import ProviderComponent from "./components/ProviderComponent.js";
-import Meta from "../../SEO/meta.tsx";
-import { EpisodeSelector } from "./components/EpisodeSelector.tsx";
-import { DataInfoProps, Episode } from "../../utils/Interfaces.ts";
-import { ProPlansPromoStrip } from "../../components/common/ProPlansPromoStrip";
+import { fetchSpecific } from "../../client/tmdb.js";
+import { BackButton, ShareButton } from "../../components";
+import { EpisodeSelector, ProviderComponent } from "./components";
+import { Episode } from "../../interfaces/media/index.ts";
+import type { TmdbMediaDetails } from "../../interfaces/tmdb/index.ts";
+import { ProPlansPromoStrip } from "../../components/common";
 import { mediaDisplayTitle, mediaYearSuffixSpaced } from "../../utils/mediaDisplayTitle";
 
-const WatchMoviePage = () => {
-  const [info, setInfo] = useState<DataInfoProps>();
+export function WatchMoviePage() {
+  const [info, setInfo] = useState<TmdbMediaDetails>();
   const [searchParams] = useSearchParams();
   const [currentProviderUrl, setCurrentProviderUrl] = useState("");
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
@@ -26,7 +25,6 @@ const WatchMoviePage = () => {
         navigate("/404");
         return;
       }
-      // Same path as movie-info: /movie/{id} or /tv/{id} — not .../details (invalid on TMDB).
       const data = await fetchSpecific(type, movieId, "", null, "");
       if (data) {
         setInfo(data);
@@ -178,4 +176,3 @@ const WatchMoviePage = () => {
   );
 };
 
-export default WatchMoviePage;

@@ -1,7 +1,6 @@
 export const SITE_NAME = "Flash Movies";
 export const DEFAULT_IMAGE_PATH = "/flash-movies-logo.png";
 
-/** Reusable one-liner for static / fallback crawler pages. */
 export const SITE_TAGLINE =
   "Flash Movies is a free movie and TV site — watch films and series online in HD, browse lists and genres, and open full title pages in one click.";
 
@@ -18,9 +17,6 @@ export const HOME_BODY = [
   "Use the sections below to browse movies, TV, and popular actors. Find a new release, a binge-worthy series, or a classic worth watching tonight.",
 ];
 
-/** @typedef {{ question: string, answer: string }} FaqItem */
-
-/** @type {FaqItem[]} */
 export const HOME_FAQ = [
   {
     question: "Is Flash Movies free?",

@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
-import ListItem from "../../list-movie/list-components/ListItem";
-import { fetchSearch, SearchResult } from "../../utils/fetching.js";
+import { useEffect, useState } from "react";
+import type { SearchResult } from "../../interfaces/tmdb/index.ts";
+import { ListItem } from "../../pages/list/components";
+import { fetchSearch } from "../../client/tmdb.js";
 import { useDebounce } from "../../utils/Hooks.js";
 import { Link, useNavigate } from "react-router-dom";
-import MenuButton from "../menu/MenuButton";
-import UserMenu from "../UserMenu";
+import { MenuButton } from "../menu";
+import { UserMenu } from "..";
 import { useUser } from "../../context/UserContext";
 
-const Search = () => {
+export function Search() {
   const [query, setQuery] = useState<string | undefined>("");
   const [MovieSearch, setMovieSearch] = useState<SearchResult[]>([]);
   const [cardCount, setCardCount] = useState(5);
@@ -38,7 +39,6 @@ const Search = () => {
         ></div>
       )}
       <div className="w-full items-center justify-center flex mt-[32px] mb-[32px]">
-        {/* Logo */}
         <button
           className="flex w-[32px] h-[32px] sm:w-[48px] sm:h-[48px] mr-2 sm:mr-4"
           onClick={() => {
@@ -77,7 +77,6 @@ const Search = () => {
           </svg>
         </button>
 
-        {/* Search Input */}
         <div className="w-[50%] sm:w-[40%] flex-col">
           <input
             className="relative z-20 font-roboto py-1 px-3 sm:py-2 sm:px-6 rounded-lg w-full focus-none outline-offset-[-2px] outline-[#F5C518] "
@@ -128,7 +127,6 @@ const Search = () => {
           )}
         </div>
 
-        {/* Right side: Pro CTA (free users) + User/Login + Menu */}
         <div className="flex shrink-0 items-center gap-1 ml-1 sm:ml-2 sm:gap-2">
           {!userLoading && !isPro && (
             <Link
@@ -149,4 +147,3 @@ const Search = () => {
   );
 };
 
-export default Search;

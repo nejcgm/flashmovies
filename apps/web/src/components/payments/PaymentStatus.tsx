@@ -1,4 +1,3 @@
-import React from 'react';
 
 interface PaymentStatusProps {
   status: 'success' | 'error' | 'processing';
@@ -6,7 +5,7 @@ interface PaymentStatusProps {
   onDismiss?: () => void;
 }
 
-const PaymentStatus: React.FC<PaymentStatusProps> = ({ status, message, onDismiss }) => {
+export function PaymentStatus({ status, message, onDismiss }: PaymentStatusProps) {
   const styles = {
     success: {
       bg: 'bg-green-900/30 border-green-500',
@@ -29,7 +28,6 @@ const PaymentStatus: React.FC<PaymentStatusProps> = ({ status, message, onDismis
 
   return (
     <div className={`p-4 rounded-lg border ${currentStyle.bg} flex items-start gap-3`}>
-      {/* Icon */}
       <div className={`flex-shrink-0 ${currentStyle.icon}`}>
         {status === 'success' && (
           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -49,10 +47,8 @@ const PaymentStatus: React.FC<PaymentStatusProps> = ({ status, message, onDismis
         )}
       </div>
 
-      {/* Message */}
       <p className={`flex-grow ${currentStyle.text}`}>{message}</p>
 
-      {/* Dismiss button */}
       {onDismiss && (
         <button
           onClick={onDismiss}
@@ -67,4 +63,3 @@ const PaymentStatus: React.FC<PaymentStatusProps> = ({ status, message, onDismis
   );
 };
 
-export default PaymentStatus;

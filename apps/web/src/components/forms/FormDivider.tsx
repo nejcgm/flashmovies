@@ -1,10 +1,9 @@
-import React from 'react';
 
 interface FormDividerProps {
   text?: string;
 }
 
-const FormDivider: React.FC<FormDividerProps> = ({ text = 'or' }) => {
+export function FormDivider({ text = 'or' }: FormDividerProps) {
   return (
     <div className="my-6 flex items-center">
       <div className="flex-1 border-t border-gray-700"></div>
@@ -14,4 +13,3 @@ const FormDivider: React.FC<FormDividerProps> = ({ text = 'or' }) => {
   );
 };
 
-export default FormDivider;

@@ -1,11 +1,13 @@
-import React, {
+import {
   createContext,
   useCallback,
   useContext,
   useMemo,
   useState,
+  type ReactNode,
 } from 'react';
-import ProUpsellModal, { ProUpsellReason } from '../components/pro/ProUpsellModal';
+import { ProUpsellModal } from "../components/pro";
+import type { ProUpsellReason } from '../interfaces/analytics/index.ts';
 import { useUser } from './UserContext';
 
 const AD_UPSELL_SESSION_KEY = 'proUpsellAdShown';
@@ -17,7 +19,7 @@ interface ProUpsellContextValue {
 
 const ProUpsellContext = createContext<ProUpsellContextValue | null>(null);
 
-export function ProUpsellProvider({ children }: { children: React.ReactNode }) {
+export function ProUpsellProvider({ children }: { children: ReactNode }) {
   const { isPro, isLoading } = useUser();
   const [state, setState] = useState<{
     open: boolean;

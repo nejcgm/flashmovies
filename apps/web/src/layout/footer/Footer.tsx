@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-export default function Footer() {
+export function Footer() {
   const navigate = useNavigate();
 
   const location = useLocation();

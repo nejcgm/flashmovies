@@ -14,7 +14,6 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto, ip: string, userAgent: string) {
-    // Check if user exists
     const existingUser = await this.pool.query(
       'SELECT id FROM users WHERE email = $1',
       [dto.email.toLowerCase()],
@@ -24,10 +23,8 @@ export class AuthService {
       throw new ConflictException('Email already registered');
     }
 
-    // Hash password (bcrypt 10 rounds)
     const passwordHash = await bcrypt.hash(dto.password, 10);
 
-    // Get default role and status IDs
     const roleResult = await this.pool.query(
       "SELECT id FROM lookup_values WHERE category = 'user_role' AND code = 'user'",
     );
@@ -38,7 +35,6 @@ export class AuthService {
     const roleId = roleResult.rows[0]?.id || 1;
     const statusId = statusResult.rows[0]?.id || 1;
 
-    // Create user
     const result = await this.pool.query(
       `INSERT INTO users (email, password_hash, display_name, role_id, status_id)
        VALUES ($1, $2, $3, $4, $5)
@@ -48,7 +44,6 @@ export class AuthService {
 
     const user = result.rows[0];
 
-    // Generate token and create session
     const token = await this.createSession(user.id, ip, userAgent);
 
     return {
@@ -62,7 +57,6 @@ export class AuthService {
   }
 
   async login(dto: LoginDto, ip: string, userAgent: string) {
-    // Find user
     const result = await this.pool.query(
       `SELECT u.id, u.email, u.password_hash, u.display_name, u.role_id, u.status_id,
               lv.code as status_code
@@ -82,13 +76,11 @@ export class AuthService {
       throw new UnauthorizedException('Account is not active');
     }
 
-    // Verify password
     const isValid = await bcrypt.compare(dto.password, user.password_hash);
     if (!isValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Generate token and create session
     const token = await this.createSession(user.id, ip, userAgent);
 
     return {
@@ -126,7 +118,6 @@ export class AuthService {
     const token = this.jwtService.sign(payload);
     const tokenHash = await this.hashToken(token);
 
-    // Session expires in 7 days
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 7);
 

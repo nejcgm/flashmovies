@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 
 interface IMetaProps {
@@ -14,7 +14,7 @@ interface IMetaProps {
   modifiedTime?: string;
 }
 
-const Meta = ({
+export function Meta({
   title,
   description,
   keywords = [],
@@ -25,14 +25,13 @@ const Meta = ({
   siteName = "Flash Movies",
   publishedTime="2025-08-04",
   modifiedTime=new Date().toISOString(),
-}: IMetaProps) => {
+}: IMetaProps) {
 
   useEffect(() => {
     window.prerenderReady = true;
   }, []);
 
   const [savedTitle, setSavedTitle] = useState<string>()
-  // Default values for dynamic content
   const defaultTitle = "Flash Movies — Watch Free Movies & TV Shows Online";
   const defaultDescription =
     "Flash Movies (flashmovies.xyz) is a free movie and TV streaming website. Watch movies and TV shows online in HD — browse popular and trending titles, explore details and cast, and start watching with no subscription required.";
@@ -42,7 +41,6 @@ const Meta = ({
     "free tv shows", "stream movies free", "online movie platform", "HD movies", "TV series streaming"
   ];
 
-  // Use provided values or defaults
   const finalTitle = title || defaultTitle;
   const finalDescription = description || defaultDescription;
   const finalKeywords = keywords.length > 0 ? keywords : defaultKeywords;
@@ -51,14 +49,12 @@ const Meta = ({
     setSavedTitle(finalTitle)
   }, [finalTitle])
 
-  // Ensure image URL is absolute
   const absoluteImageUrl = image?.startsWith('http') 
     ? image 
     : image?.startsWith('/') 
       ? `https://flashmovies.xyz${image}`
       : `https://flashmovies.xyz/${image}`;
 
-  // Set appropriate image dimensions based on image source
   const getImageDimensions = (imageUrl: string) => {
     if (imageUrl.includes('image.tmdb.org/t/p/w1280')) {
       return { width: "1280", height: "720" }; // 16:9 ratio for backdrops
@@ -66,7 +62,6 @@ const Meta = ({
     if (imageUrl.includes('image.tmdb.org/t/p/w500')) {
       return { width: "500", height: "750" }; // 2:3 ratio for posters
     }
-    // Default Flash Movies logo dimensions
     return { width: "1200", height: "630" }; // 1.91:1 ratio recommended by Facebook
   };
 
@@ -74,14 +69,12 @@ const Meta = ({
 
   return (
     <Helmet>
-      {/* Always render title, description and keywords (with defaults if not provided) */}
       <title>{savedTitle || finalTitle}</title>
       <meta name="description" content={finalDescription} />
       <meta name="keywords" content={finalKeywords.join(", ")} />
       {robots && <meta name="robots" content={robots} />}
       {url && <link rel="canonical" href={url} />}
 
-      {/* Open Graph / Facebook - Always render title and description */}
       {type && <meta property="og:type" content={type} />}
       {url && <meta property="og:url" content={url} />}
       <meta property="og:title" content={finalTitle} />
@@ -97,7 +90,6 @@ const Meta = ({
       {publishedTime && <meta property="article:published_time" content={publishedTime} />}
       {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
 
-      {/* Twitter - Always render title and description */}
       <meta name="twitter:card" content="summary_large_image" />
       {url && <meta name="twitter:url" content={url} />}
       <meta name="twitter:title" content={finalTitle} />
@@ -107,11 +99,9 @@ const Meta = ({
       <meta name="twitter:site" content="@flashmovies" />
       <meta name="twitter:creator" content="@flashmovies" />
 
-      {/* Additional SEO tags */}
       <meta name="format-detection" content="telephone=no" />
       <meta name="referrer" content="origin-when-cross-origin" />
     </Helmet>
   );
 };
 
-export default Meta;

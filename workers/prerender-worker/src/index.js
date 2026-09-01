@@ -1,14 +1,5 @@
-/**
- * First-party crawler HTML for Flash Movies.
- *
- * Replaces the live prerender-worker script that proxied bots to
- * service.prerender.io. That script also 404'd any bot URL containing
- * `/full-movie` — this worker does not.
- *
- * Loop protection: origin subrequests set `X-Prerender`; incoming requests
- * with that header pass through to origin.
- */
-import { hasPrerenderLoopHeader, isCrawlerRequest } from "./bots.js";
+
+import { hasPrerenderLoopHeader, isBlockedBotUserAgent, isCrawlerRequest } from "./bots.js";
 import { HOME_DESCRIPTION, SITE_NAME, SITE_TAGLINE } from "./copy.js";
 import { fetchHomeSections } from "./home-sections.js";
 import {
@@ -188,7 +179,6 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
         return withKind(notFoundPage({ canonical, siteOrigin: origin }), "not-found");
       }
     } catch {
-      // Fall through to a short generic page rather than the SPA stub.
     }
     const fallback = genericPage({
       title: `${route.type === "movie" ? "Movie" : route.type === "tv" ? "TV show" : "Title"} ${route.id} — ${SITE_NAME}`,
@@ -271,6 +261,17 @@ export function fetchOrigin(request, env, fetchImpl = fetch) {
   );
 }
 
+function blockedBotResponse() {
+  return new Response("Forbidden", {
+    status: 403,
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "no-store",
+      "x-robots-tag": "noindex, nofollow",
+    },
+  });
+}
+
 /**
  * @param {Request} request
  * @param {object} env
@@ -285,14 +286,16 @@ export async function handleRequest(request, env, ctx, deps = {}) {
     return fetchOrigin(request, env, fetchImpl);
   }
 
+  if (isBlockedBotUserAgent(request.headers.get("user-agent"))) {
+    return blockedBotResponse();
+  }
+
   const url = new URL(request.url);
   const sitemapSlashLocation = trailingSlashSitemapRedirect(url, siteOrigin(env));
   if (sitemapSlashLocation) {
     return Response.redirect(sitemapSlashLocation, 301);
   }
 
-  // Loop protection: this is already a worker→origin subrequest.
-  // Pass the request through as-is (same as the live prerender-worker).
   if (hasPrerenderLoopHeader(request)) {
     return fetchImpl(request);
   }

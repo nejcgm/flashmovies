@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 interface FormLinkProps {
@@ -7,7 +6,7 @@ interface FormLinkProps {
   to: string;
 }
 
-const FormLink: React.FC<FormLinkProps> = ({ text, linkText, to }) => {
+export function FormLink({ text, linkText, to }: FormLinkProps) {
   return (
     <p className="text-center text-gray-400">
       {text}{' '}
@@ -21,4 +20,3 @@ const FormLink: React.FC<FormLinkProps> = ({ text, linkText, to }) => {
   );
 };
 
-export default FormLink;

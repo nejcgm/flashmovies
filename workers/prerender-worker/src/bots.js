@@ -1,14 +1,5 @@
-/**
- * Crawler User-Agents that receive first-party HTML instead of the SPA shell.
- *
- * Starts from the live `prerender-worker` BOT_AGENTS list (prerender.io
- * Cloudflare worker) and keeps the extra AI / social / scanner agents
- * already needed for this catalog. Matching is case-insensitive substring.
- *
- * Do not match the generic word "bot" (too many false positives).
- */
+
 export const BOT_AGENTS = [
-  // Live prerender-worker / prerender.io Cloudflare list
   "googlebot",
   "yahoo! slurp",
   "bingbot",
@@ -45,7 +36,6 @@ export const BOT_AGENTS = [
   "telegrambot",
   "google-inspectiontool",
 
-  // Additional search / preview agents
   "google-extended",
   "storebot-google",
   "adsbot-google",
@@ -71,9 +61,6 @@ export const BOT_AGENTS = [
   "applenewsbot",
   "pagespeed",
 
-  // Social / unfurl crawlers only — do not use tokens that appear in
-  // in-app browsers (Instagram, Snapchat, LINE, KakaoTalk, Viber).
-  // Instagram link previews already match facebookexternalhit.
   "facebot",
   "facebookbot",
   "facebookcatalog",
@@ -83,7 +70,6 @@ export const BOT_AGENTS = [
   "iframely",
   "pocketparser",
 
-  // AI crawlers
   "gptbot",
   "chatgpt-user",
   "oai-searchbot",
@@ -98,7 +84,6 @@ export const BOT_AGENTS = [
   "amazonbot",
   "youbot",
 
-  // SEO / site-audit
   "ahrefsbot",
   "semrushbot",
   "mj12bot",
@@ -111,12 +96,17 @@ export const BOT_AGENTS = [
   "seekport",
   "cincraw",
 
-  // Archives
   "ia_archiver",
   "archive.org_bot",
   "wayback",
 
-  // Reputation / safety scanners (Scamadviser-like)
+  "gtmetrix",
+  "pingdom",
+  "uptimerobot",
+  "statuscake",
+];
+
+export const BLOCKED_BOT_AGENTS = [
   "scamadviser",
   "scam-adviser",
   "urlscan",
@@ -132,20 +122,24 @@ export const BOT_AGENTS = [
   "zoominfobot",
   "censys",
   "securitytrails",
-
-  // Preview / lighthouse-style
-  "gtmetrix",
-  "pingdom",
-  "uptimerobot",
-  "statuscake",
 ];
 
 /**
  * @param {string | null | undefined} userAgent
  * @returns {boolean}
  */
-export function isBotUserAgent(userAgent) {
+export function isBlockedBotUserAgent(userAgent) {
   if (!userAgent) return false;
+  const ua = userAgent.toLowerCase();
+  return BLOCKED_BOT_AGENTS.some((pattern) => ua.includes(pattern));
+}
+
+/**
+ * @param {string | null | undefined} userAgent
+ * @returns {boolean}
+ */
+export function isBotUserAgent(userAgent) {
+  if (!userAgent || isBlockedBotUserAgent(userAgent)) return false;
   const ua = userAgent.toLowerCase();
   return BOT_AGENTS.some((pattern) => ua.includes(pattern));
 }

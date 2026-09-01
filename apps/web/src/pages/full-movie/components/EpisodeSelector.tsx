@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { fetchSpecificSeason } from '../../../utils/fetching';
-import { Episode } from '../../../utils/Interfaces';
-import CustomButton from '../../../components/CustomButton';
+import { useEffect, useState } from 'react';
+import { fetchSpecificSeason } from "../../../client/tmdb";
+import { Episode } from "../../../interfaces/media/index.ts";
+import { CustomButton } from "../../../components";
 
 interface EpisodeSelectorProps {
     seasonsCount: number;
@@ -11,13 +11,13 @@ interface EpisodeSelectorProps {
     onEpisodeChange?: (episode: Episode) => void;
 }
 
-export const EpisodeSelector = ({
+export function EpisodeSelector({
     seasonsCount,
     type,
     movieId,
     title,
     onEpisodeChange,
-}: EpisodeSelectorProps) => {
+}: EpisodeSelectorProps) {
     const [selectedSeason, setSelectedSeason] = useState(1);
     const [seasonEpisodes, setSeasonEpisodes] = useState<Episode[]>([]);
     const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);

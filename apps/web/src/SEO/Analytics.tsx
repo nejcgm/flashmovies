@@ -1,13 +1,12 @@
-import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 interface AnalyticsProps {
   measurementId?: string;
 }
 
-const Analytics: React.FC<AnalyticsProps> = ({ 
+export function Analytics({ 
   measurementId = "G-RNJNNRHPJ0"
-}) => {
+}: AnalyticsProps) {
   return (
     <Helmet>
       <script async src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`} />
@@ -26,7 +25,6 @@ const Analytics: React.FC<AnalyticsProps> = ({
 
       <script>
         {`
-          // Core Web Vitals monitoring
           function sendToGoogleAnalytics({name, delta, value, id}) {
             gtag('event', name, {
               event_category: 'Web Vitals',
@@ -36,7 +34,6 @@ const Analytics: React.FC<AnalyticsProps> = ({
             });
           }
 
-          // Load web-vitals library and track metrics
           import('https://unpkg.com/web-vitals@3/dist/web-vitals.js').then(({onCLS, onFID, onFCP, onLCP, onTTFB}) => {
             onCLS(sendToGoogleAnalytics);
             onFID(sendToGoogleAnalytics);
@@ -50,4 +47,3 @@ const Analytics: React.FC<AnalyticsProps> = ({
   );
 };
 
-export default Analytics; 

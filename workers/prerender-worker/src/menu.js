@@ -1,7 +1,4 @@
-/**
- * Crawler site navigation — mirrors apps/web menu + footer list URLs so bots
- * get the same internal link graph as humans (without running the SPA).
- */
+
 
 /**
  * @param {Date} [now]

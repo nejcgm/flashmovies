@@ -1,15 +1,6 @@
+import type { ContextAdRedirectOptions } from "../interfaces/ads/index.ts";
 import { getAdsterraConfig } from "../config/adsterraConfig";
-import { ClickTypeEnum } from "./types";
-
-interface ContextAdRedirectOptions {
-  eventLabel: string;
-  movieTitle?: string;
-  movieId?: string | null;
-  clickType: ClickTypeEnum;
-  forceFire?: boolean;
-  incrementClick: () => boolean; 
-  isPro?: boolean;
-}
+import { ClickTypeEnum } from "../interfaces/analytics/index.ts";
 
 let globalCallCountAd = 0;
 let newCount = 0;
@@ -25,7 +16,6 @@ function triggerContextAdRedirect(
 
   newCount += 1;
 
-  /** Fire ad on 2 of every 3 clicks (skip each 3rd) */
   const shouldTriggerMain =
     options.forceFire || (newCount - 1) % 3 !== 0;
 
@@ -50,9 +40,6 @@ function triggerContextAdRedirect(
   }
 };
 
-/**
- * Higher-level wrapper for movie-related clicks
- */
 export const redirectForMovie = (
   clickType:
     | ClickTypeEnum.HERO_CARD
@@ -73,9 +60,6 @@ export const redirectForMovie = (
   });
 };
 
-/**
- * Higher-level wrapper for navigation clicks
- */
 export const redirectForNavigation = (
   linkName: string,
   linkType:
@@ -92,9 +76,6 @@ export const redirectForNavigation = (
   });
 };
 
-/**
- * Context-aware version of triggerAdRedirect for direct use
- */
 export const triggerContextAdRedirectDirect = (
   options: {
     eventLabel: string;

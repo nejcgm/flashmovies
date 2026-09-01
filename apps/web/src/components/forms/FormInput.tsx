@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 interface FormInputProps {
   id: string;
@@ -49,7 +49,7 @@ const EyeSlashIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const FormInput: React.FC<FormInputProps> = ({
+export function FormInput({
   id,
   name,
   type,
@@ -61,7 +61,7 @@ const FormInput: React.FC<FormInputProps> = ({
   minLength,
   autoComplete,
   showPasswordToggle = false,
-}) => {
+}: FormInputProps) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const isPassword = type === 'password';
   const effectiveType =
@@ -113,4 +113,3 @@ const FormInput: React.FC<FormInputProps> = ({
   );
 };
 
-export default FormInput;

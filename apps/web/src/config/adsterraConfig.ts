@@ -4,7 +4,6 @@ const ADSTERRA_CONFIG = {
   
   enabled: true,
   
-  //AdsterraRedirect Component Settings
   adsterraRedirect: {
     enabled: true,           // Enable/disable the component
     useLocalCooldown: true,          // Whether to use local cooldown in addition to global
@@ -14,7 +13,6 @@ const ADSTERRA_CONFIG = {
   },  
 };
 
-// Get current Adsterra configuration
 export const getAdsterraConfig = () => {
   return {
     url: ADSTERRA_CONFIG.url,

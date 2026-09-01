@@ -26,10 +26,7 @@ export class UsersController {
     return this.usersService.getSubscriptionStatus(user.id);
   }
 
-  /**
-   * TEST ENDPOINT: Remove pro status from current user
-   * Use this to test the payment flow again
-   */
+  
   @Post('remove-pro')
   async removePro(@CurrentUser() user: any) {
     return this.usersService.removeProStatus(user.id);

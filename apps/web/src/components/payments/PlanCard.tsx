@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 import { Card, Badge } from '../common';
 
 interface PlanFeature {
@@ -16,10 +16,10 @@ interface PlanCardProps {
   features: PlanFeature[];
   isLifetime?: boolean;
   highlighted?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
-const PlanCard: React.FC<PlanCardProps> = ({
+export function PlanCard({
   name,
   price,
   compareAtPrice,
@@ -29,7 +29,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
   isLifetime = false,
   highlighted = false,
   children,
-}) => {
+}: PlanCardProps) {
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -41,7 +41,6 @@ const PlanCard: React.FC<PlanCardProps> = ({
 
   return (
     <Card highlighted={highlighted} className="flex flex-col h-full">
-      {/* Header */}
       <div className="text-center mb-6">
         <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
           <h3 className="text-xl font-bold text-white">{name}</h3>
@@ -53,7 +52,6 @@ const PlanCard: React.FC<PlanCardProps> = ({
         {description && <p className="text-gray-400 text-sm">{description}</p>}
       </div>
 
-      {/* Price */}
       <div className="mb-6 flex justify-center">
         <div
           className={`flex flex-col ${
@@ -109,7 +107,6 @@ const PlanCard: React.FC<PlanCardProps> = ({
         </div>
       </div>
 
-      {/* Features */}
       <ul className="space-y-3 mb-0 flex-grow">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start gap-3">
@@ -166,4 +163,3 @@ const PlanCard: React.FC<PlanCardProps> = ({
   );
 };
 
-export default PlanCard;

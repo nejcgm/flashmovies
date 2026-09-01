@@ -1,9 +1,6 @@
 import { HOME_DESCRIPTION, SITE_TAGLINE, assertsSiteCopy } from "./copy.js";
 import { formatListTitle, mediaDisplayTitle } from "./text.js";
 
-/** @typedef {import("./routes.js").ParsedRoute} ParsedRoute */
-/** @typedef {import("./list-filters.js").ListFilters} ListFilters */
-
 const GENRE_SLUG_KEYWORDS = {
   "action-movies": "action",
   "adventure-movies": "adventure",

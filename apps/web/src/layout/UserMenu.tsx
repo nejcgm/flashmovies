@@ -1,16 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 
 const PersonPlaceholder = "/dark-mode-avatar-placeholder.png";
 
-const UserMenu = () => {
+export function UserMenu() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { isLoggedIn, user, isLoading, isPro } = useUser();
   const userMenuRef = useRef<HTMLDivElement>(null);
 
-  // Close user menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
@@ -56,7 +55,6 @@ const UserMenu = () => {
             </svg>
           </button>
 
-          {/* Dropdown menu */}
           {userMenuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-[#1F1F1F] rounded-lg shadow-lg py-2 z-50">
               <div className="px-4 py-2 border-b border-white/10">
@@ -107,4 +105,3 @@ const UserMenu = () => {
   );
 };
 
-export default UserMenu;

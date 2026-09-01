@@ -35,7 +35,7 @@ The web app already calls TMDB from the browser:
 
 ```
 apps/web/.env   →   VITE_API_KEY=Bearer <TMDB v4 read token>
-apps/web/src/utils/fetching.ts   →   Authorization: VITE_API_KEY
+apps/web/src/client/tmdb.ts   →   Authorization: VITE_API_KEY
 ```
 
 Reuse that **same string**. Do not add a new backend.
