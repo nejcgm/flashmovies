@@ -28,7 +28,7 @@ CACHE_TTL_SECONDS = "21600"
 # Homepage and other static catalog pages: 24 hours
 HOME_CACHE_TTL_SECONDS = "86400"
 # Bump when crawler HTML shape changes (invalidates Cache API entries).
-CACHE_KEY_VERSION = "4"
+CACHE_KEY_VERSION = "5"
 
 # TMDB_API_KEY is a secret (same string as apps/web VITE_API_KEY):
 #   npx wrangler secret put TMDB_API_KEY
