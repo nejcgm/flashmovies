@@ -36,6 +36,7 @@ export const BOT_AGENTS = [
   "telegrambot",
   "google-inspectiontool",
 
+  // Additional search / preview agents
   "google-extended",
   "storebot-google",
   "adsbot-google",
@@ -61,6 +62,9 @@ export const BOT_AGENTS = [
   "applenewsbot",
   "pagespeed",
 
+  // Social / unfurl crawlers only — do not use tokens that appear in
+  // in-app browsers (Instagram, Snapchat, LINE, KakaoTalk, Viber).
+  // Instagram link previews already match facebookexternalhit.
   "facebot",
   "facebookbot",
   "facebookcatalog",
@@ -84,6 +88,7 @@ export const BOT_AGENTS = [
   "amazonbot",
   "youbot",
 
+  // SEO / site-audit
   "ahrefsbot",
   "semrushbot",
   "mj12bot",
