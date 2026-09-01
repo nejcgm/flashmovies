@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import PageSelector from "./PageSelector";
+import { useState } from "react";
+import { PageSelector } from "./";
 
-const MenuButton = () => {
+export function MenuButton() {
   const [openMenu, setOpenMenu] = useState(false);
 
   return (
@@ -28,4 +28,3 @@ const MenuButton = () => {
   );
 };
 
-export default MenuButton;

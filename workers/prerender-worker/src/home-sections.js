@@ -2,7 +2,6 @@ import { mediaDisplayTitle } from "./text.js";
 import { isBlockedTitle } from "./routes.js";
 import { fetchTmdbList } from "./tmdb.js";
 
-/** TMDB carousels mirrored from apps/web/src/pages/Home.tsx */
 export const HOME_TMDB_SECTIONS = [
   { title: "Trending movies this week", type: "movie", search: "trending_week" },
   { title: "Now playing", type: "movie", search: "now_playing" },

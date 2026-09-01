@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { getToken, clearAuthData } from '../client/auth';
-import { getCurrentUser, UserProfile, SubscriptionStatus } from '../client/user';
+import { getCurrentUser } from '../client/user';
+import type { SubscriptionStatus, UserProfile } from '../interfaces/user/index.ts';
 
 interface UserState {
   isLoggedIn: boolean;
@@ -29,7 +30,7 @@ interface UserProviderProps {
   children: ReactNode;
 }
 
-export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
+export function UserProvider({ children }: UserProviderProps) {
   const [state, setState] = useState<UserState>(initialState);
 
   const refreshUser = useCallback(async () => {
@@ -62,7 +63,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       });
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
-      // If fetching fails (e.g., token expired), clear auth and set logged out
       setState({
         isLoggedIn: false,
         isPro: false,
@@ -84,12 +84,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     });
   }, []);
 
-  // Fetch user on mount if token exists
   useEffect(() => {
     refreshUser();
   }, [refreshUser]);
 
-  // Listen for storage changes (e.g., login/logout in another tab)
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'flashmovies_token') {
@@ -106,7 +104,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       {children}
     </UserContext.Provider>
   );
-};
+}
 
 export const useUser = (): UserContextType => {
   const context = useContext(UserContext);

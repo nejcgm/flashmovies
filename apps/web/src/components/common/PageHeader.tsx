@@ -1,4 +1,3 @@
-import React from 'react';
 
 interface PageHeaderProps {
   title: string;
@@ -6,7 +5,7 @@ interface PageHeaderProps {
   className?: string;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, className = '' }) => {
+export function PageHeader({ title, subtitle, className = '' }: PageHeaderProps) {
   return (
     <div className={`text-center mb-8 sm:mb-12 md:mb-5 ${className}`}>
       <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">{title}</h1>
@@ -15,4 +14,3 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, className = ''
   );
 };
 
-export default PageHeader;

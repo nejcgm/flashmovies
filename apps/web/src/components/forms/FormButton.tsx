@@ -1,19 +1,19 @@
-import React from 'react';
-import Spinner from '../Spinner';
+import type { ReactNode } from 'react';
+import { Spinner } from "..";
 
 interface FormButtonProps {
   loading: boolean;
   loadingText: string;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
-const FormButton: React.FC<FormButtonProps> = ({
+export function FormButton({
   loading,
   loadingText,
   children,
   className = '',
-}) => {
+}: FormButtonProps) {
   return (
     <button
       type="submit"
@@ -34,4 +34,3 @@ const FormButton: React.FC<FormButtonProps> = ({
   );
 };
 
-export default FormButton;

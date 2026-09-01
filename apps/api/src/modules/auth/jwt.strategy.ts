@@ -27,7 +27,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     const tokenHash = await bcrypt.hash(token.slice(-32), 5);
 
-    // Validate session in database (NEVER trust JWT alone)
     const sessionResult = await this.pool.query(
       `SELECT s.id FROM sessions s
        WHERE s.user_id = $1
@@ -40,7 +39,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Session expired or revoked');
     }
 
-    // Get user details
     const userResult = await this.pool.query(
       `SELECT u.id, u.email, u.display_name, u.role_id, u.stripe_customer_id,
               lr.code as role_code, ls.code as status_code

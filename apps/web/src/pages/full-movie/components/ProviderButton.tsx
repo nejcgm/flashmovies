@@ -1,19 +1,18 @@
-import React from "react";
+import type { CSSProperties } from "react";
 import { PRO_COMPARE_AT, PRO_PRICE } from "../../../config/proCheckoutPaths";
 
 interface ProviderButtonProps {
   provider: string;
   url?: string;
   updateProvider?: (url: string) => void;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   className?: string;
   isPremium?: boolean;
   isLocked?: boolean;
-  /** Tiny strike + sale price for non‑Pro users (matches plans promo). */
   showDiscountCallout?: boolean;
 }
 
-const ProviderButton = ({
+export function ProviderButton({
   provider,
   url = '',
   updateProvider = () => {},
@@ -22,7 +21,7 @@ const ProviderButton = ({
   isPremium = false,
   isLocked = false,
   showDiscountCallout = false,
-}: ProviderButtonProps) => {
+}: ProviderButtonProps) {
   return (
     <button
       className={`${className} bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-1.5 px-2 sm:py-2 sm:px-4 text-sm sm:text-base rounded shadow flex flex-wrap items-center gap-1 sm:gap-1.5`}
@@ -50,6 +49,5 @@ const ProviderButton = ({
       )}
     </button>
   );
-};
+}
 
-export default ProviderButton;

@@ -151,6 +151,28 @@ describe("worker request handling", () => {
     assert.equal(response.headers.get("x-flash-crawler"), null);
   });
 
+  it("returns 403 for blocked security scanner user agents", async () => {
+    const fetchImpl = async () => {
+      throw new Error("blocked bots must not reach origin or TMDB");
+    };
+
+    for (const ua of ["Scamadviser.com/1.0", "Mozilla/5.0 (compatible; urlscan.io)"]) {
+      const response = await handleRequest(
+        new Request("https://flashmovies.xyz/movie-info?type=movie&id=550", {
+          headers: { "user-agent": ua },
+        }),
+        env,
+        {},
+        { fetch: fetchImpl, cache: memoryCache() },
+      );
+
+      assert.equal(response.status, 403, ua);
+      assert.equal(await response.text(), "Forbidden");
+      assert.equal(response.headers.get("x-robots-tag"), "noindex, nofollow");
+      assert.equal(response.headers.get("x-flash-crawler"), null);
+    }
+  });
+
   it("sets X-Prerender on origin passthrough (loop protection)", async () => {
     let seen = null;
     const fetchImpl = async (input) => {

@@ -1,12 +1,10 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import { Link } from 'react-router-dom';
 import { isAuthenticated } from '../../client/auth';
 import { PRO_COMPARE_AT, PRO_PRICE, PLANS_AUTO_CHECKOUT_REGISTER } from '../../config/proCheckoutPaths';
-import StripeBuyButton from '../payments/StripeBuyButton';
 import { trackPlansAuthIntent } from '../../utils/analytics';
-
-export type ProUpsellReason = 'premium_server' | 'ad_redirect';
+import type { ProUpsellReason } from '../../interfaces/analytics/index.ts';
+import { StripeBuyButton } from "../payments";
 
 interface ProUpsellModalProps {
   open: boolean;
@@ -28,11 +26,11 @@ const copyByReason: Record<
   },
 };
 
-const ProUpsellModal: React.FC<ProUpsellModalProps> = ({
+export function ProUpsellModal({
   open,
   reason,
   onClose,
-}) => {
+}: ProUpsellModalProps) {
   if (!open) return null;
 
   const { title, subtitle } = copyByReason[reason];
@@ -129,4 +127,3 @@ const ProUpsellModal: React.FC<ProUpsellModalProps> = ({
   );
 };
 
-export default ProUpsellModal;

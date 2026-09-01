@@ -1,12 +1,12 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 
 interface BadgeProps {
-  children: React.ReactNode;
+  children: ReactNode;
   variant?: 'primary' | 'success' | 'warning' | 'info';
   className?: string;
 }
 
-const Badge: React.FC<BadgeProps> = ({ children, variant = 'primary', className = '' }) => {
+export function Badge({ children, variant = 'primary', className = '' }: BadgeProps) {
   const variantStyles = {
     primary: 'bg-[#f5c518] text-black',
     success: 'bg-green-500 text-white',
@@ -23,4 +23,3 @@ const Badge: React.FC<BadgeProps> = ({ children, variant = 'primary', className 
   );
 };
 
-export default Badge;

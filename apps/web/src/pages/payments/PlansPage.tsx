@@ -1,0 +1,266 @@
+import { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import type { SubscriptionStatus } from "../../interfaces/user/index.ts";
+import {
+  PLANS_AUTO_CHECKOUT_LOGIN,
+  PLANS_AUTO_CHECKOUT_REGISTER,
+  PRO_COMPARE_AT,
+  PRO_PRICE,
+} from "../../config/proCheckoutPaths";
+import { trackBeginCheckout, trackPlansAuthIntent } from "../../utils/analytics";
+import { csTagPage } from "../../SEO";
+import { PageHeader } from "../../components/common";
+import { PaymentStatus, PlanCard, StripeBuyButton } from "../../components/payments";
+import { Spinner } from "../../components";
+import { isAuthenticated } from "../../client/auth";
+import { getSubscriptionStatus } from "../../client/user";
+import { createCheckoutSession } from "../../client/payments";
+import { useUser } from "../../context/UserContext";
+
+export function PlansPage() {
+  useEffect(() => { csTagPage('Pricing - Plans'); }, []);
+  const { refreshUser } = useUser();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isPro, setIsPro] = useState(false);
+  const [subscription, setSubscription] = useState<SubscriptionStatus | null>(
+    null
+  );
+  const [paymentStatus, setPaymentStatus] = useState<{
+    status: "success" | "error" | "processing";
+    message: string;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      const authenticated = isAuthenticated();
+      setIsLoggedIn(authenticated);
+
+      if (authenticated) {
+        try {
+          const status = await getSubscriptionStatus();
+          setSubscription(status);
+          setIsPro(status.isPro);
+
+          if (!status.isPro && searchParams.get("autoCheckout") === "1") {
+            const origin = searchParams.get("checkout_origin");
+            const checkoutSource =
+              origin === "register" ? "after_register" : "after_login";
+            setSearchParams({}, { replace: true });
+            trackBeginCheckout("pro_lifetime", checkoutSource);
+            const { url } = await createCheckoutSession("pro_lifetime");
+            window.location.href = url;
+            return;
+          }
+        } catch (err) {
+          console.error("Failed to get subscription status:", err);
+        }
+      }
+
+      setLoading(false);
+    };
+
+    checkStatus();
+  }, []);
+
+  useEffect(() => {
+    const sessionId = searchParams.get("session_id");
+    const paymentSuccess = searchParams.get("payment") === "success";
+    if (sessionId || paymentSuccess) {
+      setPaymentStatus({
+        status: "success",
+        message:
+          "Payment successful! Your account has been upgraded to Pro. Enjoy premium streaming!",
+      });
+      setIsPro(true);
+      refreshUser();
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams, refreshUser]);
+
+  const lifetimeFeatures = [
+    { text: "Watch ad-free forever", included: true, emphasized: true },
+    { text: "Premium streaming servers (ad-free, best quality)", included: true },
+    { text: "Full comment viewing everywhere", included: true },
+    { text: "One-time payment — not a subscription", included: true },
+    { text: "Early access to new features", included: true },
+  ];
+
+  const freeFeatures = [
+    { text: "Access to all content", included: true },
+    { text: "HD streaming", included: true },
+    { text: "Ad-supported viewing", included: true },
+    { text: "Full comment viewing everywhere", included: false },
+    { text: "No ads", included: false },
+    { text: "Access to premium streaming servers", included: false },
+  ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen py-12 px-4">
+      <div className="max-w-5xl mx-auto">
+        <PageHeader
+          title="Choose Your Plan"
+          subtitle={`Watch ad-free forever — $${PRO_PRICE.toFixed(2)} one-time. Premium servers & full reviews included.`}
+        />
+
+        {paymentStatus && (
+          <div className="mb-8 max-w-md mx-auto">
+            <PaymentStatus
+              status={paymentStatus.status}
+              message={paymentStatus.message}
+              onDismiss={() => setPaymentStatus(null)}
+            />
+          </div>
+        )}
+
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-3xl mx-auto">
+          <div className="order-2 md:order-1 h-full">
+            <PlanCard
+              name="Free"
+              price={0}
+              description="Basic access with ads"
+              features={freeFeatures}
+            >
+              {!isPro ? (
+                <div className="text-center py-3 text-gray-400 border border-gray-700 rounded-lg">
+                  Current Plan
+                </div>
+              ) : (
+                <div className="text-center py-3 text-gray-500 border border-gray-800 rounded-lg bg-gray-900/50">
+                  Free Tier
+                </div>
+              )}
+            </PlanCard>
+          </div>
+
+          <div className="order-1 md:order-2 h-full">
+            <PlanCard
+              name="Pro"
+              price={PRO_PRICE}
+              compareAtPrice={PRO_COMPARE_AT}
+              description="Watch ad-free forever"
+              features={lifetimeFeatures}
+              isLifetime
+              highlighted={!isPro}
+            >
+              {isPro ? (
+                <div className="space-y-3">
+                  <div className="text-center py-3 text-green-400 border border-green-600 rounded-lg bg-green-900/20">
+                    <span className="flex items-center justify-center gap-2">
+                      <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Current Plan
+                    </span>
+                  </div>
+                  {subscription?.subscription && (
+                    <p className="text-center text-gray-400 text-sm">
+                      {subscription.subscription.isLifetime
+                        ? "Lifetime access"
+                        : `Expires: ${new Date(
+                            subscription.subscription.expiresAt!
+                          ).toLocaleDateString()}`}
+                    </p>
+                  )}
+                </div>
+              ) : isLoggedIn ? (
+                <StripeBuyButton className="w-full"/>
+              ) : (
+                <div className="space-y-3">
+                  <Link
+                    to={`/auth/register?redirect=${PLANS_AUTO_CHECKOUT_REGISTER}`}
+                    className="block w-full py-3 px-4 bg-[#f5c518] hover:bg-yellow-600 text-black 
+                           font-semibold rounded-lg text-center transition-all duration-300"
+                    onClick={() => trackPlansAuthIntent("register")}
+                  >
+                    Get Pro — ${PRO_PRICE.toFixed(2)} lifetime
+                  </Link>
+                  <p className="text-center text-gray-500 text-sm">
+                    Create a free account — checkout takes about 30 seconds.
+                  </p>
+                  <p className="text-center text-gray-500 text-sm">
+                    Already have an account?{" "}
+                    <Link
+                      to={`/auth/login?redirect=${PLANS_AUTO_CHECKOUT_LOGIN}`}
+                      className="text-[#f5c518] hover:underline"
+                      onClick={() => trackPlansAuthIntent("login")}
+                    >
+                      Sign in
+                    </Link>
+                  </p>
+                </div>
+              )}
+            </PlanCard>
+          </div>
+        </div>
+
+        <div className="mt-12 text-center space-y-3">
+          {!isPro && (
+            <p className="text-gray-400 text-sm">
+              One-time payment, not a subscription. Pay exactly $
+              {PRO_PRICE.toFixed(2)} at Stripe checkout.
+            </p>
+          )}
+          <p className="text-gray-500 text-sm">
+            If you have purchased the pro plan and did not receive it please
+            contact us at{" "}
+            <a
+              href="mailto:flashmovies@proton.me"
+              className="text-[#f5c518] hover:underline"
+            >
+              flashmovies@proton.me
+            </a>
+          </p>
+          <div className="inline-flex items-center gap-2 text-gray-500 text-sm">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span>
+              Secure payment via Stripe (Card, Apple Pay, Google Pay, and more)
+            </span>
+          </div>
+          <p className="text-gray-500 text-sm">
+            By purchasing Pro, you agree to our{" "}
+            <Link
+              to="/pro-plan-terms-and-conditions"
+              className="text-[#f5c518] hover:underline"
+            >
+              Pro Plan Terms &amp; Conditions
+            </Link>
+          </p>
+        </div>
+
+        <div className="mt-8 text-center">
+          <Link
+            to="/"
+            className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
+          >
+            ← Back to Home
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+

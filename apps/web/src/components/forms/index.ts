@@ -1,6 +1,6 @@
-export { default as FormInput } from './FormInput';
-export { default as FormButton } from './FormButton';
-export { default as FormError } from './FormError';
-export { default as FormDivider } from './FormDivider';
-export { default as FormLink } from './FormLink';
-export { default as AuthFormLayout } from './AuthFormLayout';
+export * from "./AuthFormLayout.tsx";
+export * from "./FormButton.tsx";
+export * from "./FormDivider.tsx";
+export * from "./FormError.tsx";
+export * from "./FormInput.tsx";
+export * from "./FormLink.tsx";

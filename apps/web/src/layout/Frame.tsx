@@ -1,10 +1,9 @@
-import React from "react";
+import type { ReactNode } from "react";
 
-// Wrapper Component
 interface FrameProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
-const Frame: React.FC<FrameProps> = ({ children }) => {
+export function Frame({ children }: FrameProps) {
   return (
     <>
       <div className="bg-black overflow-x-hidden w-screen min-h-screen flex flex-col">
@@ -16,4 +15,3 @@ const Frame: React.FC<FrameProps> = ({ children }) => {
   );
 };
 
-export default Frame;

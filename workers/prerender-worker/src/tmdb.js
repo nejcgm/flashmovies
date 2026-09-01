@@ -68,7 +68,7 @@ export async function fetchTmdbDetails(type, id, apiKey, fetchImpl = fetch) {
 
 /**
  * Map list-items search keys to TMDB list endpoints (same idea as
- * apps/web/src/utils/fetching.ts). Returns null when there is no cheap list.
+ * apps/web/src/client/tmdb.ts). Returns null when there is no cheap list.
  * @param {"movie" | "tv" | "person"} type
  * @param {string} search
  * @param {import("./list-filters.js").ListFilters} [filters]

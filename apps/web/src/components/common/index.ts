@@ -1,3 +1,5 @@
-export { default as Card } from './Card';
-export { default as Badge } from './Badge';
-export { default as PageHeader } from './PageHeader';
+export * from "./Badge.tsx";
+export * from "./Card.tsx";
+export * from "./PageHeader.tsx";
+export * from "./ProPlansPromoStrip.tsx";
+export * from "./SectionDivider.tsx";

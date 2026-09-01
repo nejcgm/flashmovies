@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 import { PRO_COMPARE_AT, PRO_PRICE } from '../../config/proCheckoutPaths';
@@ -12,21 +11,16 @@ const linkClassProminent =
 interface ProPlansPromoStripProps {
   className?: string;
   onClick?: () => void;
-  /** When false, nothing is rendered (e.g. hide on person pages). */
   when?: boolean;
-  /** Larger padding and type (e.g. home page hero-adjacent). */
   prominent?: boolean;
 }
 
-/**
- * Compact CTA linking to Pro plans; hidden for Pro users and when `when` is false.
- */
-export const ProPlansPromoStrip: React.FC<ProPlansPromoStripProps> = ({
+export function ProPlansPromoStrip({
   className = '',
   onClick,
   when = true,
   prominent = false,
-}) => {
+}: ProPlansPromoStripProps) {
   const { isPro } = useUser();
   if (!when || isPro) return null;
 

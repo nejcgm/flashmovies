@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
 import axios from "axios";
-import { DataInfoProps } from "./Interfaces";
+import { useEffect, useState } from "react";
+import type { TmdbMediaDetails } from "../interfaces/tmdb/index.ts";
 
 const CACHE_TTL = 1000 * 60 * 60 * 24 * 7 * 10; // 10 weeks
 const TMDB_BASE = "https://api.themoviedb.org/3";
@@ -9,7 +9,7 @@ function getCache(cacheKey: string) {
   return JSON.parse(localStorage.getItem(cacheKey) || "[]");
 }
 
-function setCache(cacheKey: string, cache: Array<[]>) {
+function setCache(cacheKey: string, cache: Array<{ id: number; data: TmdbMediaDetails; expiresAt: number }>) {
   localStorage.setItem(cacheKey, JSON.stringify(cache));
 }
 
@@ -33,7 +33,6 @@ function addToLocaleStorageList(
   localStorage.setItem(listStorageKey, JSON.stringify(updated));
 }
 
-// fetch list data and store in array cache
 async function fetchList(
   type: string,
   id: string | number,
@@ -81,7 +80,7 @@ export function useLocaleStorageList(
   cacheKey: string,
   maxItems = 20
 ) {
-  const [data, setData] = useState<[]>([]);
+  const [data, setData] = useState<TmdbMediaDetails[]>([]);
   const apiKey = import.meta.env.VITE_API_KEY;
 
   useEffect(() => {
@@ -113,7 +112,7 @@ export function useLocaleStorageList(
         )
         .filter(Boolean);
 
-      setData(dataList as []);
+      setData(dataList as TmdbMediaDetails[]);
     };
 
     loadList();
@@ -131,7 +130,7 @@ export function useLocaleStorageList(
           const cacheAfterFetch = getCache(cacheKey);
           const cacheMap = new Map(
             cacheAfterFetch.map(
-              (m: { id: string | number; data: DataInfoProps }) => [
+              (m: { id: string | number; data: TmdbMediaDetails }) => [
                 Number(m.id),
                 m.data,
               ]
@@ -140,7 +139,7 @@ export function useLocaleStorageList(
           const updatedList = ids
             .map((id) => cacheMap.get(Number(id)))
             .filter(Boolean);
-          setData(updatedList as []);
+          setData(updatedList as TmdbMediaDetails[]);
         })
         .catch((error) => {
           console.error("Failed to fetch list", error);

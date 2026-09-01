@@ -1,4 +1,3 @@
-// scripts/sitemap/generate-index.js
 import {
   createWriteStream,
   existsSync,
@@ -49,7 +48,6 @@ async function generateSitemapIndex() {
     `🎬 Catalog ids (${catalog.source}${catalog.exportDate ? ` ${catalog.exportDate}` : ""}): ${catalog.movieIds.length} movies, ${catalog.tvIds.length} TV, ${catalog.personIds.length} people${statsSuffix}`,
   );
 
-  // Create sitemaps directory
   const sitemapsDir = path.resolve(WEB_ROOT, "public", "sitemaps");
   if (!existsSync(sitemapsDir)) {
     mkdirSync(sitemapsDir, { recursive: true });
@@ -58,7 +56,6 @@ async function generateSitemapIndex() {
   const baseUrl = "https://flashmovies.xyz";
   const today = new Date().toISOString().split("T")[0];
 
-  // Helper function to create individual sitemap
   const createSitemap = (
     filename,
     urls,
@@ -77,7 +74,6 @@ async function generateSitemapIndex() {
       );
 
       urls.forEach((url) => {
-        // Properly encode XML entities - comprehensive encoding
         const encodedUrl = `${baseUrl}${url.path}`
           .replace(/&/g, "&amp;")
           .replace(/</g, "&lt;")
@@ -148,7 +144,6 @@ async function generateSitemapIndex() {
     }
   };
 
-  // 1. Static Pages Sitemap
   const highlightYear = new Date().getFullYear();
   const staticPages = [
     { path: "/", priority: 1.0, changefreq: "daily" },
@@ -164,7 +159,6 @@ async function generateSitemapIndex() {
     },
   ];
 
-  // 2. Movie Categories Sitemap (mirrors menu)
   const movieCategories = [
     {
       path: "/list-items?type=movie&search=trending_week&title=trending-movies-this-week",
@@ -200,7 +194,6 @@ async function generateSitemapIndex() {
     },
   ];
 
-  // 3. TV Categories Sitemap (mirrors menu)
   const tvCategories = [
     {
       path: "/list-items?type=tv&search=trending_week&title=trending-tv-this-week",
@@ -232,7 +225,6 @@ async function generateSitemapIndex() {
     },
   ];
 
-  // 4. Celebrity Categories
   const celebrityCategories = [
     {
       path: "/list-items?type=person&search=popular&title=most-popular-actors",
@@ -240,7 +232,6 @@ async function generateSitemapIndex() {
     },
   ];
 
-  // Detail pages — ids refreshed from TMDB when VITE_API_KEY is set
   const popularMovieIds = catalog.movieIds;
   const popularTvIds = catalog.tvIds;
   const popularCelebrityIds = catalog.personIds;
@@ -338,7 +329,6 @@ async function generateSitemapIndex() {
     },
   ]);
 
-  // Create individual sitemaps
   const sitemapGroups = await Promise.all([
     createSitemap("static.xml", staticPages, 1.0, "daily"),
     createSitemap("movie-categories.xml", movieCategories, 0.9, "daily"),
@@ -363,7 +353,6 @@ async function generateSitemapIndex() {
   const sitemapResults = sitemapGroups.flat();
   pruneStaleSitemaps(sitemapResults.map((result) => result.filename));
 
-  // Create sitemap index
   const indexStream = createWriteStream(
     path.resolve(WEB_ROOT, "public", "sitemap.xml")
   );
@@ -402,7 +391,6 @@ async function generateSitemapIndex() {
   console.log(`📁 Individual sitemaps: public/sitemaps/`);
   console.log(`🌐 Index size: Optimized for search engines\n`);
 
-  // Log individual sitemap sizes
   console.log("📋 Individual sitemap breakdown:");
   sitemapResults.forEach((result) => {
     console.log(`   • ${result.filename}: ${result.urlCount} URLs`);

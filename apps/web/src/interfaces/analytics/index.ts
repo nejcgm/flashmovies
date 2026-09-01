@@ -1,0 +1,15 @@
+export enum ClickTypeEnum {
+  HERO_CARD = "hero_card",
+  MOVIE_CARD = "movie_card",
+  UPNEXT_CARD = "upnext_card",
+  MENU_LINK = "menu_link",
+  NAVIGATION = "navigation",
+  WATCH_MOVIE = "watch_movie",
+  WATCH_TRAILER = "watch_trailer",
+}
+
+export type PlansAuthIntent = "login" | "register";
+
+export type CheckoutSource = "logged_in" | "after_login" | "after_register";
+
+export type ProUpsellReason = "premium_server" | "ad_redirect";

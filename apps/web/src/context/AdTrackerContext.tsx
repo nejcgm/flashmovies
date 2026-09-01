@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 interface AdTrackerState {
   globalClickCount: number;
@@ -27,14 +27,14 @@ interface AdTrackerProviderProps {
   affiliateCooldownDuration?: number;
 }
 
-export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
+export function AdTrackerProvider({
   children,
   clicksBeforeCooldown = 7,
   cooldownDuration = 30 * 60 * 1000,
   affiliateClicksBeforeCooldown = 1,
   affiliateCooldownDuration = 1000 * 60 * 1000
 
-}) => {
+}: AdTrackerProviderProps) {
 
   const [state, setState] = useState<AdTrackerState>({
     globalClickCount: 0,
@@ -105,7 +105,6 @@ export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
       };
     });
 
-    // Return true if ad should fire (when cooldown starts)
     return state.globalClickCount + 1 <= clicksBeforeCooldown && !state.isInCooldown;
   };
 
@@ -174,7 +173,6 @@ export const AdTrackerProvider: React.FC<AdTrackerProviderProps> = ({
   );
 };
 
-// Custom hook to use the ad tracker context
 export const useAdTracker = (): AdTrackerContextType => {
   const context = useContext(AdTrackerContext);
   if (context === undefined) {

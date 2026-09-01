@@ -1,13 +1,4 @@
-interface AffiliateLink {
-  name: string;
-  url: string;
-  bgColor: string;
-  hoverColor: string;
-  textColor: string;
-  offer: string;
-  commission: string;
-}
-
+import type { AffiliateLink } from "../interfaces/config/index.ts";
 export const getAffiliateLinks = (movieTitle: string): AffiliateLink[] => [
   {
     name: "Amazon Prime Video",

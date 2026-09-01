@@ -8,6 +8,4 @@ export const formatTitle = (str: string | null) => {
   return str?.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
-
-
   

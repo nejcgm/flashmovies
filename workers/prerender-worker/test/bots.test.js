@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { BOT_AGENTS, hasEscapedFragment, hasPrerenderLoopHeader, isBotUserAgent, isCrawlerRequest } from "../src/bots.js";
+import { BOT_AGENTS, BLOCKED_BOT_AGENTS, hasEscapedFragment, hasPrerenderLoopHeader, isBlockedBotUserAgent, isBotUserAgent, isCrawlerRequest } from "../src/bots.js";
 
 describe("bot user-agents", () => {
   const bots = [
@@ -15,8 +15,6 @@ describe("bot user-agents", () => {
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15 Applebot/0.1",
     "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)",
     "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; ClaudeBot/1.0; +claudebot@anthropic.com)",
-    "Scamadviser.com/1.0",
-    "Mozilla/5.0 (compatible; urlscan.io)",
   ];
 
   for (const ua of bots) {
@@ -74,13 +72,28 @@ describe("bot user-agents", () => {
       "applebot",
       "gptbot",
       "claudebot",
-      "scamadviser",
     ];
     for (const name of required) {
       assert.ok(
         BOT_AGENTS.includes(name),
         `missing ${name} in BOT_AGENTS`,
       );
+    }
+  });
+
+  it("blocks security and reputation scanners", () => {
+    const blocked = [
+      "Scamadviser.com/1.0",
+      "Mozilla/5.0 (compatible; urlscan.io)",
+      "Mozilla/5.0 (compatible; VirusTotal/1.0)",
+    ];
+    for (const ua of blocked) {
+      assert.equal(isBlockedBotUserAgent(ua), true, ua);
+      assert.equal(isBotUserAgent(ua), false, ua);
+      assert.equal(isCrawlerRequest(new Request("https://flashmovies.xyz/", { headers: { "user-agent": ua } })), false, ua);
+    }
+    for (const name of BLOCKED_BOT_AGENTS) {
+      assert.ok(BLOCKED_BOT_AGENTS.includes(name), `missing ${name} in BLOCKED_BOT_AGENTS`);
     }
   });
 

@@ -1,14 +1,4 @@
-interface StreamingProvider {
-  name: string;
-  url: (type: string, movieId: string) => string;
-  priority: number;
-  description: string;
-  isEpisodeSlugPartOfSlug: boolean;
-  params?: string;
-  isPremium?: boolean;
-}
-//one day
-//https://player2.autoembed.app/embed/${type}/${movieId}
+import type { StreamingProvider } from "../interfaces/config/index.ts";
 
 export const STREAMING_PROVIDERS: StreamingProvider[] = [
   {
@@ -29,7 +19,6 @@ export const STREAMING_PROVIDERS: StreamingProvider[] = [
     description: "Ad-free, Best Quality 👑",
     isPremium: true,
   },
-  //vidsrc.xyz
   {
     name: "Server 1",
     url: (type: string, movieId: string) => `https://vsembed.ru/embed/${type}/${movieId}`,
@@ -38,7 +27,6 @@ export const STREAMING_PROVIDERS: StreamingProvider[] = [
     priority: 2,
     description: "Most Stable 💪"
   },
-  //videasy.net
   {
     name: "Server 2",
     url: (type: string, movieId: string) => `https://player.videasy.net/${type}/${movieId}`,
@@ -47,7 +35,6 @@ export const STREAMING_PROVIDERS: StreamingProvider[] = [
     priority: 3,
     description: "Best Quality 😎"
   },
-  //111movies.com
   {
     name: "Server 3",
     url: (type: string, movieId: string) => `https://111movies.com/${type}/${movieId}`,
@@ -56,7 +43,6 @@ export const STREAMING_PROVIDERS: StreamingProvider[] = [
     priority: 3,
     description: "Good Overall Quality 😎"
   },
-  //moviesapi.club
   {
     name: "Server 4",
     url: (type: string, movieId: string) => `https://moviesapi.club/${type}/${movieId}`,

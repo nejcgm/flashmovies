@@ -1,7 +1,4 @@
-/**
- * Static extensions the live prerender-worker skipped (IGNORE_EXTENSIONS).
- * Crawler HTML is never generated for these; they pass through to origin.
- */
+
 import { LIST_FILTER_PARAM_ORDER, parseListFilters } from "./list-filters.js";
 
 export const IGNORE_EXTENSIONS = [
@@ -65,10 +62,6 @@ const BYPASS_EXACT = new Set([
   "/verify.html",
 ]);
 
-/**
- * Same hidden title the SPA 404s (MovieInfoPage / WatchMoviePage) and
- * strips from search and carousels. Do not emit indexable crawler HTML.
- */
 export const BLOCKED_MOVIE_ID = "1439112";
 
 /**
@@ -141,7 +134,6 @@ export function shouldBypass(url) {
   if (IGNORE_EXTENSIONS.some((ext) => rawPath.endsWith(ext))) {
     return true;
   }
-  // Google / Bing HTML verification files, etc.
   if (/^\/google[a-z0-9]+\.html$/i.test(path)) return true;
   return false;
 }
@@ -235,7 +227,6 @@ export function canonicalUrl(requestUrl, siteOrigin) {
   const params = new URLSearchParams(requestUrl.searchParams);
   params.delete("_escaped_fragment_");
 
-  // Stable query order for movie/TV/person pages.
   if (DETAIL_PATHS.has(path) && params.has("type") && params.has("id")) {
     const type = params.get("type");
     const id = params.get("id");

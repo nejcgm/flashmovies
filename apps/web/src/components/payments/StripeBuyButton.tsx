@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { createCheckoutSession } from "../../client/payments";
 import { PRO_PRICE } from "../../config/proCheckoutPaths";
 import { trackBeginCheckout } from "../../utils/analytics";
@@ -8,7 +8,7 @@ interface StripeBuyButtonProps {
   planCode?: string;
 }
 
-export default function StripeBuyButton({
+export function StripeBuyButton({
   className = "",
   planCode = "pro_lifetime",
 }: StripeBuyButtonProps) {

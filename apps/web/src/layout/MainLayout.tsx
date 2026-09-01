@@ -1,11 +1,10 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
-import Frame from "./Frame";
-import Search from "./search/SearchComponent";
-import SkipLink from "../components/SkipLink";
-import Footer from "./footer/Footer";
-import ProBanner from "../components/ProBanner";
-const MainLayout = () => {
+import { Frame, SkipLink } from "./";
+import { Search } from "./search";
+import { ProBanner } from "../components";
+import { Footer } from "./footer";
+
+export function MainLayout() {
   return (
     <>
       <SkipLink />
@@ -25,4 +24,3 @@ const MainLayout = () => {
   );
 };
 
-export default MainLayout;

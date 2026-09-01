@@ -1,7 +1,4 @@
-/**
- * Discover list filters from /list-items query params (genre, year, rating).
- * Matches URLs in apps/web/public/sitemaps/*.xml.
- */
+
 
 /**
  * @typedef {object} ListFilters
@@ -46,7 +43,6 @@ export function parseListFilters(url) {
   };
 }
 
-/** Stable query order for list canonical URLs. */
 export const LIST_FILTER_PARAM_ORDER = [
   "with_genres",
   "primary_release_year",

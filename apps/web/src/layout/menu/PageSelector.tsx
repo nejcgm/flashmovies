@@ -1,18 +1,17 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-import { useNavigate } from "react-router-dom";
-import { ProPlansPromoStrip } from "../../components/common/ProPlansPromoStrip";
 import CrossBlack from "../../assets/crossBlack.png";
+import { useNavigate } from "react-router-dom";
+import { ProPlansPromoStrip } from "../../components/common";
 import { redirectForNavigation } from "../../utils/contextAdRedirect";
 import { useAdTracker } from "../../context/AdTrackerContext";
 import { useUser } from "../../context/UserContext";
-import { ClickTypeEnum } from "../../utils/types";
+import { ClickTypeEnum } from "../../interfaces/analytics/index.ts";
 
 interface PageSelectorProps {
   onCancel: () => void;
 }
 
-/** Full-width tap targets on small screens; compact underline hover on md+ */
 const menuPrimaryLinkClass =
   "block w-full rounded-xl py-2 px-3 text-left text-[15px] leading-snug font-medium text-white/95 transition-colors hover:bg-white/[10%] active:bg-white/[16%] md:inline md:w-auto md:rounded-none md:py-0 md:px-0 md:font-normal md:text-[16px] md:leading-[18px] md:hover:bg-transparent md:hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c518]";
 
@@ -22,7 +21,7 @@ const menuMutedLinkClass =
 const sectionCardClass =
   "rounded-2xl border border-white/[10%] bg-[#181818]/95 p-4 shadow-md shadow-black/30 min-w-0 md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none";
 
-const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
+export function PageSelector({ onCancel }: PageSelectorProps) {
   const navigate = useNavigate();
   const Container = useRef<HTMLDivElement>(null);
   const { incrementClick } = useAdTracker();
@@ -522,4 +521,3 @@ const PageSelector: React.FC<PageSelectorProps> = ({ onCancel }) => {
   return ReactDOM.createPortal(mainContent, document.body);
 };
 
-export default PageSelector;
