@@ -12,4 +12,8 @@ export type PlansAuthIntent = "login" | "register";
 
 export type CheckoutSource = "logged_in" | "after_login" | "after_register";
 
-export type ProUpsellReason = "premium_server" | "ad_redirect";
+export type ProUpsellReason =
+  | "premium_server"
+  | "ad_redirect"
+  | "watchlist"
+  | "trending_today";

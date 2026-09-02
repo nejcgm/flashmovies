@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength, MaxLength, Matches, IsOptional, Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
+import { IsEmail, IsString, MinLength, MaxLength, IsOptional, Validate, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 
 @ValidatorConstraint({ name: 'noPlus', async: false })
 class NoPlusInEmail implements ValidatorConstraintInterface {
@@ -14,12 +14,13 @@ class NoPlusInEmail implements ValidatorConstraintInterface {
 export class RegisterDto {
   @IsEmail()
   @Validate(NoPlusInEmail)
-  email: string;
+  @MaxLength(255)
+  email!: string;
 
   @IsString()
   @MinLength(8)
   @MaxLength(72)
-  password: string;
+  password!: string;
 
   @IsOptional()
   @IsString()

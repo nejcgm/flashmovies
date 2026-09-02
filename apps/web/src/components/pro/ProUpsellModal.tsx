@@ -24,6 +24,14 @@ const copyByReason: Record<
     title: 'Tired of ads?',
     subtitle: 'Watch ad-free forever with a one-time Pro upgrade.',
   },
+  watchlist: {
+    title: 'Save titles with Pro',
+    subtitle: 'Build your personal watchlist with a one-time Pro upgrade.',
+  },
+  trending_today: {
+    title: 'Trending Today is Pro-only',
+    subtitle: 'See what is hot right now with a one-time Pro upgrade.',
+  },
 };
 
 export function ProUpsellModal({
@@ -35,6 +43,9 @@ export function ProUpsellModal({
 
   const { title, subtitle } = copyByReason[reason];
   const loggedIn = isAuthenticated();
+  const loginRedirect = encodeURIComponent(
+    `${window.location.pathname}${window.location.search}`,
+  );
 
   return ReactDOM.createPortal(
     <div
@@ -106,6 +117,16 @@ export function ProUpsellModal({
                 }}
               >
                 Get Pro — ${PRO_PRICE.toFixed(2)} lifetime
+              </Link>
+              <Link
+                to={`/auth/login?redirect=${loginRedirect}`}
+                className="block w-full rounded-lg border border-white/20 py-3 px-4 text-center font-semibold text-white transition-colors hover:bg-white/10"
+                onClick={() => {
+                  trackPlansAuthIntent('login');
+                  onClose();
+                }}
+              >
+                Log in
               </Link>
               <p className="text-center text-xs text-gray-500">
                 Create a free account — checkout takes about 30 seconds.

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Meta } from "../../SEO";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchSpecific } from "../../client/tmdb.js";
-import { BackButton, ShareButton } from "../../components";
+import { BackButton } from "../../components";
 import { EpisodeSelector, ProviderComponent } from "./components";
 import { Episode } from "../../interfaces/media/index.ts";
 import type { TmdbMediaDetails } from "../../interfaces/tmdb/index.ts";
@@ -130,9 +130,6 @@ export function WatchMoviePage() {
                 — Watch on Flash Movies
               </span>
             </h1>
-          </div>
-          <div className="hidden shrink-0 justify-end lg:flex lg:items-center">
-            <ShareButton />
           </div>
         </div>
       </div>

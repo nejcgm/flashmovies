@@ -82,7 +82,7 @@ export function PlansPage() {
   const lifetimeFeatures = [
     { text: "Watch ad-free forever", included: true, emphasized: true },
     { text: "Premium streaming servers (ad-free, best quality)", included: true },
-    { text: "Full comment viewing everywhere", included: true },
+    { text: "Full access to all premium features", included: true },
     { text: "One-time payment — not a subscription", included: true },
     { text: "Early access to new features", included: true },
   ];
@@ -91,7 +91,7 @@ export function PlansPage() {
     { text: "Access to all content", included: true },
     { text: "HD streaming", included: true },
     { text: "Ad-supported viewing", included: true },
-    { text: "Full comment viewing everywhere", included: false },
+    { text: "Full access to all premium features", included: false },
     { text: "No ads", included: false },
     { text: "Access to premium streaming servers", included: false },
   ];

@@ -1,16 +1,17 @@
-import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { Pool } from 'pg';
-import * as bcrypt from 'bcrypt';
-import { DATABASE_POOL } from '../../config/database.module';
+import { AuthenticatedUser, UserRole } from '../../common/interfaces/authenticated-user.interface';
+import { UsersService } from '../users/services/users.service';
+import { AuthRepository } from './repositories/auth.repository';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly configService: ConfigService,
-    @Inject(DATABASE_POOL) private readonly pool: Pool,
+    private readonly authRepository: AuthRepository,
+    private readonly usersService: UsersService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -20,45 +21,24 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(req: any, payload: any) {
+  async validate(req: any, payload: { sub: number }): Promise<AuthenticatedUser> {
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
     if (!token) {
       throw new UnauthorizedException('No token provided');
     }
-    const tokenHash = await bcrypt.hash(token.slice(-32), 5);
 
-    const sessionResult = await this.pool.query(
-      `SELECT s.id FROM sessions s
-       WHERE s.user_id = $1
-       AND s.expires_at > CURRENT_TIMESTAMP
-       AND s.revoked_at IS NULL`,
-      [payload.sub],
-    );
-
-    if (sessionResult.rows.length === 0) {
+    const hasSession = await this.authRepository.hasValidSessionForToken(payload.sub, token);
+    if (!hasSession) {
       throw new UnauthorizedException('Session expired or revoked');
     }
 
-    const userResult = await this.pool.query(
-      `SELECT u.id, u.email, u.display_name, u.role_id, u.stripe_customer_id,
-              lr.code as role_code, ls.code as status_code
-       FROM users u
-       JOIN lookup_values lr ON u.role_id = lr.id
-       JOIN lookup_values ls ON u.status_id = ls.id
-       WHERE u.id = $1 AND ls.code = 'active'`,
-      [payload.sub],
-    );
+    const user = await this.usersService.findById(payload.sub);
 
-    if (userResult.rows.length === 0) {
-      throw new UnauthorizedException('User not found or inactive');
-    }
-
-    const user = userResult.rows[0];
     return {
       id: user.id,
       email: user.email,
       displayName: user.display_name,
-      role: user.role_code,
+      role: user.role_code as UserRole,
       stripeCustomerId: user.stripe_customer_id,
     };
   }

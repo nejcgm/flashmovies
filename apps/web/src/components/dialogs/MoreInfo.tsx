@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import Cross from "../../assets/gridicons_cross.png";
 import Play from "../../assets/play2.png";
-import Homeicon from "../../assets/homeIcon.png";
 import type { FetchSpecificResponse } from "../../interfaces/tmdb/index.ts";
 import { Rating } from "../media";
 import { Spinner } from "../feedback";
+import { WatchlistHeartButton } from "../watchlist";
 import { fetchSpecific } from "../../client/tmdb.ts";
 import { useNavigate } from "react-router-dom";
 import { convertMinutesToHoursAndMinutes } from "../../utils/helpers.ts";
@@ -68,7 +68,8 @@ export function MoreInfo({
                   <>
                     <div className="flex gap-3">
                       <button
-                      className="flex gap-3 w-full"
+                        type="button"
+                        className="shrink-0"
                         onClick={() => {
                           navigate(`/movie-info/?id=${movieId}&type=${type}`);
                           onCancel();
@@ -79,16 +80,25 @@ export function MoreInfo({
                           src={`https://image.tmdb.org/t/p/w500${info.poster_path}`}
                           alt=""
                         />
-                        <div className="text-white font-roboto w-full">
-                          <div className="font-bold w-fill items-center flex justify-between text-[18px] sm:text-[24px]">
-                            <div className="text-left">{info.title || info.name}</div>
-                           
-                              <img
-                                className="w-[20px] sm:w-[28px]"
-                                src={Homeicon}
-                                alt=""
-                              />
-                          </div>
+                      </button>
+                      <div className="min-w-0 flex-1 text-white font-roboto">
+                        <div className="flex items-start justify-between gap-2">
+                          <button
+                            type="button"
+                            className="min-w-0 flex-1 text-left font-bold text-[18px] sm:text-[24px]"
+                            onClick={() => {
+                              navigate(`/movie-info/?id=${movieId}&type=${type}`);
+                              onCancel();
+                            }}
+                          >
+                            {info.title || info.name}
+                          </button>
+                          <WatchlistHeartButton
+                            variant="inline"
+                            tmdbId={movieId}
+                            mediaType={type}
+                          />
+                        </div>
 
                           <ul className="list-disc list-inside flex text-[11px] sm:text-[14px] text-[#BBBBBB] gap-4 marker:text-[12px] ">
                             <li className="list-none">
@@ -119,8 +129,7 @@ export function MoreInfo({
                               /10
                             </div>
                           )}
-                        </div>
-                      </button>
+                      </div>
                     </div>
                     <div className="font-roboto text-white text-[12px] sm:text-[14px] mt-[16px]">
                       {info.overview

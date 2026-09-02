@@ -3,17 +3,24 @@ import InfoIcon from "../../assets/info_icon.png";
 interface InfoCtaProps {
   infoMessage: string;
   infoDisplay: () => void;
+  className?: string;
+  iconClassName?: string;
 }
-export function InfoCta({ infoMessage, infoDisplay }: InfoCtaProps) {
+export function InfoCta({
+  infoMessage,
+  infoDisplay,
+  className = "",
+  iconClassName = "w-[18px] sm:w-[24px]",
+}: InfoCtaProps) {
   return (
     <>
       <div
         onClick={() => {
           infoDisplay();
         }}
-        className="gap-2 items-center text-[12px] sm:text-[14px] self-start flex p-2 rounded-full hover:bg-white/5 "
+        className={`flex items-center gap-2 self-start rounded-full p-2 text-[12px] hover:bg-white/5 sm:text-[14px] ${className}`}
       >
-        <img className="w-[18px] sm:w-[24px]" src={InfoIcon} alt="more info flash movies" />
+        <img className={iconClassName} src={InfoIcon} alt="more info flash movies" />
         {infoMessage && <div>{infoMessage}</div>}
       </div>
     </>

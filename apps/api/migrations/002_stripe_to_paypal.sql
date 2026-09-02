@@ -46,7 +46,7 @@ WHERE code = 'free';
 UPDATE plans SET 
     name = 'Pro Lifetime',
     description = 'Ad-free experience forever, one-time payment',
-    price_cents = 1500,
+    price_cents = 699,
     currency = 'USD',
     interval_type = NULL,
     is_active = TRUE
@@ -54,5 +54,5 @@ WHERE code = 'pro_lifetime';
 
 -- If pro_lifetime doesn't exist, insert it
 INSERT INTO plans (code, name, description, price_cents, currency, interval_type, is_active)
-SELECT 'pro_lifetime', 'Pro Lifetime', 'Ad-free experience forever, one-time payment', 1500, 'USD', NULL, TRUE
+SELECT 'pro_lifetime', 'Pro Lifetime', 'Ad-free experience forever, one-time payment', 699, 'USD', NULL, TRUE
 WHERE NOT EXISTS (SELECT 1 FROM plans WHERE code = 'pro_lifetime');

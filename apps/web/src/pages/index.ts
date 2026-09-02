@@ -6,3 +6,4 @@ export * from "./list/index.ts";
 export * from "./movie-info/index.ts";
 export * from "./not-found/index.ts";
 export * from "./payments/index.ts";
+export * from "./watchlist/index.ts";

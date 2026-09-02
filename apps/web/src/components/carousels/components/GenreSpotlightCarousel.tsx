@@ -130,7 +130,7 @@ export function GenreSpotlightCarousel({
               ? "Filter spotlight movies by genre"
               : "Filter spotlight TV by genre"
           }
-          className="flex flex-wrap gap-2 pb-4 px-2 sm:px-0 -mx-2 sm:mx-0 sm:flex-nowrap sm:overflow-x-auto sm:scrollbar-hide"
+          className="-mx-2 flex flex-nowrap gap-2 overflow-x-auto px-2 pb-4 scrollbar-hide sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
         >
           {genreList.map((genre) => {
             const selected = selectedGenreIds.includes(genre.id);
