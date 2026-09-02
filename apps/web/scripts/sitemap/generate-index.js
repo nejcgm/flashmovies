@@ -7,7 +7,7 @@ import {
   unlinkSync,
 } from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import { resolveSitemapCatalogIds } from "./lib/tmdb-ids.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,8 +15,8 @@ const __dirname = path.dirname(__filename);
 const WEB_ROOT = path.resolve(__dirname, "../..");
 const SITEMAP_URL_LIMIT = 45000;
 
-function loadLocalEnvFile() {
-  const envPath = path.resolve(WEB_ROOT, ".env");
+function loadLocalEnvFile(webRoot = WEB_ROOT) {
+  const envPath = path.resolve(webRoot, ".env");
   if (!existsSync(envPath)) return;
   for (const line of readFileSync(envPath, "utf8").split("\n")) {
     const trimmed = line.trim();
@@ -36,19 +36,43 @@ function loadLocalEnvFile() {
   }
 }
 
-async function generateSitemapIndex() {
-  console.log("🚀 Starting sitemap index generation...");
-  loadLocalEnvFile();
+/**
+ * Delete child sitemap files that are no longer in the index, including leftover
+ * movie-watch*.xml / tv-watch*.xml from older generator runs.
+ * @param {string} sitemapsDir
+ * @param {string[]} keepFilenames
+ * @param {(message: string) => void} [log]
+ */
+export function pruneStaleSitemaps(sitemapsDir, keepFilenames, log = console.log) {
+  const keep = new Set(keepFilenames);
+  for (const file of readdirSync(sitemapsDir)) {
+    if (!file.endsWith(".xml") || keep.has(file)) continue;
+    unlinkSync(path.resolve(sitemapsDir, file));
+    log(`🗑️  Removed stale sitemap ${file}`);
+  }
+}
 
-  const catalog = await resolveSitemapCatalogIds();
+/**
+ * @param {object} [options]
+ * @param {object} [options.catalog]
+ * @param {string} [options.webRoot]
+ * @param {(message: string) => void} [options.log]
+ */
+export async function generateSitemapIndex(options = {}) {
+  const log = options.log || console.log;
+  log("🚀 Starting sitemap index generation...");
+  const webRoot = options.webRoot || WEB_ROOT;
+  loadLocalEnvFile(webRoot);
+
+  const catalog = options.catalog || (await resolveSitemapCatalogIds());
   const statsSuffix = catalog.stats
     ? ` | candidates ${catalog.stats.movieCandidates}/${catalog.stats.tvCandidates}/${catalog.stats.personCandidates}`
     : "";
-  console.log(
+  log(
     `🎬 Catalog ids (${catalog.source}${catalog.exportDate ? ` ${catalog.exportDate}` : ""}): ${catalog.movieIds.length} movies, ${catalog.tvIds.length} TV, ${catalog.personIds.length} people${statsSuffix}`,
   );
 
-  const sitemapsDir = path.resolve(WEB_ROOT, "public", "sitemaps");
+  const sitemapsDir = path.resolve(webRoot, "public", "sitemaps");
   if (!existsSync(sitemapsDir)) {
     mkdirSync(sitemapsDir, { recursive: true });
   }
@@ -98,7 +122,7 @@ async function generateSitemapIndex() {
       writeStream.end();
 
       writeStream.on("finish", () => {
-        console.log(`✅ ${filename}: ${urlCount} URLs`);
+        log(`✅ ${filename}: ${urlCount} URLs`);
         resolve({ filename, urlCount });
       });
       writeStream.on("error", reject);
@@ -133,15 +157,6 @@ async function generateSitemapIndex() {
       );
     }
     return results;
-  };
-
-  const pruneStaleSitemaps = (keepFilenames) => {
-    const keep = new Set(keepFilenames);
-    for (const file of readdirSync(sitemapsDir)) {
-      if (!file.endsWith(".xml") || keep.has(file)) continue;
-      unlinkSync(path.resolve(sitemapsDir, file));
-      console.log(`🗑️  Removed stale sitemap ${file}`);
-    }
   };
 
   const highlightYear = new Date().getFullYear();
@@ -241,19 +256,9 @@ async function generateSitemapIndex() {
     priority: 0.7,
   }));
 
-  const movieWatchPages = popularMovieIds.map((id) => ({
-    path: `/full-movie?type=movie&id=${id}`,
-    priority: 0.6,
-  }));
-
   const tvInfoPages = popularTvIds.map((id) => ({
     path: `/movie-info?type=tv&id=${id}`,
     priority: 0.7,
-  }));
-
-  const tvWatchPages = popularTvIds.map((id) => ({
-    path: `/full-movie?type=tv&id=${id}`,
-    priority: 0.6,
   }));
 
   const celebrityPages = popularCelebrityIds.map((id) => ({
@@ -345,16 +350,14 @@ async function generateSitemapIndex() {
     createSitemap("rating-based.xml", ratingBasedPages, 0.4, "monthly"),
     createChunkedSitemaps("celebrities", celebrityPages, 0.7, "weekly"),
     createChunkedSitemaps("movie-info", movieInfoPages, 0.7, "weekly"),
-    createChunkedSitemaps("movie-watch", movieWatchPages, 0.6, "weekly"),
     createChunkedSitemaps("tv-info", tvInfoPages, 0.7, "weekly"),
-    createChunkedSitemaps("tv-watch", tvWatchPages, 0.6, "weekly"),
   ]);
 
   const sitemapResults = sitemapGroups.flat();
-  pruneStaleSitemaps(sitemapResults.map((result) => result.filename));
+  pruneStaleSitemaps(sitemapsDir, sitemapResults.map((result) => result.filename), log);
 
   const indexStream = createWriteStream(
-    path.resolve(WEB_ROOT, "public", "sitemap.xml")
+    path.resolve(webRoot, "public", "sitemap.xml")
   );
 
   indexStream.write('<?xml version="1.0" encoding="UTF-8"?>\n');
@@ -384,19 +387,30 @@ async function generateSitemapIndex() {
     0
   );
 
-  console.log(`\n✅ Sitemap index generated successfully!`);
-  console.log(`📊 Total sitemaps: ${sitemapResults.length}`);
-  console.log(`📊 Total URLs: ${totalUrls}`);
-  console.log(`📁 Main sitemap: public/sitemap.xml`);
-  console.log(`📁 Individual sitemaps: public/sitemaps/`);
-  console.log(`🌐 Index size: Optimized for search engines\n`);
+  log(`\n✅ Sitemap index generated successfully!`);
+  log(`📊 Total sitemaps: ${sitemapResults.length}`);
+  log(`📊 Total URLs: ${totalUrls}`);
+  log(`📁 Main sitemap: public/sitemap.xml`);
+  log(`📁 Individual sitemaps: public/sitemaps/`);
+  log(`🌐 Index size: Optimized for search engines\n`);
 
-  console.log("📋 Individual sitemap breakdown:");
+  log("📋 Individual sitemap breakdown:");
   sitemapResults.forEach((result) => {
-    console.log(`   • ${result.filename}: ${result.urlCount} URLs`);
+    log(`   • ${result.filename}: ${result.urlCount} URLs`);
   });
+
+  return { sitemapResults, totalUrls };
 }
 
-generateSitemapIndex().catch((error) => {
-  console.error("❌ Error generating sitemap index:", error);
-});
+function isMainModule() {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  return pathToFileURL(path.resolve(entry)).href === import.meta.url;
+}
+
+if (isMainModule()) {
+  generateSitemapIndex().catch((error) => {
+    console.error("❌ Error generating sitemap index:", error);
+    process.exitCode = 1;
+  });
+}
