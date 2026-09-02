@@ -39,7 +39,13 @@ export function ProviderComponent({
   }));
 
   const getDefaultProvider = () => {
-    if (isPro) return providers[0];
+    if (isPro) {
+      return (
+        providers.find((p) => p.name === "Server 1") ||
+        providers.find((p) => !p.isPremium) ||
+        providers[0]
+      );
+    }
     return providers.find((p) => !p.isPremium) || providers[0];
   };
 
@@ -56,7 +62,11 @@ export function ProviderComponent({
   }, [providerUrl, isEpisodeSlugPartOfSlug, params, newProvider]);
 
   useEffect(() => {
-    const newDefault = isPro ? providers[0] : (providers.find((p) => !p.isPremium) || providers[0]);
+    const newDefault = isPro
+      ? providers.find((p) => p.name === "Server 1") ||
+        providers.find((p) => !p.isPremium) ||
+        providers[0]
+      : providers.find((p) => !p.isPremium) || providers[0];
     setSelectedProvider(newDefault.name);
     setProviderUrl(newDefault.url);
     setIsEpisodeSlugPartOfSlug(newDefault.isEpisodeSlugPartOfSlug);
@@ -72,6 +82,10 @@ export function ProviderComponent({
   ) => {
     if (isPremium && !isPro) {
       openProUpsell('premium_server');
+      return;
+    }
+
+    if (isPremium && isPro) {
       return;
     }
 
@@ -96,7 +110,10 @@ export function ProviderComponent({
           {description}
         </div>
         <div className="flex flex-wrap gap-x-2 gap-y-2 sm:gap-x-3 sm:gap-y-3 mt-4">
-          {providers.map((provider) => (
+          {providers.map((provider) => {
+            const isMaintenance = Boolean(provider.isPremium && isPro);
+
+            return (
             <ProviderButton
               key={provider.name}
               provider={provider.name}
@@ -119,9 +136,11 @@ export function ProviderComponent({
               }
               isPremium={provider.isPremium}
               isLocked={provider.isPremium && !isPro}
+              isMaintenance={isMaintenance}
               showDiscountCallout={provider.isPremium && !isPro}
             />
-          ))}
+            );
+          })}
         </div>
 
         <div className="mt-2 text-sm text-gray-400">

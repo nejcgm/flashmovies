@@ -1,7 +1,8 @@
 import { Controller, Post, Req, Headers, RawBodyRequest, BadRequestException, Logger } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
-import { PaymentsService } from './payments.service';
+import { mapWebhookResponse } from '../mappers/payments.mappers';
+import { PaymentsService } from '../services/payments.service';
 
 @Controller('public/webhooks')
 export class WebhookController {
@@ -19,6 +20,7 @@ export class WebhookController {
       this.logger.error('Raw body not available for webhook verification');
       throw new BadRequestException('Invalid webhook request');
     }
-    return this.paymentsService.handleWebhook(signature, req.rawBody);
+    const result = await this.paymentsService.handleWebhook(signature, req.rawBody);
+    return mapWebhookResponse(result.received);
   }
 }

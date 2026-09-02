@@ -5,6 +5,7 @@ import { useUser } from '../../../context/UserContext';
 import { ClickTypeEnum } from '../../../interfaces/analytics/index.ts';
 import { MoreInfo, VideoPlayer } from "../../dialogs";
 import { InfoCta, LazyImage, Rating } from "../../media";
+import { WatchlistHeartButton } from "../../watchlist";
 import { useNavigate } from "react-router-dom";
 
 const MoviePlaceholder = "/dark-mode-img-placeholder.png";
@@ -71,6 +72,7 @@ export function MovieCard({
               alt={`watch ${title || 'Movie'} for free on flashmovies`}
               placeholder={MoviePlaceholder}
             />
+            <WatchlistHeartButton tmdbId={movieId} mediaType={type} />
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 rounded-t-lg"></div>
           </div>
         </button>

@@ -5,6 +5,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { WatchlistModule } from './modules/watchlist/watchlist.module';
 import { DatabaseModule } from './config/database.module';
 
 @Module({
@@ -34,6 +35,7 @@ import { DatabaseModule } from './config/database.module';
     AuthModule,
     UsersModule,
     PaymentsModule,
+    WatchlistModule,
   ],
   providers: [
     {

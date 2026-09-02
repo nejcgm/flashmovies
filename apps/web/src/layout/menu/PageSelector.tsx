@@ -5,8 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { ProPlansPromoStrip } from "../../components/common";
 import { redirectForNavigation } from "../../utils/contextAdRedirect";
 import { useAdTracker } from "../../context/AdTrackerContext";
+import { useProUpsell } from "../../context/ProUpsellContext";
 import { useUser } from "../../context/UserContext";
 import { ClickTypeEnum } from "../../interfaces/analytics/index.ts";
+import type { ProUpsellReason } from "../../interfaces/analytics/index.ts";
 
 interface PageSelectorProps {
   onCancel: () => void;
@@ -15,16 +17,22 @@ interface PageSelectorProps {
 const menuPrimaryLinkClass =
   "block w-full rounded-xl py-2 px-3 text-left text-[15px] leading-snug font-medium text-white/95 transition-colors hover:bg-white/[10%] active:bg-white/[16%] md:inline md:w-auto md:rounded-none md:py-0 md:px-0 md:font-normal md:text-[16px] md:leading-[18px] md:hover:bg-transparent md:hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c518]";
 
-const menuMutedLinkClass =
-  "block w-full rounded-xl py-2 px-3 text-left text-[14px] leading-snug text-gray-400 transition-colors hover:bg-white/[8%] hover:text-white active:bg-white/[12%] md:inline md:w-auto md:rounded-none md:py-0 md:px-0 md:text-[13px] md:hover:bg-transparent md:hover:underline md:hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c518]";
+const menuLockedLinkClass =
+  "inline-flex w-full items-center gap-2 rounded-xl py-2 px-3 text-left text-[15px] leading-snug font-medium text-gray-400 transition-colors hover:bg-white/[8%] hover:text-white active:bg-white/[12%] md:w-auto md:rounded-none md:py-0 md:px-0 md:text-[16px] md:leading-[18px] md:hover:bg-transparent md:hover:underline md:hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f5c518]";
 
 const sectionCardClass =
   "rounded-2xl border border-white/[10%] bg-[#181818]/95 p-4 shadow-md shadow-black/30 min-w-0 md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none";
+
+const MOVIES_TRENDING_TODAY_HREF =
+  "/list-items?type=movie&search=trending_day&title=trending-movies-today";
+const TV_TRENDING_TODAY_HREF =
+  "/list-items?type=tv&search=trending_day&title=trending-tv-today";
 
 export function PageSelector({ onCancel }: PageSelectorProps) {
   const navigate = useNavigate();
   const Container = useRef<HTMLDivElement>(null);
   const { incrementClick } = useAdTracker();
+  const { openProUpsell } = useProUpsell();
   const { isPro, isLoading } = useUser();
   const highlightYear = new Date().getFullYear();
 
@@ -57,6 +65,68 @@ export function PageSelector({ onCancel }: PageSelectorProps) {
     setTimeout(() => {
       onCancel();
     }, 800);
+  };
+
+  const renderProFeatureLink = (
+    label: string,
+    href: string,
+    navigationKey: string,
+    reason: ProUpsellReason,
+  ) => {
+    if (isPro) {
+      return (
+        <a
+          href={href}
+          onClick={() => {
+            redirectForNavigation(
+              navigationKey,
+              ClickTypeEnum.MENU_LINK,
+              incrementClick,
+              isPro,
+            );
+            if (href.startsWith("/watchlist")) {
+              navigate("/watchlist");
+            }
+            onCancel();
+          }}
+          className={menuPrimaryLinkClass}
+        >
+          {label}
+        </a>
+      );
+    }
+
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          openProUpsell(reason);
+          onCancel();
+        }}
+        className={menuLockedLinkClass}
+      >
+        <span>{label}</span>
+        <span className="inline-flex shrink-0 items-center gap-1.5">
+          <svg
+            className="h-4 w-4 text-gray-500"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            />
+          </svg>
+          <span className="text-xs font-semibold uppercase tracking-wide text-[#F5C518]">
+            Pro
+          </span>
+        </span>
+      </button>
+    );
   };
 
   const mainContent = (
@@ -190,7 +260,7 @@ export function PageSelector({ onCancel }: PageSelectorProps) {
             </div>
 
             <div className="flex w-full flex-col">
-            <div className="order-2 flex flex-col gap-3 font-roboto text-[12px] sm:text-[16px] leading-[14px] sm:leading-[18px] md:order-1 md:mt-12 md:flex-row md:items-start md:justify-between md:gap-6 md:gap-y-0 lg:gap-8">
+            <div className="order-2 flex flex-col gap-3 font-roboto text-[12px] sm:text-[16px] leading-[14px] sm:leading-[18px] md:order-1 md:mt-12 md:flex-row md:items-start md:justify-between md:gap-10 md:gap-y-0 lg:gap-14 xl:gap-16">
               <section className={`text-white ${sectionCardClass}`}>
                 <div className="mb-3 flex gap-2 sm:gap-3 md:mb-0">
                   <svg
@@ -314,26 +384,6 @@ export function PageSelector({ onCancel }: PageSelectorProps) {
                   >
                     Browse Movies By Genre
                   </a>
-                  <div className="mt-2 border-t border-white/10 pt-2 md:mt-2 md:pt-2">
-                    <span className="mb-1 block px-3 text-[11px] font-semibold uppercase tracking-wide text-gray-500 md:mb-1 md:px-0">
-                      More
-                    </span>
-                    <a
-                      href="/list-items?type=movie&search=trending_day&title=trending-movies-today"
-                      onClick={() => {
-                        redirectForNavigation(
-                          "trending_movies_day",
-                          ClickTypeEnum.MENU_LINK,
-                          incrementClick,
-                          isPro
-                        );
-                        onCancel();
-                      }}
-                      className={menuMutedLinkClass}
-                    >
-                      Trending today
-                    </a>
-                  </div>
                 </div>
               </div>
               </section>
@@ -446,28 +496,51 @@ export function PageSelector({ onCancel }: PageSelectorProps) {
                   >
                     Browse Shows By Genre
                   </a>
-                  <div className="mt-2 border-t border-white/10 pt-2 md:mt-2 md:pt-2">
-                    <span className="mb-1 block px-3 text-[11px] font-semibold uppercase tracking-wide text-gray-500 md:mb-1 md:px-0">
-                      More
-                    </span>
-                    <a
-                      href="/list-items?type=tv&search=trending_day&title=trending-tv-today"
-                      onClick={() => {
-                        redirectForNavigation(
-                          "trending_tv_day",
-                          ClickTypeEnum.MENU_LINK,
-                          incrementClick,
-                          isPro
-                        );
-                        onCancel();
-                      }}
-                      className={menuMutedLinkClass}
-                    >
-                      Trending today
-                    </a>
-                  </div>
                 </div>
               </div>
+              </section>
+
+              <div className="flex min-w-0 flex-col gap-3 md:gap-8 lg:gap-10">
+              <section className={`text-white ${sectionCardClass}`}>
+                <div className="mb-3 flex gap-2 sm:gap-3 md:mb-0">
+                  <svg
+                    className="h-6 w-6 shrink-0 text-[#F5C518] sm:mt-[6px]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    role="presentation"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                    />
+                  </svg>
+                  <div className="flex min-w-0 flex-col items-start gap-0.5 md:gap-3">
+                  <h2 className="text-lg font-semibold leading-tight text-[#f5c518] md:text-[19px] md:leading-[19px] md:text-white lg:text-[24px] lg:leading-[28px]">
+                    Pro Features
+                  </h2>
+                    {renderProFeatureLink(
+                      "My Watchlist",
+                      "/watchlist",
+                      "watchlist",
+                      "watchlist",
+                    )}
+                    {renderProFeatureLink(
+                      "Movies Trending Today",
+                      MOVIES_TRENDING_TODAY_HREF,
+                      "trending_movies_day",
+                      "trending_today",
+                    )}
+                    {renderProFeatureLink(
+                      "TV Trending Today",
+                      TV_TRENDING_TODAY_HREF,
+                      "trending_tv_day",
+                      "trending_today",
+                    )}
+                  </div>
+                </div>
               </section>
 
               <section className={`text-white ${sectionCardClass}`}>
@@ -503,11 +576,12 @@ export function PageSelector({ onCancel }: PageSelectorProps) {
                 </div>
               </div>
               </section>
+              </div>
             </div>
 
             {!isLoading && (
               <ProPlansPromoStrip
-                className="order-1 mx-auto mb-5 w-full max-w-xl md:order-2 md:mb-0 md:mt-10 lg:mt-12"
+                className="order-1 mx-auto mb-5 w-full max-w-xl md:order-2 md:mb-0 md:mt-14 lg:mt-16"
                 onClick={() => onCancel()}
               />
             )}

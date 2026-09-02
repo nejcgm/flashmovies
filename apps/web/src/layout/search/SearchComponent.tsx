@@ -38,7 +38,7 @@ export function Search() {
           className="fixed w-screen h-screen z-10"
         ></div>
       )}
-      <div className="w-full items-center justify-center flex mt-[32px] mb-[32px]">
+      <div className="mb-[32px] mt-[32px] flex w-full items-center justify-center overflow-visible">
         <button
           className="flex w-[32px] h-[32px] sm:w-[48px] sm:h-[48px] mr-2 sm:mr-4"
           onClick={() => {
@@ -77,7 +77,7 @@ export function Search() {
           </svg>
         </button>
 
-        <div className="w-[50%] sm:w-[40%] flex-col">
+        <div className="relative w-[50%] overflow-visible sm:w-[40%] flex-col">
           <input
             className="relative z-20 font-roboto py-1 px-3 sm:py-2 sm:px-6 rounded-lg w-full focus-none outline-offset-[-2px] outline-[#F5C518] "
             type="text"
@@ -91,8 +91,8 @@ export function Search() {
           />
 
           {query && (
-            <div className="relative w-full z-20">
-              <div className="absolute z-20 flex w-full flex-col gap-2.5 rounded-lg bg-[#1F1F1F] p-2.5 sm:gap-2 sm:p-3">
+            <div className="relative z-20 w-full overflow-visible">
+              <div className="absolute left-0 z-20 flex w-[calc(100%+4.75rem)] flex-col gap-2.5 rounded-lg bg-[#1F1F1F] p-2.5 sm:w-full sm:gap-2 sm:p-3">
                 {MovieSearch?.slice(0, cardCount)?.map(
                   (item: SearchResult) => (
                     <ListItem

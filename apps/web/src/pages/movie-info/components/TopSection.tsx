@@ -1,5 +1,5 @@
 import ChartIcon from "../../../assets/chart.png";
-import { BackButton, Rating, ShareButton } from "../../../components";
+import { BackButton, Rating } from "../../../components";
 import { convertMinutesToHoursAndMinutes } from "../../../utils/helpers.js";
 import { mediaYearInParens } from "../../../utils/mediaDisplayTitle";
 
@@ -40,9 +40,6 @@ export function TopSection({
               — Movie Info
             </span>
           </h1>
-          <div className="hidden min-w-[50px] shrink-0 lg:flex">
-            <ShareButton />
-          </div>
         </div>
         <ul className="hidden list-inside list-disc gap-2 self-end text-[12px] text-[#BBBBBB] marker:text-[12px] sm:flex sm:gap-4 sm:text-[14px]">
           <li className="list-none">{release}</li>

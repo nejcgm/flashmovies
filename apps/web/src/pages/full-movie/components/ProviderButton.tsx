@@ -9,6 +9,7 @@ interface ProviderButtonProps {
   className?: string;
   isPremium?: boolean;
   isLocked?: boolean;
+  isMaintenance?: boolean;
   showDiscountCallout?: boolean;
 }
 
@@ -20,6 +21,7 @@ export function ProviderButton({
   className,
   isPremium = false,
   isLocked = false,
+  isMaintenance = false,
   showDiscountCallout = false,
 }: ProviderButtonProps) {
   return (
@@ -37,6 +39,12 @@ export function ProviderButton({
         </span>
       )}
       <span className="min-w-0 leading-tight">{provider}</span>
+      {isMaintenance && (
+        <>
+          <span className="shrink-0 text-xs sm:text-sm">🛠️</span>
+          <span className="shrink-0 text-[10px] sm:text-xs">Maintenance</span>
+        </>
+      )}
       {showDiscountCallout && (
         <span className="inline-flex items-baseline gap-0.5 rounded border border-amber-500/50 bg-black/35 px-1 py-0.5 sm:px-1.5 shrink-0">
           <span className="text-[8px] sm:text-[9px] font-semibold tabular-nums text-gray-200 line-through decoration-red-500/90 decoration-1">

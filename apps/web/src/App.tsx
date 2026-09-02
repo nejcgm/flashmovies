@@ -24,6 +24,7 @@ const RegisterPage = lazyNamed(() => import("./pages"), "RegisterPage");
 const LogoutPage = lazyNamed(() => import("./pages"), "LogoutPage");
 const PlansPage = lazyNamed(() => import("./pages"), "PlansPage");
 const RemoveProPage = lazyNamed(() => import("./pages"), "RemoveProPage");
+const WatchlistPage = lazyNamed(() => import("./pages"), "WatchlistPage");
 
 function ListWithSearchKey() {
   const { search } = useLocation();
@@ -68,6 +69,7 @@ export function App() {
               element={<ProPlanTermsConditionsPage />}
             />
             <Route path="/frequently-asked-questions" element={<FAQPage />} />
+            <Route path="/watchlist" element={<WatchlistPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

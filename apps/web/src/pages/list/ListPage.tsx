@@ -6,16 +6,22 @@ import { BackButton, Spinner } from "../../components";
 import { fetchSpecific, fetchThisYearHighlights, fetchTrending } from "../../client/tmdb.ts";
 import { formatTitle } from "../../utils/helpers.ts";
 import { MediaListItem, MediaType } from "../../interfaces/media/index.ts";
+import type { TmdbMediaType } from "../../interfaces/tmdb/index.ts";
 import { mediaDisplayTitle } from "../../utils/mediaDisplayTitle";
+import { useUser } from "../../context/UserContext";
+import { useProUpsell } from "../../context/ProUpsellContext";
 
 export function ListPage() {
   const [listItems, setListItems] = useState<MediaListItem[]>([]);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { isPro, isLoading: userLoading } = useUser();
+  const { openProUpsell } = useProUpsell();
   const search = searchParams.get("search");
   const type = searchParams.get("type") as MediaType;
   const title: string | null = searchParams.get("title");
   const withGenresParam = searchParams.get("with_genres");
+  const isTrendingToday = search === "trending_day";
 
   const [counter, setCounter] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -37,17 +43,37 @@ export function ListPage() {
   }, [type, search, navigate]);
 
   useEffect(() => {
+    if (!userLoading && isTrendingToday && !isPro) {
+      openProUpsell("trending_today");
+    }
+  }, [userLoading, isTrendingToday, isPro, openProUpsell]);
+
+  useEffect(() => {
     setCounter(1);
     setListItems([]);
     setEndOfList(false);
   }, [genreList]);
 
   useEffect(() => {
+    if (isTrendingToday && (userLoading || !isPro)) {
+      return;
+    }
+
     const loadList = async () => {
+      if (!type || !search) {
+        return;
+      }
+
       if (search === "discover") {
         setLoading(true);
         setEndOfList(false);
-        const data = await fetchSpecific(search, type, "", genreList, counter);
+        const data = await fetchSpecific(
+          "discover",
+          type as TmdbMediaType,
+          "",
+          genreList,
+          counter,
+        );
         if (data && data.results.length !== 0) {
           setListItems((prevItems) => [
             ...prevItems,
@@ -80,7 +106,7 @@ export function ListPage() {
       } else if (search === "year_highlights" && type === "movie") {
         data = await fetchThisYearHighlights(counter);
       } else {
-        data = await fetchSpecific(type, "", search, null, counter);
+        data = await fetchSpecific(type, "", `/${search}`, null, counter);
       }
 
       if (data && data.results?.length) {
@@ -94,7 +120,7 @@ export function ListPage() {
       setLoading(false);
     };
     loadList();
-  }, [type, search, counter, genreList]);
+  }, [type, search, counter, genreList, isTrendingToday, userLoading, isPro]);
 
   useEffect(() => {
     if (endOfList) {
@@ -166,13 +192,13 @@ export function ListPage() {
                 <ListItem
                   index={index}
                   key={item.id}
-                  poster={item.poster_path || item.profile_path}
+                  poster={item.poster_path || item.profile_path || ""}
                   title={mediaDisplayTitle(item)}
-                  movieId={item.id}
-                  voteCount={item.vote_count}
-                  year={item.release_date || item.first_air_date}
+                  movieId={item.id != null ? String(item.id) : null}
+                  voteCount={item.vote_count ?? 0}
+                  year={item.release_date || item.first_air_date || ""}
                   type={type}
-                  rating={item.vote_average}
+                  rating={item.vote_average ?? null}
                   largeScreen={true}
                   onCancel={() => {}}
                 />
