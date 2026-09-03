@@ -72,6 +72,9 @@ function validateUrlset(xml, filePath) {
     if (loc.length > MAX_LOC_LENGTH) {
       err(`${filePath}: loc too long (${loc.length} chars)`);
     }
+    if (loc.includes("/full-movie")) {
+      err(`${filePath}: /full-movie loc is not indexable — ${loc}`);
+    }
     if (!loc.startsWith(`${SITE_ORIGIN}/`)) {
       warn(`${filePath}: loc off-domain — ${loc.slice(0, 80)}`);
     }
@@ -128,11 +131,20 @@ function main() {
     if (!loc.startsWith(expectedBase)) {
       warn(`sitemap.xml: child not under /sitemaps/ — ${loc}`);
     }
+    if (/\/sitemaps\/(movie-watch|tv-watch)/.test(loc)) {
+      err(`sitemap.xml indexes watch sitemap — ${loc}`);
+    }
   }
 
   const diskFiles = readdirSync(sitemapsDir)
     .filter((f) => f.endsWith(".xml"))
     .sort();
+
+  for (const file of diskFiles) {
+    if (/^(movie-watch|tv-watch)/.test(file)) {
+      err(`sitemaps/${file}: watch sitemaps must not be generated`);
+    }
+  }
   const indexedFiles = indexedLocs.map((loc) => loc.replace(expectedBase, ""));
 
   for (const file of diskFiles) {

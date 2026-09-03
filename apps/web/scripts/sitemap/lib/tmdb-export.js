@@ -12,6 +12,14 @@ const EXPORT_BASE = "https://files.tmdb.org/p/exports";
 /** @typedef {{ id: number, popularity: number }} ExportEntry */
 
 /**
+ * Catalog caps after dropping /full-movie watch sitemaps.
+ * List/static files add ~77 locs, so 32k + 10k + 7.5k ≈ 49.6k total.
+ */
+export const SITEMAP_MAX_MOVIES_DEFAULT = 32000;
+export const SITEMAP_MAX_TV_DEFAULT = 10000;
+export const SITEMAP_MAX_PEOPLE_DEFAULT = 7500;
+
+/**
  * @param {Date} [date]
  */
 export function exportDateLabel(date = new Date()) {
@@ -188,9 +196,9 @@ async function resolveExportFile(kind, options = {}) {
  * Phase 1 catalog ids from TMDB daily exports (popularity-ranked, capped).
  *
  * Env:
- * - SITEMAP_MAX_MOVIES (default 15000)
- * - SITEMAP_MAX_TV (default 5000)
- * - SITEMAP_MAX_PEOPLE (default 2500)
+ * - SITEMAP_MAX_MOVIES (default 32000)
+ * - SITEMAP_MAX_TV (default 10000)
+ * - SITEMAP_MAX_PEOPLE (default 7500)
  * - SITEMAP_MIN_POPULARITY (default 1)
  * - SITEMAP_EXPORT_CACHE_DIR (optional)
  * - SITEMAP_EXPORT_DATE=MM_DD_YYYY (optional pin)
@@ -205,9 +213,9 @@ async function resolveExportFile(kind, options = {}) {
  */
 export async function resolveCatalogIdsFromExports(options = {}) {
   const fetchImpl = options.fetchImpl || fetch;
-  const maxMovies = options.maxMovies ?? intEnv("SITEMAP_MAX_MOVIES", 15000);
-  const maxTv = options.maxTv ?? intEnv("SITEMAP_MAX_TV", 5000);
-  const maxPeople = options.maxPeople ?? intEnv("SITEMAP_MAX_PEOPLE", 2500);
+  const maxMovies = options.maxMovies ?? intEnv("SITEMAP_MAX_MOVIES", SITEMAP_MAX_MOVIES_DEFAULT);
+  const maxTv = options.maxTv ?? intEnv("SITEMAP_MAX_TV", SITEMAP_MAX_TV_DEFAULT);
+  const maxPeople = options.maxPeople ?? intEnv("SITEMAP_MAX_PEOPLE", SITEMAP_MAX_PEOPLE_DEFAULT);
   const minPopularity = options.minPopularity ?? Number(process.env.SITEMAP_MIN_POPULARITY || 1);
   const cacheDir = options.cacheDir || process.env.SITEMAP_EXPORT_CACHE_DIR;
   const pinnedDate = parsePinnedExportDate(process.env.SITEMAP_EXPORT_DATE);

@@ -5,6 +5,9 @@ import {
   exportDownloadUrl,
   movieExportRowPasses,
   personExportRowPasses,
+  SITEMAP_MAX_MOVIES_DEFAULT,
+  SITEMAP_MAX_PEOPLE_DEFAULT,
+  SITEMAP_MAX_TV_DEFAULT,
   topIdsByPopularity,
   tvExportRowPasses,
 } from "../lib/tmdb-export.js";
@@ -35,6 +38,25 @@ describe("sitemap TMDB export", () => {
     assert.equal(tvExportRowPasses({ id: 1396, popularity: 0.2 }, opts), false);
     assert.equal(personExportRowPasses({ id: 31, adult: false, popularity: 5 }, opts), true);
     assert.equal(personExportRowPasses({ id: 31, adult: true, popularity: 5 }, opts), false);
+  });
+
+  it("raises catalog caps so info-only sitemaps stay near 50k locs", () => {
+    assert.equal(SITEMAP_MAX_MOVIES_DEFAULT, 32000);
+    assert.equal(SITEMAP_MAX_TV_DEFAULT, 10000);
+    assert.equal(SITEMAP_MAX_PEOPLE_DEFAULT, 7500);
+
+    const year = new Date().getFullYear();
+    const yearPages = Math.max(0, year - 2015 + 1) * 2;
+    const listAndStatic = 3 + 8 + 7 + 1 + 18 + 10 + yearPages + 6;
+    const total =
+      SITEMAP_MAX_MOVIES_DEFAULT +
+      SITEMAP_MAX_TV_DEFAULT +
+      SITEMAP_MAX_PEOPLE_DEFAULT +
+      listAndStatic;
+    assert.ok(
+      Math.abs(total - 50000) <= 2000,
+      `expected ~50k locs, got ${total}`,
+    );
   });
 
   it("selects top ids by popularity", () => {

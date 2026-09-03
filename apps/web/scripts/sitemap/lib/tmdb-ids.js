@@ -143,7 +143,7 @@ async function resolveCatalogIdsFromApi({ auth, fetchImpl }) {
 }
 
 /**
- * Catalog ids for detail/watch sitemaps (Phase 1).
+ * Catalog ids for /movie-info sitemaps (Phase 1). Watch /full-movie URLs are not indexed.
  *
  * Priority:
  * 1. TMDB daily exports (popularity-ranked, up to tens of thousands)
