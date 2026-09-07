@@ -347,8 +347,9 @@ describe("worker request handling", () => {
     const html = await response.text();
     assert.equal(response.status, 200);
     assert.equal(response.headers.get("x-flash-crawler"), "1");
-    assert.match(html, /<title>Fight Club \(1999\) — Watch Free Online \| Flash Movies<\/title>/);
-    assert.match(html, /property="og:title" content="Fight Club \(1999\) — Watch Free Online \| Flash Movies"/);
+    assert.match(html, /<title>Fight Club \(1999\) \| Flash Movies<\/title>/);
+    assert.match(html, /property="og:title" content="Fight Club \(1999\) \| Flash Movies"/);
+    assert.doesNotMatch(html, /<title>[^<]*Watch Free Online/);
     assert.match(html, /application\/ld\+json/);
     assert.doesNotMatch(html, /Affiliate Site Verification/);
   });
@@ -370,6 +371,12 @@ describe("worker request handling", () => {
     assert.match(html, /Fight Club/);
     assert.match(html, /Browse movies by genre/);
     assert.match(html, /aria-label="Site menu"/);
+    assert.match(html, /Popular titles/);
+    assert.match(html, /The Whisper Man/);
+    assert.match(html, /movie-info\?type=movie&amp;id=860508/);
+    assert.match(html, /movie-info\?type=movie&amp;id=969681/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1368337/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1386315/);
     assert.doesNotMatch(html, /Affiliate Site Verification/);
     assert.equal(first.headers.get("x-crawler-cache"), "MISS");
 

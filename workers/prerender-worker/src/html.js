@@ -17,6 +17,7 @@ import {
 } from "./list-copy.js";
 import { tmdbImageUrl } from "./tmdb.js";
 import { isBlockedTitle } from "./routes.js";
+import { popularTitlesSection } from "./popular-titles.js";
 
 /**
  * @typedef {object} PageModel
@@ -80,7 +81,13 @@ function detailPageTitle(type, isWatchPage, titled) {
   if (isWatchPage) {
     return `Watch ${titled} Free Online — ${SITE_NAME}`;
   }
-  return `${titled} — Watch Free Online | ${SITE_NAME}`;
+  return `${titled} | ${SITE_NAME}`;
+}
+
+function infoPageDescription(titled, overview, kindLabel) {
+  const text = (overview || "").trim();
+  if (text) return truncate(text, 280);
+  return `${titled} is a ${kindLabel} on Flash Movies.`;
 }
 
 function websiteJsonLd(siteOrigin, description) {
@@ -124,7 +131,7 @@ export function homePage({ canonical, siteOrigin, featuredSections = [] }) {
     robots: "index, follow",
     heading: HOME_TITLE,
     paragraphs,
-    navSections: featuredSections,
+    navSections: [popularTitlesSection(), ...featuredSections],
     faq: HOME_FAQ,
     jsonLd: [websiteJsonLd(siteOrigin, description), faqPageJsonLd(HOME_FAQ)],
   };
@@ -192,16 +199,11 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
   const overview = (data.overview || data.biography || "").trim();
   const kindLabel = type === "tv" ? "TV series" : type === "person" ? "person" : "movie";
 
-  const description = overview
-    ? truncate(
-        isWatchPage
-          ? `Watch ${titled} free online in HD on Flash Movies. ${overview}`
-          : `Watch ${titled} free on Flash Movies. ${overview}`,
-        280,
-      )
-    : isWatchPage
-      ? `Watch ${titled} free online in HD on Flash Movies — stream this ${kindLabel} with full play links.`
-      : `Watch ${titled} free online on Flash Movies — movies and TV in HD.`;
+  const description = isWatchPage
+    ? overview
+      ? truncate(`Watch ${titled} free online in HD on Flash Movies. ${overview}`, 280)
+      : `Watch ${titled} free online in HD on Flash Movies — stream this ${kindLabel} with full play links.`
+    : infoPageDescription(titled, overview, kindLabel);
 
   const poster = tmdbImageUrl(data.poster_path || data.profile_path, "w500");
   const backdrop = tmdbImageUrl(data.backdrop_path, "w1280");
