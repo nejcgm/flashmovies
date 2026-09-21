@@ -133,7 +133,11 @@ export function MovieInfoPage() {
               ? `https://image.tmdb.org/t/p/w1280${info.backdrop_path}`
               : "https://flashmovies.xyz/flash-movies-logo.png"
           }
-          url={window.location.href}
+          url={
+            type && movieId
+              ? `https://flashmovies.xyz/movie-info?type=${type}&id=${movieId}`
+              : "https://flashmovies.xyz"
+          }
           keywords={[
             mediaDisplayTitle(info) || "",
             ...(info.genres?.map((genre: { name: string }) => genre.name) ||

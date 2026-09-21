@@ -370,6 +370,12 @@ describe("worker request handling", () => {
     assert.match(html, /Fight Club/);
     assert.match(html, /Browse movies by genre/);
     assert.match(html, /aria-label="Site menu"/);
+    assert.match(html, /Popular titles/);
+    assert.match(html, /The Whisper Man/);
+    assert.match(html, /movie-info\?type=movie&amp;id=860508/);
+    assert.match(html, /movie-info\?type=movie&amp;id=969681/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1368337/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1386315/);
     assert.doesNotMatch(html, /Affiliate Site Verification/);
     assert.equal(first.headers.get("x-crawler-cache"), "MISS");
 
