@@ -347,9 +347,8 @@ describe("worker request handling", () => {
     const html = await response.text();
     assert.equal(response.status, 200);
     assert.equal(response.headers.get("x-flash-crawler"), "1");
-    assert.match(html, /<title>Fight Club \(1999\) \| Flash Movies<\/title>/);
-    assert.match(html, /property="og:title" content="Fight Club \(1999\) \| Flash Movies"/);
-    assert.doesNotMatch(html, /<title>[^<]*Watch Free Online/);
+    assert.match(html, /<title>Fight Club \(1999\) — Watch Free Online \| Flash Movies<\/title>/);
+    assert.match(html, /property="og:title" content="Fight Club \(1999\) — Watch Free Online \| Flash Movies"/);
     assert.match(html, /application\/ld\+json/);
     assert.doesNotMatch(html, /Affiliate Site Verification/);
   });

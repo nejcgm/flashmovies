@@ -15,22 +15,6 @@ import type {
 import { useLocaleStorageList } from "../../utils/toLocaleStorageList.ts";
 import { mediaDisplayTitle, mediaYearSuffixSpaced } from "../../utils/mediaDisplayTitle";
 
-function movieInfoMetaDescription(
-  overview: string | undefined,
-  titled: string,
-  type: string | null,
-): string {
-  const text = (overview || "").replace(/\s+/g, " ").trim();
-  if (text) {
-    if (text.length <= 280) return text;
-    const sliced = text.slice(0, 279);
-    const lastSpace = sliced.lastIndexOf(" ");
-    return `${(lastSpace > 40 ? sliced.slice(0, lastSpace) : sliced).trimEnd()}…`;
-  }
-  const kindLabel = type === "tv" ? "TV series" : type === "person" ? "person" : "movie";
-  return `${titled} is a ${kindLabel} on Flash Movies.`;
-}
-
 function castToActorListItems(cast: TmdbCastMember[] | undefined): ActorListItem[] {
   return (cast ?? []).map((member) => ({
     id: member.id,
@@ -132,16 +116,16 @@ export function MovieInfoPage() {
             info.release_date,
             info.first_air_date,
             info.birthday,
-          )} | Flash Movies`}
-          description={movieInfoMetaDescription(
-            info.overview ?? info.biography,
-            `${mediaDisplayTitle(info)}${mediaYearSuffixSpaced(
-              info.release_date,
-              info.first_air_date,
-              info.birthday,
-            )}`.trim(),
-            type,
-          )}
+          )} — Watch Free Online | Flash Movies`}
+          description={
+            info.overview
+              ? `${info.overview.slice(0, 150)}... Watch ${mediaDisplayTitle(
+                  info,
+                )} free on Flash Movies.`
+              : `Watch ${mediaDisplayTitle(
+                  info,
+                )} free on Flash Movies. Stream in HD quality.`
+          }
           image={
             info.poster_path
               ? `https://image.tmdb.org/t/p/w500${info.poster_path}`
@@ -158,10 +142,25 @@ export function MovieInfoPage() {
             mediaDisplayTitle(info) || "",
             ...(info.genres?.map((genre: { name: string }) => genre.name) ||
               []),
-            type === "tv" ? "TV series" : type === "person" ? "person" : "movie",
+            `${type} streaming`,
+            `watch ${mediaDisplayTitle(info)} free`,
+            `${type} online`,
+            `watch ${mediaDisplayTitle(info)} ${
+              type === "movie" ? "movie" : "series"
+            }`,
+            `watch ${mediaDisplayTitle(info)} ${
+              type === "movie" ? "movie" : "series"
+            } for free`,
+            `watch ${mediaDisplayTitle(info)} ${
+              type === "movie" ? "movie" : "series"
+            } for free on flashmovies`,
+            `${mediaDisplayTitle(info)} ${
+              type === "movie" ? "movie" : "series"
+            } movie info`,
+            "free movies",
+            " free series",
             "flash movies",
-            "flashmovies",
-            "flashmovies.xyz",
+            "HD streaming, flashmovies, flashmovies.xyz",
           ].filter(Boolean)}
           type={
             type === "movie"

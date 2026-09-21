@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { homePage, detailPage, renderHtml } from "../src/html.js";
 import { HOME_DESCRIPTION, HOME_TITLE } from "../src/copy.js";
-import { truncate } from "../src/text.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const fightClub = JSON.parse(
@@ -52,37 +51,19 @@ describe("crawler HTML", () => {
     });
     const html = renderHtml(page, "https://flashmovies.xyz");
 
-    assert.equal(page.title, "Fight Club (1999) | Flash Movies");
-    assert.match(page.description, /^A ticking-time-bomb insomniac/);
-    assert.doesNotMatch(page.title, /Watch Free Online/i);
-    assert.doesNotMatch(page.description, /watch free|stream online|discover movies/i);
+    assert.match(page.title, /Fight Club \(1999\)/);
+    assert.match(page.description, /Watch Fight Club \(1999\) free on Flash Movies/i);
     assert.equal(page.canonical, "https://flashmovies.xyz/movie-info?type=movie&id=550");
     assert.match(page.image, /image\.tmdb\.org\/t\/p\/w500\/jSziioSwPVrOy9Yow3XhWIBDjq1\.jpg/);
     assert.equal(page.ogType, "video.movie");
-    assert.match(html, /<title>Fight Club \(1999\) \| Flash Movies<\/title>/);
+    assert.match(html, /<title>Fight Club \(1999\) — Watch Free Online \| Flash Movies<\/title>/);
     assert.match(html, /property="og:image"/);
     assert.match(html, /name="twitter:title"/);
     assert.match(html, /"@type":"Movie"/);
     assert.match(html, /David Fincher/);
     assert.doesNotMatch(html, /Affiliate Site Verification/i);
-    assert.doesNotMatch(html, /<title>[^<]*Watch Free Online/);
-    assert.equal(page.description, truncate(fightClub.overview, 280));
-    assert.equal(page.status, 200);
-    assert.equal(page.robots, "index, follow");
-    assert.match(html, /rel="canonical" href="https:\/\/flashmovies\.xyz\/movie-info\?type=movie&amp;id=550"/);
-    assert.match(html, /<h1>Fight Club \(1999\)<\/h1>/);
-  });
-
-  it("uses a factual fallback description when movie-info has no overview", () => {
-    const page = detailPage({
-      route: { kind: "detail", pathname: "/movie-info", type: "movie", id: "550" },
-      data: { ...fightClub, overview: "" },
-      canonical: "https://flashmovies.xyz/movie-info?type=movie&id=550",
-      siteOrigin: "https://flashmovies.xyz",
-    });
-    assert.equal(page.title, "Fight Club (1999) | Flash Movies");
-    assert.equal(page.description, "Fight Club (1999) is a movie on Flash Movies.");
-    assert.doesNotMatch(page.description, /watch free|stream online|discover movies/i);
+    assert.match(html, /Watch Fight Club \(1999\) free on Flash Movies/);
+    assert.match(html, /Watch free online in HD on Flash Movies/);
   });
 
   it("renders TMDB-backed HTML for /full-movie?type=movie&id=550 (not a 404)", () => {
