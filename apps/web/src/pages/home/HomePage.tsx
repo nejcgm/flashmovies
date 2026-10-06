@@ -15,6 +15,7 @@ import { ProPlansPromoStrip } from "../../components/common";
 import { PRO_PRICE } from "../../config/proCheckoutPaths";
 import type { MediaListItem } from "../../interfaces/media/index.ts";
 import { useUser } from "../../context/UserContext";
+import { PopularTitles } from "./PopularTitles";
 
 const LIST_MORE = {
   heroNowPlaying:
@@ -118,6 +119,7 @@ export function HomePage() {
   return (
     <>
       <Meta />
+      <PopularTitles />
       {loading && (
         <div className="flex w-full justify-center">
           <Spinner />

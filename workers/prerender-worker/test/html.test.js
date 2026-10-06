@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { homePage, detailPage, renderHtml } from "../src/html.js";
 import { HOME_DESCRIPTION, HOME_TITLE } from "../src/copy.js";
-import { homePageDescription } from "../src/list-copy.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const fightClub = JSON.parse(
@@ -21,6 +20,10 @@ describe("crawler HTML", () => {
     const html = renderHtml(page, "https://flashmovies.xyz");
 
     assert.equal(page.title, HOME_TITLE);
+    assert.equal(
+      HOME_TITLE,
+      "Flash Movies — Watch Free Movies & TV Shows Online",
+    );
     assert.equal(page.description, HOME_DESCRIPTION);
     assert.match(html, /free movie and TV streaming website/i);
     assert.match(html, /browse popular and trending titles/i);
@@ -30,6 +33,11 @@ describe("crawler HTML", () => {
     assert.match(html, /Is Flash Movies free\?/);
     assert.match(html, /"@type":"FAQPage"/);
     assert.match(html, /aria-label="Site menu"/);
+    assert.match(html, /Popular titles/);
+    assert.match(html, /movie-info\?type=movie&amp;id=860508/);
+    assert.match(html, /movie-info\?type=movie&amp;id=969681/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1368337/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1386315/);
     assert.doesNotMatch(html, /Affiliate Site Verification/i);
     assert.doesNotMatch(html, /<script type="module"/);
   });

@@ -17,6 +17,7 @@ import {
 } from "./list-copy.js";
 import { tmdbImageUrl } from "./tmdb.js";
 import { isBlockedTitle } from "./routes.js";
+import { popularTitlesSection } from "./popular-titles.js";
 
 /**
  * @typedef {object} PageModel
@@ -124,7 +125,7 @@ export function homePage({ canonical, siteOrigin, featuredSections = [] }) {
     robots: "index, follow",
     heading: HOME_TITLE,
     paragraphs,
-    navSections: featuredSections,
+    navSections: [popularTitlesSection(), ...featuredSections],
     faq: HOME_FAQ,
     jsonLd: [websiteJsonLd(siteOrigin, description), faqPageJsonLd(HOME_FAQ)],
   };
