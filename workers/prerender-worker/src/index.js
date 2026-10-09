@@ -12,6 +12,7 @@ import {
 } from "./html.js";
 import {
   canonicalUrl,
+  isIndexNowKeyPath,
   parseRoute,
   shouldBypass,
   trailingSlashSitemapRedirect,
@@ -281,6 +282,13 @@ function blockedBotResponse() {
 export async function handleRequest(request, env, ctx, deps = {}) {
   const fetchImpl = deps.fetch || fetch;
   const cache = deps.cache || (typeof caches !== "undefined" ? caches.default : null);
+  const url = new URL(request.url);
+
+  // Before the blocked-bot 403 and crawler HTML. IndexNow (and any other
+  // client) must receive the static key file from origin, unchanged.
+  if (isIndexNowKeyPath(url.pathname)) {
+    return fetchOrigin(request, env, fetchImpl);
+  }
 
   if (request.method !== "GET" && request.method !== "HEAD") {
     return fetchOrigin(request, env, fetchImpl);
@@ -289,8 +297,6 @@ export async function handleRequest(request, env, ctx, deps = {}) {
   if (isBlockedBotUserAgent(request.headers.get("user-agent"))) {
     return blockedBotResponse();
   }
-
-  const url = new URL(request.url);
   const sitemapSlashLocation = trailingSlashSitemapRedirect(url, siteOrigin(env));
   if (sitemapSlashLocation) {
     return Response.redirect(sitemapSlashLocation, 301);
