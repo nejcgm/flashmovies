@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 import { handleRequest } from "../src/index.js";
-import { tmdbAuthorization } from "../src/tmdb.js";
+import { fetchTmdbDetails, tmdbAuthorization } from "../src/tmdb.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const fightClub = JSON.parse(
@@ -420,5 +420,159 @@ describe("worker request handling", () => {
   it("accepts VITE_API_KEY values with or without a Bearer prefix", () => {
     assert.equal(tmdbAuthorization("Bearer abc"), "Bearer abc");
     assert.equal(tmdbAuthorization("abc"), "Bearer abc");
+  });
+
+  it("appends recommendations and similar only on movie and TV info detail fetches", async () => {
+    const urls = [];
+    const fetchImpl = async (input) => {
+      urls.push(typeof input === "string" ? input : input.url);
+      return new Response(JSON.stringify({ id: 1, title: "X" }), { status: 200 });
+    };
+
+    await fetchTmdbDetails("movie", "550", "token", fetchImpl, { includeSimilar: true });
+    await fetchTmdbDetails("tv", "1396", "token", fetchImpl, { includeSimilar: true });
+    await fetchTmdbDetails("movie", "550", "token", fetchImpl);
+    await fetchTmdbDetails("person", "287", "token", fetchImpl, { includeSimilar: true });
+
+    assert.equal(urls.length, 4);
+    assert.match(
+      urls[0],
+      /\/movie\/550\?append_to_response=credits,recommendations,similar&language=en-US$/,
+    );
+    assert.match(
+      urls[1],
+      /\/tv\/1396\?append_to_response=credits,recommendations,similar&language=en-US$/,
+    );
+    assert.match(urls[2], /\/movie\/550\?append_to_response=credits&language=en-US$/);
+    assert.match(urls[3], /\/person\/287\?language=en-US$/);
+    assert.equal(urls.some((url) => /\/similar\?|\/recommendations\?/.test(url)), false);
+  });
+
+  it("renders Similar titles from one TMDB subrequest on movie and TV info pages", async () => {
+    const movieCalls = [];
+    const moviePayload = {
+      ...fightClub,
+      recommendations: {
+        results: Array.from({ length: 8 }, (_, index) => ({
+          id: 5000 + index,
+          title: `Movie rec ${index}`,
+        })),
+      },
+      similar: {
+        results: Array.from({ length: 4 }, (_, index) => ({
+          id: 6000 + index,
+          title: `Movie sim ${index}`,
+        })),
+      },
+    };
+    const movieResponse = await handleRequest(
+      new Request("https://flashmovies.xyz/movie-info?type=movie&id=550", {
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        },
+      }),
+      env,
+      {},
+      {
+        fetch: async (input) => {
+          const url = typeof input === "string" ? input : input.url;
+          movieCalls.push(url);
+          assert.match(url, /append_to_response=credits,recommendations,similar/);
+          return new Response(JSON.stringify(moviePayload), {
+            headers: { "content-type": "application/json" },
+          });
+        },
+        cache: memoryCache(),
+      },
+    );
+    const movieHtml = await movieResponse.text();
+    assert.equal(movieCalls.length, 1);
+    assert.match(movieHtml, /<title>Fight Club \(1999\) — Watch Free Online \| Flash Movies<\/title>/);
+    assert.match(movieHtml, /<h2>Similar titles<\/h2>/);
+    assert.match(movieHtml, /movie-info\?type=movie&amp;id=5000/);
+    assert.match(movieHtml, /movie-info\?type=movie&amp;id=6003/);
+    assert.equal((movieHtml.match(/Movie rec|Movie sim/g) || []).length, 12);
+
+    const tvCalls = [];
+    const tvResponse = await handleRequest(
+      new Request("https://flashmovies.xyz/movie-info?type=tv&id=1396", {
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        },
+      }),
+      env,
+      {},
+      {
+        fetch: async (input) => {
+          const url = typeof input === "string" ? input : input.url;
+          tvCalls.push(url);
+          assert.match(url, /\/tv\/1396\?append_to_response=credits,recommendations,similar/);
+          return new Response(
+            JSON.stringify({
+              name: "Breaking Bad",
+              first_air_date: "2008-01-20",
+              overview: "A chemistry teacher cooks.",
+              recommendations: {
+                results: Array.from({ length: 8 }, (_, index) => ({
+                  id: 7000 + index,
+                  name: `TV rec ${index}`,
+                })),
+              },
+              similar: { results: [{ id: 1396, name: "Breaking Bad" }, { id: 8000, name: "Better Call Saul" }] },
+            }),
+            { headers: { "content-type": "application/json" } },
+          );
+        },
+        cache: memoryCache(),
+      },
+    );
+    const tvHtml = await tvResponse.text();
+    assert.equal(tvCalls.length, 1);
+    assert.match(tvHtml, /<title>Breaking Bad \(2008\) — Watch Free Online \| Flash Movies<\/title>/);
+    assert.match(tvHtml, /movie-info\?type=tv&amp;id=7000/);
+    assert.match(tvHtml, /movie-info\?type=tv&amp;id=8000/);
+    assert.equal((tvHtml.match(/href="\/movie-info\?type=tv&amp;id=/g) || []).length, 9);
+  });
+
+  it("keeps /full-movie on the credits-only detail fetch and omits Similar titles", async () => {
+    const calls = [];
+    const response = await handleRequest(
+      new Request("https://flashmovies.xyz/full-movie?type=movie&id=550", {
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        },
+      }),
+      env,
+      {},
+      {
+        fetch: async (input) => {
+          const url = typeof input === "string" ? input : input.url;
+          calls.push(url);
+          return new Response(
+            JSON.stringify({
+              ...fightClub,
+              recommendations: { results: [{ id: 807, title: "Se7en" }] },
+            }),
+            { headers: { "content-type": "application/json" } },
+          );
+        },
+        cache: memoryCache(),
+      },
+    );
+    const html = await response.text();
+    assert.deepEqual(calls, [
+      "https://api.themoviedb.org/3/movie/550?append_to_response=credits&language=en-US",
+    ]);
+    assert.match(html, /<title>Watch Fight Club \(1999\) Free Online — Flash Movies<\/title>/);
+    assert.doesNotMatch(html, /Similar titles/);
+    assert.doesNotMatch(html, /Se7en/);
+  });
+
+  it("bumps CACHE_KEY_VERSION so similar-title HTML replaces cached crawler pages", () => {
+    const toml = readFileSync(join(__dirname, "../wrangler.toml"), "utf8");
+    assert.match(toml, /CACHE_KEY_VERSION = "6"/);
   });
 });
