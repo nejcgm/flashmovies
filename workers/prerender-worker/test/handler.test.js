@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 import { handleRequest } from "../src/index.js";
+import { isIndexNowKeyPath } from "../src/routes.js";
 import { tmdbAuthorization } from "../src/tmdb.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -220,6 +221,71 @@ describe("worker request handling", () => {
     assert.notEqual(html, "Not Found");
     assert.match(html, /<title>Watch Fight Club \(1999\) Free Online — Flash Movies<\/title>/);
     assert.match(html, /rel="canonical" href="https:\/\/flashmovies\.xyz\/full-movie\?type=movie&amp;id=550"/);
+  });
+
+  it("returns the IndexNow key file from origin for every user agent", async () => {
+    const publicDir = join(__dirname, "../../../apps/web/public");
+    const filename = readdirSync(publicDir).find((name) => isIndexNowKeyPath(`/${name}`));
+    assert.ok(filename);
+    const key = readFileSync(join(publicDir, filename), "utf8");
+    const agents = [
+      "Mozilla/5.0 Chrome/120.0.0.0",
+      "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+      "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+      "Mozilla/5.0 (compatible; Scamadviser/1.0)",
+      "",
+    ];
+
+    for (const userAgent of agents) {
+      let seenUrl = "";
+      const response = await handleRequest(
+        new Request(`https://flashmovies.xyz/${filename}`, {
+          headers: userAgent ? { "user-agent": userAgent } : {},
+        }),
+        env,
+        {},
+        {
+          fetch: async (input) => {
+            const request = typeof input === "string" ? null : input;
+            seenUrl = typeof input === "string" ? input : input.url;
+            assert.equal(request?.headers.get("X-Prerender"), "1");
+            return new Response(key, {
+              status: 200,
+              headers: { "content-type": "text/plain; charset=utf-8" },
+            });
+          },
+          cache: memoryCache(),
+        },
+      );
+      assert.equal(response.status, 200);
+      assert.equal(await response.text(), key);
+      assert.equal(response.headers.get("content-type"), "text/plain; charset=utf-8");
+      assert.equal(response.headers.get("x-flash-crawler"), null);
+      assert.equal(seenUrl, `https://flashmovies.xyz/${filename}`);
+    }
+
+    const head = await handleRequest(
+      new Request(`https://flashmovies.xyz/${filename}`, {
+        method: "HEAD",
+        headers: {
+          "user-agent":
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+        },
+      }),
+      env,
+      {},
+      {
+        fetch: async () =>
+          new Response(null, {
+            status: 200,
+            headers: { "content-type": "text/plain; charset=utf-8" },
+          }),
+        cache: memoryCache(),
+      },
+    );
+    assert.equal(head.status, 200);
+    assert.equal(head.headers.get("content-type"), "text/plain; charset=utf-8");
+    assert.equal(await head.text(), "");
   });
 
   it("passes X-Prerender + Googlebot through to origin instead of prerender.io", async () => {

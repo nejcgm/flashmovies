@@ -54,6 +54,17 @@ export const IGNORE_EXTENSIONS = [
 
 const BYPASS_PREFIXES = ["/assets/", "/sitemaps/", "/src/", "/api/"];
 
+/** Root IndexNow key file: `/<8-128 of [A-Za-z0-9-]>.txt`, no trailing slash. */
+const INDEXNOW_KEY_PATH = /^\/[A-Za-z0-9-]{8,128}\.txt$/;
+
+/**
+ * IndexNow fetches `/<key>.txt` and requires the raw key as text/plain.
+ * @param {string | null | undefined} pathname
+ */
+export function isIndexNowKeyPath(pathname) {
+  return INDEXNOW_KEY_PATH.test(String(pathname || ""));
+}
+
 const BYPASS_EXACT = new Set([
   "/robots.txt",
   "/sitemap.xml",
@@ -126,6 +137,9 @@ export function shouldBypass(url) {
   const path = normalizePath(url.pathname).toLowerCase();
   const rawPath = url.pathname.toLowerCase();
   if (BYPASS_EXACT.has(path) || BYPASS_EXACT.has(rawPath)) {
+    return true;
+  }
+  if (isIndexNowKeyPath(url.pathname) || isIndexNowKeyPath(rawPath)) {
     return true;
   }
   if (BYPASS_PREFIXES.some((prefix) => rawPath.startsWith(prefix))) {

@@ -26,6 +26,13 @@
         "headers": [{ "key": "Access-Control-Allow-Origin", "value": "*" }]
       },
       {
+        "source": "/4ce3866fbd727f83e8bb47d8e4594e1d.txt",
+        "headers": [
+          { "key": "Content-Type", "value": "text/plain; charset=utf-8" },
+          { "key": "Cache-Control", "value": "public, max-age=3600" }
+        ]
+      },
+      {
         "regex": "^/(sitemap\\.xml|sitemaps/[^/]+\\.xml)$",
         "headers": [
           { "key": "Content-Type", "value": "application/xml; charset=utf-8" },

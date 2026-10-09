@@ -21,7 +21,7 @@ Deploy this project **over** `prerender-worker`. Do not create a second worker.
 ## What it does
 
 1. Matches crawler User-Agents from the live `BOT_AGENTS` list (plus AI / scanner agents in `src/bots.js`) **or** `?_escaped_fragment_`.
-2. Skips `IGNORE_EXTENSIONS` (same idea as the live worker: `.js`, `.css`, images, fonts, …) and passes those to origin.
+2. Skips `IGNORE_EXTENSIONS` (same idea as the live worker: `.js`, `.css`, images, fonts, …) and passes those to origin. An IndexNow key file at `/<key>.txt` is passed through to origin for every user agent, including blocked scanners, so the response stays the raw key (`text/plain`) rather than crawler HTML or a 403.
 3. Incoming `X-Prerender` → origin passthrough (loop protection). Origin subrequests set that header.
 4. For crawlers only, returns first-party HTML:
    - `/movie-info` **and `/full-movie`** (movie / TV / person): TMDB details (`api.themoviedb.org`), same auth pattern as the SPA `VITE_API_KEY`.
