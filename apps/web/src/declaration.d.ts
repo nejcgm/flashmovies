@@ -13,7 +13,12 @@ declare module "react-helmet-async";
 declare global {
   interface Window {
     prerenderReady: boolean;
-    gtag?: (command: string, action: string, parameters?: Record<string, unknown>) => void;
+    dataLayer?: unknown[];
+    gtag?: (
+      command: string,
+      action: string | Date,
+      parameters?: Record<string, unknown>,
+    ) => void;
     _uxa?: unknown[];
   }
 }
