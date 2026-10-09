@@ -1,49 +1,63 @@
-import { Helmet } from 'react-helmet-async';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import {
+  ASYNC_TITLE_WAIT_MS,
+  GA_MEASUREMENT_ID,
+  dispatchPageView,
+  ensureGaConfig,
+  getPageViewModel,
+} from "../utils/gaPageView.ts";
 
 interface AnalyticsProps {
   measurementId?: string;
 }
 
-export function Analytics({ 
-  measurementId = "G-RNJNNRHPJ0"
+/**
+ * Sends one GA4 page_view per location after the route title is known.
+ * The gtag snippet used to run from Helmet on the first commit, while
+ * index.html has no <title> and lazy routes had not mounted, so the hit
+ * stored an empty page_title. History page views from the GA4 stream are
+ * suppressed once gtag.js loads so those are not counted twice.
+ */
+export function Analytics({
+  measurementId = GA_MEASUREMENT_ID,
 }: AnalyticsProps) {
-  return (
-    <Helmet>
-      <script async src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`} />
-      <script>
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${measurementId}', {
-            page_title: document.title,
-            page_location: window.location.href,
-            custom_parameter: 'flash_movies'
-          });
-        `}
-      </script>
+  const { pathname, search } = useLocation();
 
-      <script>
-        {`
-          function sendToGoogleAnalytics({name, delta, value, id}) {
-            gtag('event', name, {
-              event_category: 'Web Vitals',
-              event_label: id,
-              value: Math.round(name === 'CLS' ? delta * 1000 : delta),
-              non_interaction: true
-            });
-          }
+  useEffect(() => {
+    ensureGaConfig(measurementId);
+    const model = getPageViewModel();
+    for (const command of model.onRoute(pathname, search, document.title)) {
+      dispatchPageView(command, measurementId);
+    }
 
-          import('https://unpkg.com/web-vitals@3/dist/web-vitals.js').then(({onCLS, onFID, onFCP, onLCP, onTTFB}) => {
-            onCLS(sendToGoogleAnalytics);
-            onFID(sendToGoogleAnalytics);
-            onFCP(sendToGoogleAnalytics);
-            onLCP(sendToGoogleAnalytics);
-            onTTFB(sendToGoogleAnalytics);
-          });
-        `}
-      </script>
-    </Helmet>
-  );
-};
+    if (!model.isPending()) return;
 
+    let timer = 0;
+    const observer = new MutationObserver(() => {
+      const command = model.onTitle(document.title);
+      if (!command) return;
+      dispatchPageView(command, measurementId);
+      observer.disconnect();
+      window.clearTimeout(timer);
+    });
+    observer.observe(document.head, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    timer = window.setTimeout(() => {
+      observer.disconnect();
+      const command = model.flush();
+      if (command) dispatchPageView(command, measurementId);
+    }, ASYNC_TITLE_WAIT_MS);
+
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(timer);
+    };
+  }, [measurementId, pathname, search]);
+
+  return null;
+}

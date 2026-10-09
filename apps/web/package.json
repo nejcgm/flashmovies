@@ -12,6 +12,7 @@
     "build:sitemap": "npm run generate:sitemap",
     "generate:sitemap": "node scripts/sitemap/generate-index.js",
     "test:sitemap": "node --test scripts/sitemap/test/tmdb-ids.test.js scripts/sitemap/test/tmdb-export.test.js scripts/sitemap/test/firebase-hosting.test.js scripts/sitemap/test/generate-index.test.js && node scripts/sitemap/validate.js",
+    "test:analytics": "node --experimental-strip-types --test src/utils/gaPageView.test.ts",
     "build:sitemap-index": "npm run build && npm run generate:sitemap && npm run sync:sitemap",
     "lint": "eslint .",
     "preview": "vite preview",
