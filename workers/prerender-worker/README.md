@@ -61,6 +61,10 @@ npx wrangler deploy         # updates worker name `prerender-worker`
 
 `wrangler deploy` publishes to `*.workers.dev`. **It does not attach a zone route.** `flashmovies.xyz` still bypasses the worker until you add one.
 
+### Monthly: Popular titles with the sitemap deploy
+
+Before or with the monthly sitemap deploy (`npm run deploy:sitemap` in `apps/web`; see that README), update `src/popular-titles.json` with the top impression-bearing `/movie-info` ids from Google Search Console. Each entry is `id`, `type`, and `title`. Resolve the title from TMDB the same way detail pages do (`title`, else `name`, else `original_title`), or keep the title already stored when an id stays. Bump `CACHE_KEY_VERSION` in `wrangler.toml`, then redeploy this Worker so the Cache API serves the new homepage links. Leave the block crawler-only — do not add it to `apps/web`.
+
 ### After merge: attach the zone route
 
 Dashboard → **Workers & Pages → prerender-worker → Settings → Domains & Routes → Add**:
@@ -133,4 +137,5 @@ npx wrangler dev
 - `src/routes.js` — `IGNORE_EXTENSIONS`, SPA URL parsing (`/movie-info`, `/full-movie`, lists)
 - `src/tmdb.js` — TMDB v3 + Bearer token (same as `VITE_API_KEY`)
 - `src/html.js` — title / meta / OG / Twitter / canonical / JSON-LD
+- `src/popular-titles.json` — crawler-only homepage Popular titles (`id`, `type`, `title`); edit monthly with the sitemap deploy
 - `src/index.js` — Worker entry: bot gate, Cache API, origin passthrough
