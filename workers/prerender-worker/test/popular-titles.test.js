@@ -8,13 +8,14 @@ import { popularTitleLinks, popularTitlesSection, POPULAR_TITLES } from "../src/
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const REFRESHED_IDS = [1492640, 1377237, 1248832, 1032863, 969681];
+const REFRESHED_IDS = [1423191, 969681, 1101383, 1339713, 1248832, 1368337];
 const REFRESHED_TITLES = [
-  "UNABOMBER",
-  "Runner",
-  "Digger",
-  "The Love Hypothesis",
+  "Resident Evil",
   "Spider-Man: Brand New Day",
+  "The End of Oak Street",
+  "Obsession",
+  "Digger",
+  "The Odyssey",
 ];
 
 describe("popular titles chrome", () => {
@@ -25,7 +26,7 @@ describe("popular titles chrome", () => {
     );
     assert.deepEqual(
       popularTitleEntries.map((item) => item.type),
-      ["movie", "movie", "movie", "movie", "movie"],
+      ["movie", "movie", "movie", "movie", "movie", "movie"],
     );
     assert.deepEqual(
       popularTitleEntries.map((item) => item.title),

@@ -371,16 +371,18 @@ describe("worker request handling", () => {
     assert.match(html, /Browse movies by genre/);
     assert.match(html, /aria-label="Site menu"/);
     assert.match(html, /Popular titles/);
-    assert.match(html, /UNABOMBER/);
-    assert.match(html, /Runner/);
-    assert.match(html, /Digger/);
-    assert.match(html, /The Love Hypothesis/);
+    assert.match(html, /Resident Evil/);
     assert.match(html, /Spider-Man: Brand New Day/);
-    assert.match(html, /movie-info\?type=movie&amp;id=1492640/);
-    assert.match(html, /movie-info\?type=movie&amp;id=1377237/);
-    assert.match(html, /movie-info\?type=movie&amp;id=1248832/);
-    assert.match(html, /movie-info\?type=movie&amp;id=1032863/);
+    assert.match(html, /The End of Oak Street/);
+    assert.match(html, /Obsession/);
+    assert.match(html, /Digger/);
+    assert.match(html, /The Odyssey/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1423191/);
     assert.match(html, /movie-info\?type=movie&amp;id=969681/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1101383/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1339713/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1248832/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1368337/);
     assert.doesNotMatch(html, /Affiliate Site Verification/);
     assert.equal(first.headers.get("x-crawler-cache"), "MISS");
 
