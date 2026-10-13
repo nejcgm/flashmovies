@@ -13,6 +13,7 @@ import {
   collectSitemapUrls,
   extractUrlsetLocs,
   isIndexNowDryRun,
+  isIndexNowLive,
   loadIndexNowKey,
   notifyIndexNow,
   submitIndexNowBatches,
@@ -56,11 +57,15 @@ describe("IndexNow submission", () => {
       pkg.scripts["deploy:sitemap"],
       "npm run build:sitemap-index && firebase deploy --only hosting && node scripts/sitemap/notify-indexnow.js",
     );
+    assert.equal(pkg.scripts.indexnow, "node scripts/sitemap/notify-indexnow.js --live");
+    assert.equal(typeof pkg.scripts["test:analytics"], "string");
     assert.match(pkg.scripts["sync:sitemap"], new RegExp(`cp public/${filename} dist/`));
     const readme = readFileSync(path.join(webRoot, "README.md"), "utf8");
     assert.match(readme, new RegExp(filename));
     assert.match(readme, /INDEXNOW_DRY_RUN/);
     assert.match(readme, /INDEXNOW_SKIP/);
+    assert.match(readme, /notify-indexnow\.js --live/);
+    assert.match(readme, /Monthly sitemap deploy/);
   });
 
   it("decodes sitemap entities and drops off-host locs", () => {
@@ -148,6 +153,52 @@ describe("IndexNow submission", () => {
     assert.match(warnings.join("\n"), /network down/);
     assert.match(warnings.join("\n"), /HTTP 422/);
     assert.equal(logs.some((line) => line.includes("HTTP 202")), true);
+  });
+
+  it("reads page URLs from the live sitemap index without posting local files", async () => {
+    assert.equal(isIndexNowLive({ INDEXNOW_LIVE: "1" }, []), true);
+    assert.equal(isIndexNowLive({}, ["node", "notify-indexnow.js", "--live"]), true);
+    assert.equal(isIndexNowLive({}, ["node", "notify-indexnow.js"]), false);
+
+    const calls = [];
+    const warnings = [];
+    const result = await notifyIndexNow({
+      publicDir,
+      live: true,
+      sitemapUrl: "https://flashmovies.xyz/sitemap.xml",
+      log: () => {},
+      warn: (message) => warnings.push(message),
+      fetchImpl: async (url, init) => {
+        calls.push(url);
+        if (url === "https://flashmovies.xyz/sitemap.xml") {
+          return new Response(
+            `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><sitemap><loc>https://flashmovies.xyz/sitemaps/static.xml</loc></sitemap></sitemapindex>`,
+            { status: 200 },
+          );
+        }
+        if (url === "https://flashmovies.xyz/sitemaps/static.xml") {
+          return new Response(
+            `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://flashmovies.xyz/movie-info?type=movie&amp;id=550</loc></url><url><loc>https://example.com/nope</loc></url></urlset>`,
+            { status: 200 },
+          );
+        }
+        assert.equal(url, "https://api.indexnow.org/indexnow");
+        const payload = JSON.parse(init.body);
+        assert.deepEqual(payload.urlList, [
+          "https://flashmovies.xyz/movie-info?type=movie&id=550",
+        ]);
+        assert.equal(payload.host, "flashmovies.xyz");
+        return new Response("", { status: 200 });
+      },
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.submitted, 1);
+    assert.deepEqual(calls.slice(0, 2), [
+      "https://flashmovies.xyz/sitemap.xml",
+      "https://flashmovies.xyz/sitemaps/static.xml",
+    ]);
+    assert.match(warnings.join("\n"), /skipped 1/);
   });
 
   it("does not call fetch on dry run or skip, and never throws when the key is missing", async () => {

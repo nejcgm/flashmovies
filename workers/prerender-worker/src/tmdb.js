@@ -54,13 +54,24 @@ async function readJsonOrNull(response) {
 }
 
 /**
+ * Movie and TV detail pages can ask for recommendations and similar titles
+ * on the same request (`append_to_response`). That stays one subrequest.
+ * Person and watch pages keep the previous query.
+ *
  * @param {"movie" | "tv" | "person"} type
  * @param {string} id
  * @param {string} apiKey
  * @param {typeof fetch} fetchImpl
+ * @param {{ includeSimilar?: boolean }} [options]
  */
-export async function fetchTmdbDetails(type, id, apiKey, fetchImpl = fetch) {
-  const query = type === "person" ? "" : "append_to_response=credits";
+export async function fetchTmdbDetails(type, id, apiKey, fetchImpl = fetch, options = {}) {
+  let query = "";
+  if (type !== "person") {
+    query =
+      options.includeSimilar === true
+        ? "append_to_response=credits,recommendations,similar"
+        : "append_to_response=credits";
+  }
   const path = query ? `${type}/${id}?${query}` : `${type}/${id}`;
   const response = await fetchTmdb(path, apiKey, fetchImpl);
   return readJsonOrNull(response);

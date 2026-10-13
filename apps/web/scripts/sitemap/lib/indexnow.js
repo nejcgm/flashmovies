@@ -6,6 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
 export const INDEXNOW_HOST = "flashmovies.xyz";
+export const LIVE_SITEMAP_URL = `https://${INDEXNOW_HOST}/sitemap.xml`;
 /** IndexNow rejects a urlList longer than this. */
 export const INDEXNOW_BATCH_LIMIT = 10000;
 
@@ -28,6 +29,17 @@ export function isIndexNowDryRun(env = process.env) {
 }
 
 /**
+ * Fetch the published sitemap instead of the files on disk.
+ * @param {NodeJS.ProcessEnv} [env]
+ * @param {string[]} [argv]
+ */
+export function isIndexNowLive(env = process.env, argv = process.argv) {
+  const source = env || process.env;
+  const args = argv || process.argv;
+  return args.includes("--live") || isTruthyEnv(source.INDEXNOW_LIVE);
+}
+
+/**
  * @param {string} value
  */
 export function decodeXmlEntities(value) {
@@ -45,14 +57,32 @@ export function decodeXmlEntities(value) {
  * @param {string} xml
  * @returns {string[]}
  */
-export function extractUrlsetLocs(xml) {
-  if (!/<urlset[\s>]/.test(xml)) return [];
+/**
+ * @param {string} xml
+ * @returns {string[]}
+ */
+function extractLocs(xml) {
   const locs = [];
   for (const match of xml.matchAll(/<loc>([^<]*)<\/loc>/g)) {
     const loc = decodeXmlEntities(match[1].trim());
     if (loc) locs.push(loc);
   }
   return locs;
+}
+
+export function extractUrlsetLocs(xml) {
+  if (!/<urlset[\s>]/.test(xml)) return [];
+  return extractLocs(xml);
+}
+
+/**
+ * Child sitemap URLs from a sitemap index. Urlsets contribute nothing.
+ * @param {string} xml
+ * @returns {string[]}
+ */
+export function extractSitemapIndexLocs(xml) {
+  if (!/<sitemapindex[\s>]/.test(xml)) return [];
+  return extractLocs(xml);
 }
 
 /**
@@ -155,6 +185,59 @@ export function collectSitemapUrls(publicDir, warn = console.error) {
 }
 
 /**
+ * Page URLs from the published sitemap index and its child urlsets.
+ * Does not deploy or read the local sitemap files.
+ * @param {typeof fetch} [fetchImpl]
+ * @param {(message: string) => void} [warn]
+ * @param {string} [indexUrl]
+ */
+export async function collectLiveSitemapUrls(
+  fetchImpl = fetch,
+  warn = console.error,
+  indexUrl = LIVE_SITEMAP_URL,
+) {
+  const indexResponse = await fetchImpl(indexUrl);
+  if (!indexResponse.ok) {
+    throw new Error(`failed to fetch sitemap ${indexUrl} (HTTP ${indexResponse.status})`);
+  }
+  const indexXml = await indexResponse.text();
+  /** @type {string[]} */
+  const urls = [];
+  const seen = new Set();
+  let skipped = 0;
+
+  const acceptPage = (loc) => {
+    if (!isHostUrl(loc)) {
+      skipped += 1;
+      return;
+    }
+    if (seen.has(loc)) return;
+    seen.add(loc);
+    urls.push(loc);
+  };
+
+  for (const loc of extractUrlsetLocs(indexXml)) acceptPage(loc);
+
+  for (const child of extractSitemapIndexLocs(indexXml)) {
+    if (!isHostUrl(child)) {
+      skipped += 1;
+      continue;
+    }
+    const childResponse = await fetchImpl(child);
+    if (!childResponse.ok) {
+      throw new Error(`failed to fetch sitemap ${child} (HTTP ${childResponse.status})`);
+    }
+    const childXml = await childResponse.text();
+    for (const loc of extractUrlsetLocs(childXml)) acceptPage(loc);
+  }
+
+  if (skipped > 0) {
+    warn(`IndexNow skipped ${skipped} sitemap locs outside https://${INDEXNOW_HOST}`);
+  }
+  return urls;
+}
+
+/**
  * @param {string} key
  * @param {string[]} urlList
  */
@@ -244,6 +327,8 @@ export async function submitIndexNowBatches(options) {
  * @param {string} [options.publicDir]
  * @param {string[]} [options.urls]
  * @param {boolean} [options.dryRun]
+ * @param {boolean} [options.live]
+ * @param {string} [options.sitemapUrl]
  * @param {NodeJS.ProcessEnv} [options.env]
  * @param {typeof fetch} [options.fetchImpl]
  * @param {(message: string) => void} [options.log]
@@ -253,19 +338,28 @@ export async function notifyIndexNow(options = {}) {
   const log = options.log || console.log;
   const warn = options.warn || console.error;
   const dryRun = options.dryRun ?? isIndexNowDryRun(options.env);
+  const live = options.live ?? isIndexNowLive(options.env, options.argv);
   const publicDir =
     options.publicDir || path.resolve(__dirname, "../../../public");
+  const fetchImpl = options.fetchImpl || fetch;
 
   try {
     const { key, keyLocation } = loadIndexNowKey(publicDir);
-    const urls = options.urls || collectSitemapUrls(publicDir, warn);
+    const urls =
+      options.urls ||
+      (live
+        ? await collectLiveSitemapUrls(fetchImpl, warn, options.sitemapUrl)
+        : collectSitemapUrls(publicDir, warn));
+    if (live) {
+      log(`IndexNow: read live sitemap ${options.sitemapUrl || LIVE_SITEMAP_URL}`);
+    }
     log(
       `IndexNow: ${urls.length} URLs, host ${INDEXNOW_HOST}, keyLocation ${keyLocation}`,
     );
     return await submitIndexNowBatches({
       key,
       urls,
-      fetchImpl: options.fetchImpl,
+      fetchImpl,
       log,
       warn,
       dryRun,

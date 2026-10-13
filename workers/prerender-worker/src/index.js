@@ -169,6 +169,7 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
         route.id,
         env.TMDB_API_KEY,
         fetchImpl,
+        { includeSimilar: route.pathname === "/movie-info" && route.type !== "person" },
       );
       if (result.data) {
         return withKind(

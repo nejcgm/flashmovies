@@ -4,7 +4,7 @@
  *
  * Skip the POST (still logs batch sizes) with INDEXNOW_DRY_RUN=1 or INDEXNOW_SKIP=1.
  */
-import { isIndexNowDryRun, notifyIndexNow } from "./lib/indexnow.js";
+import { isIndexNowDryRun, isIndexNowLive, notifyIndexNow } from "./lib/indexnow.js";
 
 function logFailure(error) {
   const message = error instanceof Error ? error.message : String(error);
@@ -21,7 +21,7 @@ process.on("unhandledRejection", (error) => {
   process.exit(0);
 });
 
-notifyIndexNow({ dryRun: isIndexNowDryRun() })
+notifyIndexNow({ dryRun: isIndexNowDryRun(), live: isIndexNowLive() })
   .catch((error) => {
     logFailure(error);
   })
