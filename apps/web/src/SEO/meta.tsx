@@ -32,6 +32,7 @@ export function Meta({
   }, []);
 
   const [savedTitle, setSavedTitle] = useState<string>()
+  // Keep in sync with HOME_PAGE_TITLE in utils/gaPageView.ts.
   const defaultTitle = "Flash Movies — Watch Free Movies & TV Shows Online";
   const defaultDescription =
     "Flash Movies (flashmovies.xyz) is a free movie and TV streaming website. Watch movies and TV shows online in HD — browse popular and trending titles, explore details and cast, and start watching with no subscription required.";

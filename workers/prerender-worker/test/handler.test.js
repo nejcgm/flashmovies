@@ -371,11 +371,18 @@ describe("worker request handling", () => {
     assert.match(html, /Browse movies by genre/);
     assert.match(html, /aria-label="Site menu"/);
     assert.match(html, /Popular titles/);
-    assert.match(html, /The Whisper Man/);
-    assert.match(html, /movie-info\?type=movie&amp;id=860508/);
+    assert.match(html, /Resident Evil/);
+    assert.match(html, /Spider-Man: Brand New Day/);
+    assert.match(html, /The End of Oak Street/);
+    assert.match(html, /Obsession/);
+    assert.match(html, /Digger/);
+    assert.match(html, /The Odyssey/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1423191/);
     assert.match(html, /movie-info\?type=movie&amp;id=969681/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1101383/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1339713/);
+    assert.match(html, /movie-info\?type=movie&amp;id=1248832/);
     assert.match(html, /movie-info\?type=movie&amp;id=1368337/);
-    assert.match(html, /movie-info\?type=movie&amp;id=1386315/);
     assert.doesNotMatch(html, /Affiliate Site Verification/);
     assert.equal(first.headers.get("x-crawler-cache"), "MISS");
 
@@ -573,6 +580,6 @@ describe("worker request handling", () => {
 
   it("bumps CACHE_KEY_VERSION so similar-title HTML replaces cached crawler pages", () => {
     const toml = readFileSync(join(__dirname, "../wrangler.toml"), "utf8");
-    assert.match(toml, /CACHE_KEY_VERSION = "6"/);
+    assert.match(toml, /CACHE_KEY_VERSION = "7"/);
   });
 });
