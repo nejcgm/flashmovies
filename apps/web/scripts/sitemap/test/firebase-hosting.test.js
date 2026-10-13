@@ -1,11 +1,13 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
+import { loadIndexNowKey } from "../lib/indexnow.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const firebasePath = path.resolve(__dirname, "../../../firebase.json");
+const publicDir = path.resolve(__dirname, "../../../public");
 
 describe("firebase hosting sitemap config", () => {
   const config = JSON.parse(readFileSync(firebasePath, "utf8"));
@@ -57,5 +59,20 @@ describe("firebase hosting sitemap config", () => {
       source: "**",
       destination: "/index.html",
     });
+  });
+
+  it("serves the IndexNow key file as text/plain from public/", () => {
+    const { filename } = loadIndexNowKey(publicDir);
+    const keyPath = path.join(publicDir, filename);
+    assert.equal(existsSync(keyPath), true);
+
+    const rule = (hosting.headers || []).find((entry) => entry.source === `/${filename}`);
+    assert.ok(rule, "missing IndexNow key header");
+    const contentType = (rule.headers || []).find((header) => header.key === "Content-Type");
+    assert.equal(contentType?.value, "text/plain; charset=utf-8");
+
+    const rewriteSources = (hosting.rewrites || []).map((rule) => rule.source);
+    assert.equal(rewriteSources.includes(`/${filename}`), false);
+    assert.equal(rewriteSources.at(-1), "**");
   });
 });

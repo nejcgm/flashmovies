@@ -1,12 +1,18 @@
 import assert from "node:assert/strict";
+import { readdirSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 import {
   canonicalUrl,
   IGNORE_EXTENSIONS,
+  isIndexNowKeyPath,
   parseRoute,
   shouldBypass,
   trailingSlashSitemapRedirect,
 } from "../src/routes.js";
+
+const publicDir = join(dirname(fileURLToPath(import.meta.url)), "../../../apps/web/public");
 
 describe("routes", () => {
   it("parses movie, TV, and person detail URLs", () => {
@@ -67,6 +73,16 @@ describe("routes", () => {
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/flash-movies-logo.png")), true);
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/movie-info?type=movie&id=550")), false);
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/full-movie?type=movie&id=550")), false);
+  });
+
+  it("bypasses the IndexNow key file for every crawler path check", () => {
+    const filename = readdirSync(publicDir).find((name) => isIndexNowKeyPath(`/${name}`));
+    assert.ok(filename, "missing IndexNow key file in apps/web/public");
+    assert.equal(shouldBypass(new URL(`https://flashmovies.xyz/${filename}`)), true);
+    assert.equal(isIndexNowKeyPath("/robots.txt"), false);
+    assert.equal(isIndexNowKeyPath("/short.txt"), false);
+    assert.equal(isIndexNowKeyPath(`/${filename}/`), false);
+    assert.equal(isIndexNowKeyPath(`/sitemaps/${filename}`), false);
   });
 
   it("301s trailing-slash sitemap URLs to the real XML file", () => {
