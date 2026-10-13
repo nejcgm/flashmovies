@@ -32,6 +32,7 @@ import { popularTitlesSection } from "./popular-titles.js";
  * @property {string} heading
  * @property {string[]} paragraphs
  * @property {Array<{ href: string, text: string }>} [links]
+ * @property {Array<{ href: string, text: string }>} [similarTitles]
  * @property {Array<{ title: string, links: Array<{ href: string, text: string }> }>} [navSections]
  * @property {object[]} jsonLd
  * @property {Array<{ question: string, answer: string }>} [faq]
@@ -181,6 +182,61 @@ function castNames(credits, limit = 8) {
   return cast.slice(0, limit).map((c) => c.name).filter(Boolean);
 }
 
+/** Recommendations first, then similar, capped so each info page adds a small crawl fan-out. */
+export const SIMILAR_TITLES_MAX = 12;
+
+function appendedResults(block) {
+  return Array.isArray(block?.results) ? block.results : [];
+}
+
+function similarLinkText(item) {
+  return [item?.title, item?.name, item?.original_title, item?.original_name]
+    .map((value) => String(value || "").trim())
+    .find(Boolean) || "";
+}
+
+/**
+ * Internal links for crawler HTML on `/movie-info` movie and TV pages
+ * (the movie-info and tv-info sitemaps). Same canonical shape as the SPA:
+ * `/movie-info?type=movie&id=…`. Watch pages and people get none.
+ *
+ * @param {object} data
+ * @param {{ pathname?: string, type?: string, id?: string }} route
+ * @returns {Array<{ href: string, text: string }>}
+ */
+export function similarTitleLinks(data, route) {
+  if (route?.pathname !== "/movie-info") return [];
+  if (route.type !== "movie" && route.type !== "tv") return [];
+
+  const seen = new Set([`${route.type}:${String(route.id)}`]);
+  const links = [];
+  const candidates = [
+    ...appendedResults(data?.recommendations),
+    ...appendedResults(data?.similar),
+  ];
+
+  for (const item of candidates) {
+    if (links.length >= SIMILAR_TITLES_MAX) break;
+    if (!item || item.adult === true) continue;
+    if (item.media_type && item.media_type !== "movie" && item.media_type !== "tv") continue;
+    if (item.id == null || !/^\d+$/.test(String(item.id))) continue;
+    const type = item.media_type === "movie" || item.media_type === "tv" ? item.media_type : route.type;
+    const id = String(item.id);
+    const key = `${type}:${id}`;
+    if (seen.has(key)) continue;
+    if (isBlockedTitle(type, id)) continue;
+    const text = similarLinkText(item);
+    if (!text) continue;
+    seen.add(key);
+    links.push({
+      href: `/movie-info?type=${type}&id=${id}`,
+      text,
+    });
+  }
+
+  return links;
+}
+
 /**
  * @param {object} opts
  */
@@ -311,6 +367,7 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
         : [{ href: infoUrl.replace(siteOrigin, "") || infoUrl, text: `${display} profile` }]),
       { href: "/", text: "Flash Movies — watch movies & TV online" },
     ],
+    similarTitles: similarTitleLinks(data, route),
     jsonLd,
   };
 }
@@ -411,6 +468,20 @@ function renderFaq(faq) {
   return `\n    <section aria-labelledby="home-faq">\n      <h2 id="home-faq">Frequently asked questions</h2>\n${items}\n    </section>`;
 }
 
+/**
+ * @param {Array<{ href: string, text: string }> | undefined} links
+ */
+function renderSimilarTitles(links) {
+  if (!links?.length) return "";
+  const items = links
+    .map(
+      (link) =>
+        `      <li><a href="${escapeHtml(link.href)}">${escapeHtml(link.text)}</a></li>`,
+    )
+    .join("\n");
+  return `\n    <nav aria-label="Similar titles">\n      <h2>Similar titles</h2>\n      <ul>\n${items}\n      </ul>\n    </nav>`;
+}
+
 function renderNavSections(sections) {
   return sections
     .map((section) => {
@@ -449,6 +520,7 @@ export function renderHtml(page, siteOrigin) {
   const pageLinksNav = links
     ? `\n    <nav aria-label="Related titles">\n      <ul>\n${links}\n      </ul>\n    </nav>`
     : "";
+  const similarNav = renderSimilarTitles(page.similarTitles);
   const siteNav = renderNavSections(crawlerMenuSections());
   const faqSection = renderFaq(page.faq);
 
@@ -490,7 +562,7 @@ export function renderHtml(page, siteOrigin) {
       <h1>${escapeHtml(page.heading)}</h1>
     </header>
     <main>
-${paragraphs}${faqSection}${mainNavSections}${pageLinksNav}
+${paragraphs}${faqSection}${mainNavSections}${pageLinksNav}${similarNav}
     </main>
     <footer>
       <nav aria-label="Site menu">
