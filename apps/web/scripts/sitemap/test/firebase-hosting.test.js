@@ -53,12 +53,18 @@ describe("firebase hosting sitemap config", () => {
     assert.equal(pattern.test("/index.html"), false);
   });
 
-  it("keeps the SPA catch-all rewrite after redirects", () => {
+  it("rewrites client routes to the SPA and leaves missing assets as 404s", () => {
     const rewrites = hosting.rewrites || [];
     assert.deepEqual(rewrites[rewrites.length - 1], {
-      source: "**",
+      source: "!/assets/**",
       destination: "/index.html",
     });
+    assert.equal(
+      rewrites.some((rule) => rule.source === "**"),
+      false,
+      "a ** rewrite serves index.html for missing /assets/*.js and gets cached as JavaScript",
+    );
+    assert.equal(existsSync(path.join(publicDir, "404.html")), true);
   });
 
   it("serves the IndexNow key file as text/plain from public/", () => {
@@ -73,6 +79,6 @@ describe("firebase hosting sitemap config", () => {
 
     const rewriteSources = (hosting.rewrites || []).map((rule) => rule.source);
     assert.equal(rewriteSources.includes(`/${filename}`), false);
-    assert.equal(rewriteSources.at(-1), "**");
+    assert.equal(rewriteSources.at(-1), "!/assets/**");
   });
 });

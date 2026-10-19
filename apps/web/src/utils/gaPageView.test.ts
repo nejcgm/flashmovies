@@ -5,9 +5,8 @@ import {
   createPageViewModel,
   dispatchPageView,
   fallbackPageTitle,
+  gtagWillRunCommand,
   historyChangeEventName,
-  isLegacyGtagCommand,
-  markGtagCommand,
   suppressAutomaticHistoryPageViews,
   toPageLocation,
   withActivePageParams,
@@ -17,13 +16,12 @@ import {
 const ORIGIN = "https://flashmovies.xyz";
 
 describe("gtag command shape", () => {
-  it("marks arrays so gtag.js will not ignore them", () => {
+  it("does not treat an array as a command, even with callee set", () => {
     const plain = ["event", "page_view", { page_title: "Home" }];
-    assert.equal(isLegacyGtagCommand(plain), false);
-    const command = markGtagCommand(plain);
-    assert.equal(isLegacyGtagCommand(command), true);
-    assert.equal(command[0], "event");
-    assert.equal((command[2] as { page_title: string }).page_title, "Home");
+    assert.equal(gtagWillRunCommand(plain), false);
+    Object.defineProperty(plain, "callee", { value: function mark() {} });
+    assert.equal(Object.prototype.hasOwnProperty.call(plain, "callee"), true);
+    assert.equal(gtagWillRunCommand(plain), false);
   });
 });
 
@@ -204,6 +202,7 @@ describe("dispatchPageView", () => {
       addEventListener() {},
     } as unknown as Window;
     target.document = {
+      title: "",
       createElement() {
         return { addEventListener() {} };
       },
@@ -218,7 +217,15 @@ describe("dispatchPageView", () => {
       "G-TEST",
     );
 
-    const commands = queued.filter(isLegacyGtagCommand) as unknown[][];
+    const commands = queued.filter(gtagWillRunCommand) as unknown[][];
+    assert.equal(commands.length, 3);
+    for (const command of commands) {
+      assert.equal(Array.isArray(command), false);
+      assert.equal(
+        Object.prototype.toString.call(command),
+        "[object Arguments]",
+      );
+    }
     assert.deepEqual(
       commands.map((command) => command[0]),
       ["js", "config", "event"],
@@ -229,6 +236,21 @@ describe("dispatchPageView", () => {
     );
     assert.equal(commands[2][1], "page_view");
     assert.deepEqual(commands[2][2], {
+      page_title: HOME_PAGE_TITLE,
+      page_location: "https://flashmovies.xyz/",
+    });
+    assert.equal(target.document.title, HOME_PAGE_TITLE);
+
+    const gtag = (target.window as Window & { gtag?: (...args: unknown[]) => void })
+      .gtag;
+    assert.equal(typeof gtag, "function");
+    gtag?.("event", "affiliate_click", { link_url: "https://example.test/a" });
+    const after = queued.filter(gtagWillRunCommand) as unknown[][];
+    assert.equal(after.length, 4);
+    assert.equal(Array.isArray(after[3]), false);
+    assert.equal(after[3][1], "affiliate_click");
+    assert.deepEqual(after[3][2], {
+      link_url: "https://example.test/a",
       page_title: HOME_PAGE_TITLE,
       page_location: "https://flashmovies.xyz/",
     });

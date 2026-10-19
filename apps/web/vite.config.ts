@@ -30,7 +30,11 @@ export default defineConfig({
       output: {
         manualChunks: {
           router: ['react-router-dom'],
-          utils: ['axios'],
+          // Renamed from `utils` so browsers stop requesting
+          // /assets/utils-BCn5QfZZ.js. That URL's CORS cache entry is
+          // index.html, stored as immutable JavaScript since 2 Sep 2026,
+          // which prevents the SPA (and therefore GA) from booting.
+          axios: ['axios'],
         },
       },
     },
