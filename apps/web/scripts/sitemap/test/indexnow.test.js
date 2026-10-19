@@ -58,7 +58,6 @@ describe("IndexNow submission", () => {
       "npm run build:sitemap-index && firebase deploy --only hosting && node scripts/sitemap/notify-indexnow.js",
     );
     assert.equal(pkg.scripts.indexnow, "node scripts/sitemap/notify-indexnow.js --live");
-    assert.equal(typeof pkg.scripts["test:analytics"], "string");
     assert.match(pkg.scripts["sync:sitemap"], new RegExp(`cp public/${filename} dist/`));
     const readme = readFileSync(path.join(webRoot, "README.md"), "utf8");
     assert.match(readme, new RegExp(filename));
