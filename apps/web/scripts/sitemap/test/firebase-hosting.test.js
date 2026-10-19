@@ -53,12 +53,44 @@ describe("firebase hosting sitemap config", () => {
     assert.equal(pattern.test("/index.html"), false);
   });
 
-  it("keeps the SPA catch-all rewrite after redirects", () => {
+  it("rewrites unknown routes to index.html but never /assets/**", () => {
     const rewrites = hosting.rewrites || [];
-    assert.deepEqual(rewrites[rewrites.length - 1], {
-      source: "**",
-      destination: "/index.html",
-    });
+    const spa = rewrites.filter((rule) => rule.destination === "/index.html");
+    assert.deepEqual(spa, [
+      {
+        source: "!/assets/**",
+        destination: "/index.html",
+      },
+    ]);
+    assert.equal(
+      rewrites.some((rule) => rule.source === "**" || rule.source === "/assets/**"),
+      false,
+    );
+  });
+
+  it("caches HTML for an hour and hashed assets as immutable", () => {
+    const headers = hosting.headers || [];
+    const headerValue = (source, key) => {
+      const rule = headers.find((entry) => entry.source === source);
+      assert.ok(rule, `missing header rule ${source}`);
+      return (rule.headers || []).find((header) => header.key === key)?.value;
+    };
+
+    assert.equal(headerValue("**/*.html", "Cache-Control"), "max-age=3600");
+    assert.equal(headerValue("**/*.html", "Content-Type"), "text/html; charset=utf-8");
+    assert.doesNotMatch(headerValue("**/*.html", "Cache-Control"), /immutable/);
+
+    assert.equal(headerValue("/assets/**", "Cache-Control"), "max-age=31536000, immutable");
+    assert.equal(headerValue("**/*.js", "Cache-Control"), undefined);
+    assert.equal(headerValue("**/*.css", "Cache-Control"), undefined);
+    assert.match(headerValue("**/*.js", "Content-Type"), /javascript/);
+    assert.match(headerValue("**/*.css", "Content-Type"), /text\/css/);
+
+    assert.equal(headerValue("404.html", "Cache-Control"), "no-store");
+    assert.equal(headerValue("404.html", "Content-Type"), "text/html; charset=utf-8");
+    const sources = headers.map((entry) => entry.source);
+    assert.ok(sources.indexOf("404.html") > sources.indexOf("/assets/**"));
+    assert.ok(sources.indexOf("404.html") > sources.indexOf("**/*.html"));
   });
 
   it("serves the IndexNow key file as text/plain from public/", () => {
@@ -73,6 +105,6 @@ describe("firebase hosting sitemap config", () => {
 
     const rewriteSources = (hosting.rewrites || []).map((rule) => rule.source);
     assert.equal(rewriteSources.includes(`/${filename}`), false);
-    assert.equal(rewriteSources.at(-1), "**");
+    assert.equal(rewriteSources.at(-1), "!/assets/**");
   });
 });

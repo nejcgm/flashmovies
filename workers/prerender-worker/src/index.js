@@ -17,6 +17,7 @@ import {
   shouldBypass,
   trailingSlashSitemapRedirect,
 } from "./routes.js";
+import { fetchGuardedAsset, isAssetPath } from "./assets.js";
 import { fetchTmdbDetails, fetchTmdbList } from "./tmdb.js";
 
 const CACHE_HOST = "https://crawler-html.flashmovies.xyz";
@@ -308,6 +309,9 @@ export async function handleRequest(request, env, ctx, deps = {}) {
   }
 
   if (shouldBypass(url) || !isCrawlerRequest(request)) {
+    if (isAssetPath(url.pathname)) {
+      return fetchGuardedAsset(request, env, fetchImpl, fetchOrigin);
+    }
     return fetchOrigin(request, env, fetchImpl);
   }
 
