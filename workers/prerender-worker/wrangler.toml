@@ -30,6 +30,10 @@ HOME_CACHE_TTL_SECONDS = "86400"
 # Bump when crawler HTML shape changes (invalidates Cache API entries),
 # including each monthly edit of src/popular-titles.json.
 CACHE_KEY_VERSION = "7"
+# Firebase Hosting behind the custom domain. Used only when a cached
+# /assets response is HTML (or an error), so the worker can load the
+# object that is actually in the current deploy.
+ASSET_ORIGIN = "https://moviestream-14d2b.web.app"
 
 # TMDB_API_KEY is a secret (same string as apps/web VITE_API_KEY):
 #   npx wrangler secret put TMDB_API_KEY

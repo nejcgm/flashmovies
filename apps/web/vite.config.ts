@@ -30,7 +30,10 @@ export default defineConfig({
       output: {
         manualChunks: {
           router: ['react-router-dom'],
-          utils: ['axios'],
+          // The chunk name is part of the URL. The previous `utils-*.js`
+          // name is cached as HTML on Cloudflare; the next web deploy has
+          // to request a different filename so those browsers refetch.
+          axios: ['axios'],
         },
       },
     },
