@@ -30,10 +30,9 @@ export default defineConfig({
       output: {
         manualChunks: {
           router: ['react-router-dom'],
-          // Renamed from `utils` so browsers stop requesting
-          // /assets/utils-BCn5QfZZ.js. That URL's CORS cache entry is
-          // index.html, stored as immutable JavaScript since 2 Sep 2026,
-          // which prevents the SPA (and therefore GA) from booting.
+          // The chunk name is part of the URL. The previous `utils-*.js`
+          // name is cached as HTML on Cloudflare; the next web deploy has
+          // to request a different filename so those browsers refetch.
           axios: ['axios'],
         },
       },
