@@ -270,50 +270,56 @@ function dataLayer(): unknown[] {
 }
 
 /**
- * gtag.js accepts a real array as a command only when it has a `callee`
- * property (the same check it uses for `arguments` objects). A plain array
- * is ignored and the hit never sends.
+ * True when gtag.js will execute this dataLayer entry as a command
+ * (`js` / `config` / `event`). A real Array is not a command: the
+ * library checks `Array.isArray` first and treats those entries as
+ * function calls, even if a `callee` property was added to imitate
+ * `arguments`.
  */
-export function markGtagCommand(args: unknown[]): unknown[] {
-  Object.defineProperty(args, "callee", { value: markGtagCommand });
-  return args;
-}
-
-export function isLegacyGtagCommand(value: unknown): boolean {
-  if (!value || typeof value !== "object") return false;
-  return (
+export function gtagWillRunCommand(value: unknown): boolean {
+  if (Array.isArray(value) || value == null || typeof value !== "object") {
+    return false;
+  }
+  const command = value as { length?: number; 0?: unknown };
+  const isArguments =
     Object.prototype.toString.call(value) === "[object Arguments]" ||
-    Object.prototype.hasOwnProperty.call(value, "callee")
-  );
+    Object.prototype.hasOwnProperty.call(value, "callee");
+  return Boolean(isArguments && command.length && typeof command[0] === "string");
 }
 
-function pushGtag(...args: unknown[]): void {
-  dataLayer().push(markGtagCommand(args));
-}
+/**
+ * Queue one gtag command as this function's `arguments` object.
+ * Built with `new Function` so the bundler cannot rewrite it into an
+ * array push. gtag.js ignores arrays (the `callee` workaround included).
+ */
+const queueGtag = new Function(
+  "window.dataLayer = window.dataLayer || []; window.dataLayer.push(arguments);",
+) as (...parts: unknown[]) => void;
 
 function installGtagFunction(): void {
   if (typeof window.gtag === "function") return;
-  const gtag = (...args: unknown[]) => {
-    const [command, target, params] = args;
+  const gtag = (
+    command: string,
+    target?: string | Date,
+    params?: Record<string, unknown>,
+  ) => {
     if (
       command === "event" &&
       typeof target === "string" &&
       target !== "page_view"
     ) {
-      pushGtag(
+      queueGtag(
         "event",
         target,
-        withActivePageParams(
-          target,
-          params as Record<string, unknown> | undefined,
-          getActivePage(),
-        ),
+        withActivePageParams(target, params, getActivePage()),
       );
       return;
     }
-    pushGtag(...args);
+    if (params !== undefined) queueGtag(command, target, params);
+    else if (target !== undefined) queueGtag(command, target);
+    else queueGtag(command);
   };
-  window.gtag = gtag as Window["gtag"];
+  window.gtag = gtag;
 }
 
 function bindPageHide(measurementId: string): void {
@@ -386,8 +392,8 @@ export function ensureGaConfig(measurementId: string = GA_MEASUREMENT_ID): void 
   configured = true;
   // `js` then `config` must be queued before the library runs. Page views are
   // queued after this and before the script is inserted.
-  pushGtag("js", new Date());
-  pushGtag("config", measurementId, { send_page_view: false });
+  queueGtag("js", new Date());
+  queueGtag("config", measurementId, { send_page_view: false });
 }
 
 export function dispatchPageView(
@@ -402,7 +408,13 @@ export function dispatchPageView(
     page_location: command.page_location,
   };
   if (command.page_referrer) params.page_referrer = command.page_referrer;
-  pushGtag("event", "page_view", params);
+  // Enhanced measurement (scroll, for example) reads document.title. The
+  // manual page_view already carries page_title, but those automatic hits
+  // do not. Fill a blank title before gtag.js loads.
+  if (typeof document !== "undefined" && !document.title.trim()) {
+    document.title = command.page_title;
+  }
+  queueGtag("event", "page_view", params);
   // Load gtag.js only after the page_view is queued so it is processed before
   // enhanced-measurement events from this startup.
   armGaScript(measurementId);

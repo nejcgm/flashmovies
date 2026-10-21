@@ -16,8 +16,10 @@ interface AnalyticsProps {
  * Sends one GA4 page_view per location after the route title is known.
  * The gtag snippet used to run from Helmet on the first commit, while
  * index.html has no <title> and lazy routes had not mounted, so the hit
- * stored an empty page_title. History page views from the GA4 stream are
- * suppressed once gtag.js loads so those are not counted twice.
+ * stored an empty page_title. Commands are queued as `arguments` objects:
+ * gtag.js does not execute real arrays, so an array page_view never
+ * reaches collect. History page views from the GA4 stream are suppressed
+ * once gtag.js loads so those are not counted twice.
  */
 export function Analytics({
   measurementId = GA_MEASUREMENT_ID,
