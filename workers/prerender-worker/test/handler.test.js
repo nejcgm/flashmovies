@@ -388,8 +388,8 @@ describe("worker request handling", () => {
       "utf8",
     );
     const app = readFileSync(join(__dirname, "../../../apps/web/src/App.tsx"), "utf8");
-    assert.match(watchPage, /<meta name="robots" content="noindex, follow" \/>/);
-    assert.match(watchPage, /robots="noindex, follow"/);
+    assert.doesNotMatch(watchPage, /Helmet/);
+    assert.equal((watchPage.match(/robots="noindex, follow"/g) || []).length, 4);
     assert.match(app, /path="\/full-movie"/);
     assert.doesNotMatch(app, /movie-watch|tv-watch/);
   });

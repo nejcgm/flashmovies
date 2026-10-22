@@ -33,7 +33,7 @@ export function MovieCard({
 
   const handleCardClick = () => {
     redirectForMovie(ClickTypeEnum.MOVIE_CARD, title, movieId, incrementClick, isPro);
-    navigate(`/movie-info/?id=${movieId}&type=${type}`);
+    navigate(`/movie-info?id=${movieId}&type=${type}`);
   };
 
   return (

@@ -37,12 +37,40 @@ function buildPageQuery(page: number | string | null | undefined): string {
   return Number.isFinite(pageNum) && pageNum > 0 ? `&page=${pageNum}` : "";
 }
 
+export class TmdbRequestError extends Error {
+  readonly status: number | null;
+
+  constructor(status: number | null) {
+    super("TMDB request failed");
+    this.name = "TmdbRequestError";
+    this.status = status;
+  }
+}
+
+export type TmdbFailureKind = "not_found" | "retryable";
+
+/** 404 and other invalid id/type responses. Everything else can be retried. */
+export function tmdbFailureKind(error: unknown): TmdbFailureKind {
+  if (error instanceof TmdbRequestError) {
+    const status = error.status;
+    if (status === 400 || status === 404 || status === 422) return "not_found";
+  }
+  return "retryable";
+}
+
 async function tmdbGet<T>(url: string): Promise<T | null> {
-  const response: AxiosResponse<T> = await axios.request({
-    url,
-    ...tmdbRequestOptions,
-  });
-  return response.data ?? null;
+  try {
+    const response: AxiosResponse<T> = await axios.request({
+      url,
+      ...tmdbRequestOptions,
+    });
+    return response.data ?? null;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new TmdbRequestError(error.response?.status ?? null);
+    }
+    throw new TmdbRequestError(null);
+  }
 }
 
 export function fetchSpecific(

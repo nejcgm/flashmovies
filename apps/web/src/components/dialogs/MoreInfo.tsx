@@ -71,7 +71,7 @@ export function MoreInfo({
                         type="button"
                         className="shrink-0"
                         onClick={() => {
-                          navigate(`/movie-info/?id=${movieId}&type=${type}`);
+                          navigate(`/movie-info?id=${movieId}&type=${type}`);
                           onCancel();
                         }}
                       >
@@ -87,7 +87,7 @@ export function MoreInfo({
                             type="button"
                             className="min-w-0 flex-1 text-left font-bold text-[18px] sm:text-[24px]"
                             onClick={() => {
-                              navigate(`/movie-info/?id=${movieId}&type=${type}`);
+                              navigate(`/movie-info?id=${movieId}&type=${type}`);
                               onCancel();
                             }}
                           >
@@ -149,7 +149,7 @@ export function MoreInfo({
                     <div className="flex gap-3 font-semibold">
                       <button
                         onClick={() => {
-                          navigate(`/full-movie/?id=${movieId}&type=${type}`);
+                          navigate(`/full-movie?id=${movieId}&type=${type}`);
                           redirectForMovie(ClickTypeEnum.MOVIE_CARD, info.title, movieId, incrementClick, isPro);
                         }}
                         className="mb-[32px] items-center gap-1 justify-center flex text-[12px] sm:text-[14px] font-robo text-[#5799F0] bg-[#2C2C2C]
