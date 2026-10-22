@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   ASYNC_TITLE_WAIT_MS,
+  FAQ_PAGE_TITLE,
   HOME_PAGE_TITLE,
   NOT_FOUND_PAGE_TITLE,
+  TERMS_PAGE_TITLE,
   createPageViewModel,
   dispatchPageView,
   fallbackPageTitle,
@@ -124,6 +126,24 @@ describe("fallbackPageTitle", () => {
     assert.equal(
       fallbackPageTitle("/missing", ""),
       "404 - Page Not Found | Flash Movies",
+    );
+  });
+
+  it("uses the same FAQ and Terms strings as those pages' Meta titles", () => {
+    assert.equal(FAQ_PAGE_TITLE, "Frequently Asked Questions — Flash Movies");
+    assert.equal(TERMS_PAGE_TITLE, "Terms and Conditions — Flash Movies");
+    assert.equal(
+      fallbackPageTitle("/frequently-asked-questions", ""),
+      FAQ_PAGE_TITLE,
+    );
+    assert.equal(
+      fallbackPageTitle("/Frequently-Asked-Questions/", ""),
+      FAQ_PAGE_TITLE,
+    );
+    assert.equal(fallbackPageTitle("/terms-and-conditions", ""), TERMS_PAGE_TITLE);
+    assert.equal(
+      fallbackPageTitle("/Terms-And-Conditions/", ""),
+      TERMS_PAGE_TITLE,
     );
   });
 });

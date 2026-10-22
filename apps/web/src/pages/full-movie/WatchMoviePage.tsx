@@ -14,15 +14,13 @@ import {
   fallbackPageTitle,
   signalDetailTitle,
 } from "../../utils/gaPageView.ts";
-
-const WATCH_TYPES = new Set(["movie", "tv"]);
-const BLOCKED_MOVIE_ID = "1439112";
+import {
+  isWatchableTitle,
+  resetWatchPlayback,
+  seasonEpisodeForProvider,
+} from "./watchPlayback.ts";
 
 type DetailStatus = "loading" | "ready" | "not_found" | "error";
-
-function isBlockedMovie(movieId: string | null, type: string | null): boolean {
-  return movieId === BLOCKED_MOVIE_ID && type === "movie";
-}
 
 function watchDocumentTitle(info: TmdbMediaDetails): string {
   return `Watch ${mediaDisplayTitle(info)}${mediaYearSuffixSpaced(
@@ -42,22 +40,35 @@ export function WatchMoviePage() {
   const [attempt, setAttempt] = useState(0);
   const movieId = searchParams.get("id");
   const type = searchParams.get("type");
+  const titleKey = `${type ?? ""}:${movieId ?? ""}`;
+  const [playbackKey, setPlaybackKey] = useState(titleKey);
+  if (playbackKey !== titleKey) {
+    setPlaybackKey(titleKey);
+    const reset = resetWatchPlayback(isWatchableTitle(movieId, type));
+    setCurrentProviderUrl(reset.currentProviderUrl);
+    setSelectedEpisode(reset.selectedEpisode);
+    setInfo(reset.info);
+    setStatus(reset.status);
+  }
 
   useEffect(() => {
+    const reset = resetWatchPlayback(isWatchableTitle(movieId, type));
+    setCurrentProviderUrl(reset.currentProviderUrl);
+    setSelectedEpisode(reset.selectedEpisode);
+    setInfo(reset.info);
+
     const report = (next: DetailStatus, title: string) => {
       setStatus(next);
       signalDetailTitle(pathname, search, title);
     };
 
-    if (!movieId || !type || !WATCH_TYPES.has(type) || isBlockedMovie(movieId, type)) {
-      setInfo(undefined);
+    if (!movieId || !type || !isWatchableTitle(movieId, type)) {
       report("not_found", NOT_FOUND_PAGE_TITLE);
       return;
     }
 
     let cancelled = false;
-    setStatus("loading");
-    setInfo(undefined);
+    setStatus(reset.status);
 
     const loadInfo = async () => {
       try {
@@ -109,17 +120,12 @@ export function WatchMoviePage() {
 
   const applyProvider = useCallback(
     (url: string, isEpisodeSlugPartOfSlug: boolean, params?: string) => {
+      const { season, episode } = seasonEpisodeForProvider(selectedEpisode);
       setCurrentProviderUrl(
-        buildFullUrl(
-          url,
-          isEpisodeSlugPartOfSlug,
-          selectedEpisode?.season_number,
-          selectedEpisode?.episode_number,
-          params,
-        ),
+        buildFullUrl(url, isEpisodeSlugPartOfSlug, season, episode, params),
       );
     },
-    [buildFullUrl, selectedEpisode?.episode_number, selectedEpisode?.season_number],
+    [buildFullUrl, selectedEpisode],
   );
 
   if (status === "not_found") {
@@ -203,13 +209,15 @@ export function WatchMoviePage() {
 
           <div className="mx-auto w-full max-w-[1200px] space-y-4 sm:space-y-5">
             <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-black shadow-lg shadow-black/40 xl:aspect-[2/1]">
-              <iframe
-                className="absolute inset-0 h-full w-full border-0"
-                src={currentProviderUrl}
-                title={`Watch ${displayName || "video"}`}
-                referrerPolicy="origin"
-                allowFullScreen
-              />
+              {currentProviderUrl ? (
+                <iframe
+                  className="absolute inset-0 h-full w-full border-0"
+                  src={currentProviderUrl}
+                  title={`Watch ${displayName || "video"}`}
+                  referrerPolicy="origin"
+                  allowFullScreen
+                />
+              ) : null}
             </div>
 
             {info.number_of_seasons ? (

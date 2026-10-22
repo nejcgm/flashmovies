@@ -11,6 +11,10 @@ export const ASYNC_TITLE_WAIT_MS = 10000;
 
 export const NOT_FOUND_PAGE_TITLE = "404 - Page Not Found | Flash Movies";
 
+/** Shared by `fallbackPageTitle` and the FAQ / Terms `<Meta>` titles. */
+export const FAQ_PAGE_TITLE = "Frequently Asked Questions — Flash Movies";
+export const TERMS_PAGE_TITLE = "Terms and Conditions — Flash Movies";
+
 const ASYNC_TITLE_PATHS = new Set(["/movie-info", "/full-movie"]);
 
 /**
@@ -121,11 +125,11 @@ export function fallbackPageTitle(pathname: string, search: string): string {
     case "/watchlist":
       return "My Watchlist - Flash Movies";
     case "/terms-and-conditions":
-      return "Terms and Conditions — Flash Movies";
+      return TERMS_PAGE_TITLE;
     case "/pro-plan-terms-and-conditions":
       return "Pro Plan Terms — Flash Movies";
     case "/frequently-asked-questions":
-      return "Frequently Asked Questions — Flash Movies";
+      return FAQ_PAGE_TITLE;
     case "/auth/login":
       return "Login — Flash Movies";
     case "/auth/register":
