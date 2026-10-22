@@ -59,6 +59,6 @@ describe("popular titles chrome", () => {
 
   it("bumps the worker cache key with the title refresh", () => {
     const toml = readFileSync(join(__dirname, "../wrangler.toml"), "utf8");
-    assert.match(toml, /^CACHE_KEY_VERSION = "7"$/m);
+    assert.match(toml, /^CACHE_KEY_VERSION = "8"$/m);
   });
 });

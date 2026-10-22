@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { Helmet } from "react-helmet-async";
 import { Meta } from "../../SEO";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchSpecific } from "../../client/tmdb.js";
@@ -80,8 +81,12 @@ export function WatchMoviePage() {
 
   return (
     <>
+      <Helmet>
+        <meta name="robots" content="noindex, follow" />
+      </Helmet>
       {info && (
         <Meta
+          robots="noindex, follow"
           title={`Watch ${displayName}${mediaYearSuffixSpaced(
             info.release_date,
             info.first_air_date,

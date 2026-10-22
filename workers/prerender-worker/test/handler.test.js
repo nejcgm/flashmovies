@@ -268,6 +268,130 @@ describe("worker request handling", () => {
     assert.notEqual(html, "Not Found");
     assert.match(html, /<title>Watch Fight Club \(1999\) Free Online — Flash Movies<\/title>/);
     assert.match(html, /rel="canonical" href="https:\/\/flashmovies\.xyz\/full-movie\?type=movie&amp;id=550"/);
+    assert.equal(response.headers.get("x-robots-tag"), "noindex");
+    assert.match(html, /<meta name="robots" content="noindex, follow">/);
+  });
+
+  it("sends X-Robots-Tag noindex and robots meta for /full-movie, not for /movie-info or /", async () => {
+    const googlebot =
+      "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
+    const browser =
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+    const originHtml = "<!doctype html><title>SPA</title><div id='root'></div>";
+
+    const tmdbFetch = async (input, init = {}) => {
+      const url = typeof input === "string" ? input : input.url;
+      if (url.includes("api.themoviedb.org/3/movie/550")) {
+        return new Response(JSON.stringify(fightClub), {
+          headers: { "content-type": "application/json" },
+        });
+      }
+      if (url.includes("api.themoviedb.org")) {
+        return tmdbListResult();
+      }
+      if (String(url).includes("flashmovies.xyz")) {
+        return new Response(originHtml, {
+          status: 200,
+          headers: { "content-type": "text/html; charset=utf-8" },
+        });
+      }
+      throw new Error(`unexpected fetch ${url}`);
+    };
+
+    const watchPaths = [
+      { path: "/full-movie?type=movie&id=550", crawlerMeta: "noindex, follow" },
+      { path: "/full-movie/?type=movie&id=550", crawlerMeta: "noindex, follow" },
+      { path: "/FULL-MOVIE?type=movie&id=550", crawlerMeta: "noindex, nofollow" },
+      { path: "/Full-Movie/?type=movie&id=550", crawlerMeta: "noindex, nofollow" },
+    ];
+
+    for (const { path, crawlerMeta } of watchPaths) {
+      const bot = await handleRequest(
+        new Request(`https://flashmovies.xyz${path}`, {
+          headers: { "user-agent": googlebot },
+        }),
+        env,
+        {},
+        { fetch: tmdbFetch, cache: memoryCache() },
+      );
+      const botHtml = await bot.text();
+      assert.equal(bot.headers.get("x-robots-tag"), "noindex", path);
+      assert.match(botHtml, new RegExp(`<meta name="robots" content="${crawlerMeta}">`), path);
+
+      const human = await handleRequest(
+        new Request(`https://flashmovies.xyz${path}`, {
+          headers: { "user-agent": browser },
+        }),
+        env,
+        {},
+        { fetch: tmdbFetch, cache: memoryCache() },
+      );
+      assert.equal(human.status, 200, path);
+      assert.equal(human.headers.get("x-robots-tag"), "noindex", path);
+      assert.equal(await human.text(), originHtml, path);
+      assert.equal(human.headers.get("x-flash-crawler"), null, path);
+    }
+
+    const head = await handleRequest(
+      new Request("https://flashmovies.xyz/full-movie/?type=movie&id=550", {
+        method: "HEAD",
+        headers: { "user-agent": browser },
+      }),
+      env,
+      {},
+      {
+        fetch: async () =>
+          new Response(originHtml, {
+            status: 200,
+            headers: { "content-type": "text/html; charset=utf-8" },
+          }),
+        cache: memoryCache(),
+      },
+    );
+    assert.equal(head.status, 200);
+    assert.equal(head.headers.get("x-robots-tag"), "noindex");
+    assert.equal(head.headers.get("x-flash-crawler"), null);
+
+    const indexed = [
+      "/movie-info?type=movie&id=550",
+      "/",
+    ];
+    for (const path of indexed) {
+      const bot = await handleRequest(
+        new Request(`https://flashmovies.xyz${path}`, {
+          headers: { "user-agent": googlebot },
+        }),
+        env,
+        {},
+        { fetch: mockTmdbFetch(), cache: memoryCache() },
+      );
+      const botHtml = await bot.text();
+      assert.equal(bot.headers.get("x-flash-crawler"), "1", path);
+      assert.doesNotMatch(bot.headers.get("x-robots-tag") || "", /noindex/i, path);
+      assert.doesNotMatch(botHtml, /noindex/i, path);
+      assert.match(botHtml, /<meta name="robots" content="index, follow">/, path);
+
+      const human = await handleRequest(
+        new Request(`https://flashmovies.xyz${path}`, {
+          headers: { "user-agent": browser },
+        }),
+        env,
+        {},
+        { fetch: tmdbFetch, cache: memoryCache() },
+      );
+      assert.equal(await human.text(), originHtml, path);
+      assert.doesNotMatch(human.headers.get("x-robots-tag") || "", /noindex/i, path);
+    }
+
+    const watchPage = readFileSync(
+      join(__dirname, "../../../apps/web/src/pages/full-movie/WatchMoviePage.tsx"),
+      "utf8",
+    );
+    const app = readFileSync(join(__dirname, "../../../apps/web/src/App.tsx"), "utf8");
+    assert.match(watchPage, /<meta name="robots" content="noindex, follow" \/>/);
+    assert.match(watchPage, /robots="noindex, follow"/);
+    assert.match(app, /path="\/full-movie"/);
+    assert.doesNotMatch(app, /movie-watch|tv-watch/);
   });
 
   it("returns the IndexNow key file from origin for every user agent", async () => {
@@ -693,6 +817,6 @@ describe("worker request handling", () => {
 
   it("bumps CACHE_KEY_VERSION so similar-title HTML replaces cached crawler pages", () => {
     const toml = readFileSync(join(__dirname, "../wrangler.toml"), "utf8");
-    assert.match(toml, /CACHE_KEY_VERSION = "7"/);
+    assert.match(toml, /CACHE_KEY_VERSION = "8"/);
   });
 });

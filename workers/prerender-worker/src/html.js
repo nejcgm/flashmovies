@@ -354,7 +354,7 @@ export function detailPage({ route, data, canonical, siteOrigin }) {
     image,
     imageAlt: titled,
     ogType,
-    robots: "index, follow",
+    robots: isWatchPage ? "noindex, follow" : "index, follow",
     heading: isWatchPage && type !== "person" ? `Watch ${titled} free online` : titled,
     paragraphs,
     links: [
