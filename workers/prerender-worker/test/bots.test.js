@@ -101,6 +101,13 @@ describe("bot user-agents", () => {
       "siteadvisor",
       "gridinsoft",
       "mywot",
+      "quttera",
+      "urlvoid",
+      "builtwith",
+      "wappalyzer",
+      "zoominfobot",
+      "censys",
+      "securitytrails",
     ];
     for (const ua of scanners) {
       assert.equal(isBlockedBotUserAgent(ua), false, ua);
@@ -116,10 +123,19 @@ describe("bot user-agents", () => {
     }
   });
 
-  it("still blocks other non-visitor agents", () => {
-    const blocked = ["Quttera-Scanner/1.0", "urlvoid", "SecurityTrails"];
-    for (const ua of blocked) {
-      assert.equal(isBlockedBotUserAgent(ua), true, ua);
+  it("does not block security, reputation, or tech-lookup scanners", () => {
+    const scanners = [
+      "Quttera-Scanner/1.0",
+      "URLVoid",
+      "Mozilla/5.0 (compatible; BuiltWith/1.0)",
+      "Wappalyzer",
+      "ZoominfoBot (zoominfobot at zoominfo dot com)",
+      "Mozilla/5.0 (compatible; CensysInspect/1.1; +https://about.censys.io/)",
+      "SecurityTrails",
+    ];
+    assert.deepEqual(BLOCKED_BOT_AGENTS, []);
+    for (const ua of scanners) {
+      assert.equal(isBlockedBotUserAgent(ua), false, ua);
       assert.equal(isBotUserAgent(ua), false, ua);
       assert.equal(
         isCrawlerRequest(new Request("https://flashmovies.xyz/", { headers: { "user-agent": ua } })),
