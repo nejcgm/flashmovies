@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   canonicalUrl,
   IGNORE_EXTENSIONS,
+  isFullMoviePath,
   isIndexNowKeyPath,
   parseRoute,
   shouldBypass,
@@ -73,6 +74,12 @@ describe("routes", () => {
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/flash-movies-logo.png")), true);
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/movie-info?type=movie&id=550")), false);
     assert.equal(shouldBypass(new URL("https://flashmovies.xyz/full-movie?type=movie&id=550")), false);
+    assert.equal(isFullMoviePath("/full-movie"), true);
+    assert.equal(isFullMoviePath("/full-movie/"), true);
+    assert.equal(isFullMoviePath("/FULL-MOVIE"), true);
+    assert.equal(isFullMoviePath("/Full-Movie///"), true);
+    assert.equal(isFullMoviePath("/movie-info"), false);
+    assert.equal(isFullMoviePath("/full-movie/extra"), false);
   });
 
   it("bypasses the IndexNow key file for every crawler path check", () => {

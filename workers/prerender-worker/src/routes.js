@@ -180,7 +180,16 @@ function asMediaType(value) {
  */
 
 /**
- * `/full-movie` is a first-class catalog page (sitemap + SPA). The live
+ * Watch page, including case differences and one or more trailing slashes.
+ * There is no separate /movie-watch or /tv-watch route.
+ * @param {string | null | undefined} pathname
+ */
+export function isFullMoviePath(pathname) {
+  return /^\/full-movie(?:\/+)?$/i.test(String(pathname || ""));
+}
+
+/**
+ * `/full-movie` is the SPA watch page and is not in the sitemap. The live
  * prerender-worker 404'd any bot URL containing `/full-movie` — do not
  * restore that. Valid movie/TV ids here are detail pages, same as /movie-info.
  *

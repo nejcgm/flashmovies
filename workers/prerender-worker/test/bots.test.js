@@ -81,19 +81,51 @@ describe("bot user-agents", () => {
     }
   });
 
-  it("blocks security and reputation scanners", () => {
-    const blocked = [
+  it("does not treat reputation scanners as blocked or as crawlers", () => {
+    const scanners = [
       "Scamadviser.com/1.0",
+      "Mozilla/5.0 (compatible; scam-adviser)",
       "Mozilla/5.0 (compatible; urlscan.io)",
       "Mozilla/5.0 (compatible; VirusTotal/1.0)",
+      "Sucuri/1.0",
+      "Mozilla/5.0 (compatible; SiteAdvisor)",
+      "Mozilla/5.0 (compatible; Gridinsoft)",
+      "Mozilla/5.0 (compatible; MyWOT/1.0)",
     ];
+    const dropped = [
+      "scamadviser",
+      "scam-adviser",
+      "urlscan",
+      "virustotal",
+      "sucuri",
+      "siteadvisor",
+      "gridinsoft",
+      "mywot",
+    ];
+    for (const ua of scanners) {
+      assert.equal(isBlockedBotUserAgent(ua), false, ua);
+      assert.equal(isBotUserAgent(ua), false, ua);
+      assert.equal(
+        isCrawlerRequest(new Request("https://flashmovies.xyz/", { headers: { "user-agent": ua } })),
+        false,
+        ua,
+      );
+    }
+    for (const name of dropped) {
+      assert.equal(BLOCKED_BOT_AGENTS.includes(name), false, name);
+    }
+  });
+
+  it("still blocks other non-visitor agents", () => {
+    const blocked = ["Quttera-Scanner/1.0", "urlvoid", "SecurityTrails"];
     for (const ua of blocked) {
       assert.equal(isBlockedBotUserAgent(ua), true, ua);
       assert.equal(isBotUserAgent(ua), false, ua);
-      assert.equal(isCrawlerRequest(new Request("https://flashmovies.xyz/", { headers: { "user-agent": ua } })), false, ua);
-    }
-    for (const name of BLOCKED_BOT_AGENTS) {
-      assert.ok(BLOCKED_BOT_AGENTS.includes(name), `missing ${name} in BLOCKED_BOT_AGENTS`);
+      assert.equal(
+        isCrawlerRequest(new Request("https://flashmovies.xyz/", { headers: { "user-agent": ua } })),
+        false,
+        ua,
+      );
     }
   });
 

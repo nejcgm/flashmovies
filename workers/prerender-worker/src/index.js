@@ -12,6 +12,7 @@ import {
 } from "./html.js";
 import {
   canonicalUrl,
+  isFullMoviePath,
   isIndexNowKeyPath,
   parseRoute,
   shouldBypass,
@@ -188,6 +189,7 @@ export async function buildCrawlerPage(url, env, fetchImpl = fetch) {
       description: `Watch this ${route.type} free online on Flash Movies — free movies and TV in HD.`,
       canonical,
       siteOrigin: origin,
+      robots: route.pathname === "/full-movie" ? "noindex, follow" : "index, follow",
       heading: "Watch free on Flash Movies",
       paragraphs: [
         SITE_TAGLINE,
@@ -276,12 +278,31 @@ function blockedBotResponse() {
 }
 
 /**
+ * `X-Robots-Tag: noindex` on every watch-page response, including human
+ * passthrough to Firebase and crawler HTML. Exact value is `noindex`
+ * (follow stays the default). Case and trailing slashes count as the same path.
+ * @param {Request} request
+ * @param {Response} response
+ */
+function applyWatchPageRobots(request, response) {
+  const url = new URL(request.url);
+  if (!isFullMoviePath(url.pathname)) return response;
+  const headers = new Headers(response.headers);
+  headers.set("X-Robots-Tag", "noindex");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+/**
  * @param {Request} request
  * @param {object} env
  * @param {object} ctx
  * @param {object} [deps]
  */
-export async function handleRequest(request, env, ctx, deps = {}) {
+async function routeRequest(request, env, ctx, deps = {}) {
   const fetchImpl = deps.fetch || fetch;
   const cache = deps.cache || (typeof caches !== "undefined" ? caches.default : null);
   const url = new URL(request.url);
@@ -342,6 +363,11 @@ export async function handleRequest(request, env, ctx, deps = {}) {
   }
 
   return response;
+}
+
+export async function handleRequest(request, env, ctx, deps = {}) {
+  const response = await routeRequest(request, env, ctx, deps);
+  return applyWatchPageRobots(request, response);
 }
 
 export default {

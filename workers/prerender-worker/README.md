@@ -24,8 +24,8 @@ Deploy this project **over** `prerender-worker`. Do not create a second worker.
 2. Skips `IGNORE_EXTENSIONS` (same idea as the live worker: `.js`, `.css`, images, fonts, …) and passes those to origin. An IndexNow key file at `/<key>.txt` is passed through to origin for every user agent, including blocked scanners, so the response stays the raw key (`text/plain`) rather than crawler HTML or a 403.
 3. Incoming `X-Prerender` → origin passthrough (loop protection). Origin subrequests set that header.
 4. For crawlers only, returns first-party HTML:
-   - `/movie-info` **and `/full-movie`** (movie / TV / person): TMDB details (`api.themoviedb.org`), same auth pattern as the SPA `VITE_API_KEY`.
-   - Homepage and generic routes: Flash Movies as a **free movie and TV streaming website** — watch films and series online in HD. Crawler HTML does **not** include the hidden “Affiliate Site Verification” stub from `index.html`.
+   - `/movie-info` **and `/full-movie`** (movie / TV / person): TMDB details (`api.themoviedb.org`), same auth pattern as the SPA `VITE_API_KEY`. `/full-movie` crawler HTML is `noindex, follow` and every `/full-movie` response (any case, trailing slash, human or bot) sends `X-Robots-Tag: noindex`. The watch page keeps its self-canonical. There is no `/movie-watch` or `/tv-watch` route.
+   - Homepage and generic routes: Flash Movies as a **free movie and TV streaming website** — watch films and series online in HD. Crawler HTML does **not** include the old “Affiliate Site Verification” phrase (removed from `apps/web/index.html`).
 5. Caches crawler HTML in the Cloudflare Cache API (6 hours for detail/list pages, 24 hours for static catalog pages).
 6. Does **not** call prerender.io.
 

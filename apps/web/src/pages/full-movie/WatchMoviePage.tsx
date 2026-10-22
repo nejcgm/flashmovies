@@ -141,7 +141,7 @@ export function WatchMoviePage() {
   );
 
   if (status === "not_found") {
-    return <NotFoundPage />;
+    return <NotFoundPage robots="noindex, follow" />;
   }
 
   const heading = info
@@ -156,9 +156,11 @@ export function WatchMoviePage() {
 
   return (
     <>
-      {status === "error" && <Meta title={neutralTitle} />}
+      {status === "loading" && <Meta robots="noindex, follow" robotsOnly />}
+      {status === "error" && <Meta title={neutralTitle} robots="noindex, follow" />}
       {info && status === "ready" && (
         <Meta
+          robots="noindex, follow"
           title={watchDocumentTitle(info)}
           description={
             info.overview

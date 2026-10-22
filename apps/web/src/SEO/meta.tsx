@@ -8,6 +8,8 @@ interface IMetaProps {
   url?: string;
   image?: string;
   robots?: string;
+  /** Emit only the robots meta tag. Skips title and other head tags. */
+  robotsOnly?: boolean;
   type?: "website" | "video.movie" | "video.tv_show" | "article";
   siteName?: string;
   publishedTime?: string;
@@ -21,6 +23,7 @@ export function Meta({
   url="https://flashmovies.xyz",
   image="https://flashmovies.xyz/flash-movies-logo.png",
   robots="index, follow",
+  robotsOnly = false,
   type = "website",
   siteName = "Flash Movies",
   publishedTime="2025-08-04",
@@ -28,8 +31,9 @@ export function Meta({
 }: IMetaProps) {
 
   useEffect(() => {
+    if (robotsOnly) return;
     window.prerenderReady = true;
-  }, []);
+  }, [robotsOnly]);
 
   const [savedTitle, setSavedTitle] = useState<string>()
   // Keep in sync with HOME_PAGE_TITLE in utils/gaPageView.ts.
@@ -67,6 +71,14 @@ export function Meta({
   };
 
   const imageDimensions = getImageDimensions(absoluteImageUrl);
+
+  if (robotsOnly) {
+    return (
+      <Helmet>
+        {robots && <meta name="robots" content={robots} />}
+      </Helmet>
+    );
+  }
 
   return (
     <Helmet>

@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Meta } from '../../SEO';
 
-export function NotFoundPage() {
+export function NotFoundPage({ robots = "noindex, nofollow" }: { robots?: string }) {
   return (
     <>
       <Meta 
         title="404 - Page Not Found | Flash Movies"
         description="Sorry, the page you're looking for doesn't exist. Browse our collection of free movies and TV shows on Flash Movies."
-        robots="noindex, nofollow"
+        robots={robots}
         url={window.location.href}
         keywords={['404', 'page not found', 'flash movies', 'movies', 'tv shows']}
       />

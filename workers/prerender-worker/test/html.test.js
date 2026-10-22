@@ -66,6 +66,8 @@ describe("crawler HTML", () => {
     assert.match(html, /"@type":"Movie"/);
     assert.match(html, /David Fincher/);
     assert.doesNotMatch(html, /Affiliate Site Verification/i);
+    assert.equal(page.robots, "index, follow");
+    assert.doesNotMatch(html, /noindex/);
     assert.match(html, /Watch Fight Club \(1999\) free on Flash Movies/);
     assert.match(html, /Watch free online in HD on Flash Movies/);
     assert.doesNotMatch(html, /Similar titles/);
@@ -85,6 +87,9 @@ describe("crawler HTML", () => {
     assert.match(html, /<h1>Watch Fight Club \(1999\) free online<\/h1>/);
     assert.match(html, /Fight Club \(1999\)/);
     assert.match(html, /full-movie\?type=movie/);
+    assert.equal(page.robots, "noindex, follow");
+    assert.match(html, /<meta name="robots" content="noindex, follow">/);
+    assert.match(html, /rel="canonical" href="https:\/\/flashmovies\.xyz\/full-movie\?type=movie&amp;id=550"/);
     assert.doesNotMatch(html, /Similar titles/);
   });
 
