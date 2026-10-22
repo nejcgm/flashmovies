@@ -104,14 +104,21 @@ export function WatchMoviePage() {
       season?: number,
       episode?: number,
       params?: string,
+      episodeSlugStyle?: "path" | "hyphen",
     ) => {
       let fullUrl: string;
       if (isEpisodeSlugPartOfSlug && type === "tv") {
-        fullUrl = `${baseUrl}/${season ?? "1"}/${episode ?? "1"}${params ? `?${params}` : ""}`;
+        const seasonNumber = season ?? "1";
+        const episodeNumber = episode ?? "1";
+        const episodeSuffix =
+          episodeSlugStyle === "hyphen"
+            ? `-${seasonNumber}-${episodeNumber}`
+            : `/${seasonNumber}/${episodeNumber}`;
+        fullUrl = `${baseUrl}${episodeSuffix}${params ? `?${params}` : ""}`;
       } else if (type === "tv") {
         fullUrl = `${baseUrl}?season=${season ?? "1"}&episode=${episode ?? "1"}${params ? `&${params}` : ""}`;
       } else {
-        fullUrl = `${baseUrl}?${params || ""}`;
+        fullUrl = params ? `${baseUrl}?${params}` : baseUrl;
       }
       return fullUrl;
     },
@@ -119,10 +126,15 @@ export function WatchMoviePage() {
   );
 
   const applyProvider = useCallback(
-    (url: string, isEpisodeSlugPartOfSlug: boolean, params?: string) => {
+    (
+      url: string,
+      isEpisodeSlugPartOfSlug: boolean,
+      params?: string,
+      episodeSlugStyle?: "path" | "hyphen",
+    ) => {
       const { season, episode } = seasonEpisodeForProvider(selectedEpisode);
       setCurrentProviderUrl(
-        buildFullUrl(url, isEpisodeSlugPartOfSlug, season, episode, params),
+        buildFullUrl(url, isEpisodeSlugPartOfSlug, season, episode, params, episodeSlugStyle),
       );
     },
     [buildFullUrl, selectedEpisode],
@@ -214,7 +226,8 @@ export function WatchMoviePage() {
                   className="absolute inset-0 h-full w-full border-0"
                   src={currentProviderUrl}
                   title={`Watch ${displayName || "video"}`}
-                  referrerPolicy="origin"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
                   allowFullScreen
                 />
               ) : null}

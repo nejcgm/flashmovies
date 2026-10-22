@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ProviderButton } from "./";
 import { STREAMING_PROVIDERS } from "../../../config/streamingProviders";
+import type { EpisodeSlugStyle } from "../../../interfaces/config/index.ts";
 import { useUser } from "../../../context/UserContext";
 import { useProUpsell } from "../../../context/ProUpsellContext";
 
@@ -8,7 +9,8 @@ interface ProviderComponentProps {
   newProvider: (
     providerUrl: string,
     isEpisodeSlugPartOfSlug: boolean,
-    params?: string
+    params?: string,
+    episodeSlugStyle?: EpisodeSlugStyle,
   ) => void;
   title?: string;
   movieId: string;
@@ -34,17 +36,15 @@ export function ProviderComponent({
     description: provider.description,
     priority: provider.priority,
     isEpisodeSlugPartOfSlug: provider.isEpisodeSlugPartOfSlug,
+    episodeSlugStyle: provider.episodeSlugStyle,
     params: provider.params,
     isPremium: provider.isPremium || false,
+    underMaintenance: provider.underMaintenance || false,
   }));
 
   const getDefaultProvider = () => {
     if (isPro) {
-      return (
-        providers.find((p) => p.name === "Server 1") ||
-        providers.find((p) => !p.isPremium) ||
-        providers[0]
-      );
+      return providers.find((p) => p.isPremium && !p.underMaintenance) || providers[0];
     }
     return providers.find((p) => !p.isPremium) || providers[0];
   };
@@ -55,21 +55,23 @@ export function ProviderComponent({
   const [selectedProvider, setSelectedProvider] = useState(defaultProvider.name);
   const [isEpisodeSlugPartOfSlug, setIsEpisodeSlugPartOfSlug] =
     useState<boolean>(defaultProvider.isEpisodeSlugPartOfSlug);
+  const [episodeSlugStyle, setEpisodeSlugStyle] = useState<EpisodeSlugStyle | undefined>(
+    defaultProvider.episodeSlugStyle,
+  );
   const [params, setParams] = useState(defaultProvider.params);
 
   useEffect(() => {
-    newProvider(providerUrl, isEpisodeSlugPartOfSlug, params);
-  }, [providerUrl, isEpisodeSlugPartOfSlug, params, newProvider]);
+    newProvider(providerUrl, isEpisodeSlugPartOfSlug, params, episodeSlugStyle);
+  }, [providerUrl, isEpisodeSlugPartOfSlug, episodeSlugStyle, params, newProvider]);
 
   useEffect(() => {
     const newDefault = isPro
-      ? providers.find((p) => p.name === "Server 1") ||
-        providers.find((p) => !p.isPremium) ||
-        providers[0]
+      ? providers.find((p) => p.isPremium && !p.underMaintenance) || providers[0]
       : providers.find((p) => !p.isPremium) || providers[0];
     setSelectedProvider(newDefault.name);
     setProviderUrl(newDefault.url);
     setIsEpisodeSlugPartOfSlug(newDefault.isEpisodeSlugPartOfSlug);
+    setEpisodeSlugStyle(newDefault.episodeSlugStyle);
     setParams(newDefault.params);
   }, [isPro, movieId, type]);
 
@@ -78,20 +80,22 @@ export function ProviderComponent({
     url: string,
     isEpisodeSlugPartOfSlug: boolean,
     isPremium: boolean,
-    params?: string
+    params?: string,
+    episodeSlugStyle?: EpisodeSlugStyle,
   ) => {
     if (isPremium && !isPro) {
       openProUpsell('premium_server');
       return;
     }
 
-    if (isPremium && isPro) {
+    if (isPremium && isPro && providers.find((p) => p.name === provider)?.underMaintenance) {
       return;
     }
 
     setSelectedProvider(provider);
     setProviderUrl(url);
     setIsEpisodeSlugPartOfSlug(isEpisodeSlugPartOfSlug);
+    setEpisodeSlugStyle(episodeSlugStyle);
     setParams(params);
   };
 
@@ -111,7 +115,7 @@ export function ProviderComponent({
         </div>
         <div className="flex flex-wrap gap-x-2 gap-y-2 sm:gap-x-3 sm:gap-y-3 mt-4">
           {providers.map((provider) => {
-            const isMaintenance = Boolean(provider.isPremium && isPro);
+            const isMaintenance = Boolean(provider.underMaintenance && isPro);
 
             return (
             <ProviderButton
@@ -124,7 +128,8 @@ export function ProviderComponent({
                   url,
                   provider.isEpisodeSlugPartOfSlug,
                   provider.isPremium,
-                  provider.params
+                  provider.params,
+                  provider.episodeSlugStyle,
                 );
               }}
               className={
