@@ -37,7 +37,7 @@ export function ActorCard({
       clickType: ClickTypeEnum.MOVIE_CARD,
       isPro
     }, incrementClick);
-    navigate(`/movie-info/?id=${actorId}&type=${media}`);
+    navigate(`/movie-info?id=${actorId}&type=${media}`);
   };
 
   return (

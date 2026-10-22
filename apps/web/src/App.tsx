@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AuthLayout, MainLayout } from "./layout";
 import { Analytics, ContentSquare } from "./SEO";
 import { Spinner } from "./components";
@@ -31,6 +31,15 @@ function ListWithSearchKey() {
   return <ListPage key={search} />;
 }
 
+function ListRoute() {
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  if (!params.get("type") || !params.get("search")) {
+    return <Navigate to="/" replace />;
+  }
+  return <ListWithSearchKey />;
+}
+
 export function App() {
   return (
     <>
@@ -59,7 +68,7 @@ export function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/movie-info" element={<MovieInfoPage />} />
             <Route path="/full-movie" element={<WatchMoviePage />} />
-            <Route path="/list-items" element={<ListWithSearchKey />} />
+            <Route path="/list-items" element={<ListRoute />} />
             <Route
               path="/terms-and-conditions"
               element={<TermsAndConditionsPage />}

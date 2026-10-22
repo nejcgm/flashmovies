@@ -177,7 +177,7 @@ export function ListItem({
                     clickType: ClickTypeEnum.MOVIE_CARD,
                     isPro
                   }, incrementClick);
-                  navigate(`/movie-info/?id=${movieId}&type=${type}`);
+                  navigate(`/movie-info?id=${movieId}&type=${type}`);
                   onCancel();
                 }}
                 className="inline-flex max-w-full min-w-0 items-start gap-x-1 text-left font-roboto text-[13px] font-semibold leading-snug text-white sm:text-[15px]"
@@ -200,7 +200,7 @@ export function ListItem({
                   clickType: ClickTypeEnum.MOVIE_CARD,
                   isPro
                 }, incrementClick);
-                navigate(`/movie-info/?id=${movieId}&type=${type}`);
+                navigate(`/movie-info?id=${movieId}&type=${type}`);
                 onCancel();
               }}
               className="mt-1 w-full text-left font-roboto"
@@ -271,7 +271,7 @@ export function ListItem({
                     clickType: ClickTypeEnum.MOVIE_CARD,
                     isPro
                   }, incrementClick);
-                  navigate(`/movie-info/?id=${movieId}&type=${type}`);
+                  navigate(`/movie-info?id=${movieId}&type=${type}`);
                   onCancel();
                 }}
                 className="inline-flex max-w-full min-w-0 items-start gap-x-1 text-left font-roboto text-[14px] font-semibold leading-snug text-white"
@@ -294,7 +294,7 @@ export function ListItem({
                   clickType: ClickTypeEnum.MOVIE_CARD,
                   isPro
                 }, incrementClick);
-                navigate(`/movie-info/?id=${movieId}&type=${type}`);
+                navigate(`/movie-info?id=${movieId}&type=${type}`);
                 onCancel();
               }}
               className="mt-1 w-full text-left font-roboto"
@@ -342,7 +342,7 @@ export function ListItem({
               clickType: ClickTypeEnum.MOVIE_CARD,
               isPro
             }, incrementClick);
-            navigate(`/movie-info/?id=${movieId}&type=${type}`);
+            navigate(`/movie-info?id=${movieId}&type=${type}`);
             onCancel();
           }}
           className={`${

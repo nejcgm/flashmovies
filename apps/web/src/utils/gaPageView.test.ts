@@ -1,12 +1,21 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  ASYNC_TITLE_WAIT_MS,
   HOME_PAGE_TITLE,
+  NOT_FOUND_PAGE_TITLE,
   createPageViewModel,
   dispatchPageView,
   fallbackPageTitle,
   gtagWillRunCommand,
   historyChangeEventName,
+  isAsyncTitleRoute,
+  isPageViewRedirect,
+  normalizeRoutePath,
+  readDetailTitle,
+  routeKey,
+  shouldFlushForPageExit,
+  signalDetailTitle,
   suppressAutomaticHistoryPageViews,
   toPageLocation,
   withActivePageParams,
@@ -35,6 +44,50 @@ describe("toPageLocation", () => {
 
   it("omits a question mark when there is no query", () => {
     assert.equal(toPageLocation(`${ORIGIN}/`, "/", ""), "https://flashmovies.xyz/");
+  });
+});
+
+describe("normalizeRoutePath", () => {
+  it("strips trailing slashes, lowercases, and uses / when empty", () => {
+    assert.equal(normalizeRoutePath("/Movie-Info/"), "/movie-info");
+    assert.equal(normalizeRoutePath("/FULL-MOVIE///"), "/full-movie");
+    assert.equal(normalizeRoutePath("/"), "/");
+    assert.equal(normalizeRoutePath(""), "/");
+    assert.equal(normalizeRoutePath("///"), "/");
+    assert.equal(routeKey("/Movie-Info/", "?type=movie&id=550"), routeKey("/movie-info", "?type=movie&id=550"));
+  });
+
+  it("treats slash and case variants as the detail routes, not 404", () => {
+    for (const pathname of ["/movie-info/", "/Movie-Info", "/FULL-MOVIE/"]) {
+      assert.equal(isAsyncTitleRoute(pathname), true);
+      const title = fallbackPageTitle(pathname, "?type=movie&id=550");
+      assert.notEqual(title, NOT_FOUND_PAGE_TITLE);
+    }
+    assert.equal(fallbackPageTitle("/Movie-Info/", "?id=1"), "Movie — Flash Movies");
+    assert.equal(fallbackPageTitle("/FULL-MOVIE/", ""), "Watch — Flash Movies");
+    assert.equal(fallbackPageTitle("/List-Items/", "?title=most-popular-movies&type=movie&search=popular"), "Most Popular Movies - Flash Movies");
+  });
+});
+
+describe("page exit flush", () => {
+  it("flushes on pagehide and when the document is hidden", () => {
+    assert.equal(ASYNC_TITLE_WAIT_MS >= 8000 && ASYNC_TITLE_WAIT_MS <= 10000, true);
+    assert.equal(shouldFlushForPageExit("pagehide"), true);
+    assert.equal(shouldFlushForPageExit("visibilitychange", "hidden"), true);
+    assert.equal(shouldFlushForPageExit("visibilitychange", "visible"), false);
+  });
+});
+
+describe("redirect locations", () => {
+  it("marks parameter-less list routes, including slash and case variants", () => {
+    assert.equal(isPageViewRedirect("/list-items", ""), true);
+    assert.equal(isPageViewRedirect("/list-items/", ""), true);
+    assert.equal(isPageViewRedirect("/LIST-ITEMS", "?type=movie"), true);
+    assert.equal(
+      isPageViewRedirect("/list-items", "?type=movie&search=popular&title=most-popular-movies"),
+      false,
+    );
+    assert.equal(isPageViewRedirect("/movie-info", "?type=movie&id=1439112"), false);
   });
 });
 
@@ -143,6 +196,113 @@ describe("createPageViewModel", () => {
       ),
       [],
     );
+  });
+
+  it("keeps the real URL on a slashed detail path and does not send a second hit", () => {
+    const model = createPageViewModel(ORIGIN);
+    assert.deepEqual(
+      model.onRoute("/Movie-Info/", "?type=movie&id=550", HOME_PAGE_TITLE),
+      [],
+    );
+    assert.equal(model.isPending(), true);
+    const settled = model.onTitle(
+      "Fight Club (1999) — Watch Free Online | Flash Movies",
+      "signal",
+    );
+    assert.equal(
+      settled?.page_location,
+      "https://flashmovies.xyz/Movie-Info/?type=movie&id=550",
+    );
+    assert.equal(
+      settled?.page_title,
+      "Fight Club (1999) — Watch Free Online | Flash Movies",
+    );
+    assert.deepEqual(
+      model.onRoute("/movie-info", "?type=movie&id=550", settled?.page_title ?? ""),
+      [],
+    );
+    assert.equal(model.flush(), null);
+    assert.equal(
+      model.onTitle("Fight Club (1999) — Watch Free Online | Flash Movies", "signal"),
+      null,
+    );
+  });
+
+  it("sends one not-found title for a bad id and ignores a later flush", () => {
+    const model = createPageViewModel(ORIGIN);
+    assert.deepEqual(
+      model.onRoute("/movie-info", "?type=movie&id=1439112", NOT_FOUND_PAGE_TITLE),
+      [],
+    );
+    assert.equal(model.onTitle(NOT_FOUND_PAGE_TITLE), null);
+    const hit = model.onTitle(NOT_FOUND_PAGE_TITLE, "signal");
+    assert.equal(hit?.page_title, NOT_FOUND_PAGE_TITLE);
+    assert.equal(
+      hit?.page_location,
+      "https://flashmovies.xyz/movie-info?type=movie&id=1439112",
+    );
+    assert.equal(model.flush(), null);
+    assert.equal(model.onTitle(NOT_FOUND_PAGE_TITLE, "signal"), null);
+  });
+
+  it("flushes a hidden detail page once and drops a title that arrives later", () => {
+    const model = createPageViewModel(ORIGIN);
+    model.onRoute("/full-movie/", "?type=tv&id=1396", "");
+    assert.equal(model.isPending(), true);
+    assert.equal(shouldFlushForPageExit("visibilitychange", "visible"), false);
+    assert.equal(shouldFlushForPageExit("visibilitychange", "hidden"), true);
+    const flushed = model.flush();
+    assert.equal(flushed?.page_title, "Watch — Flash Movies");
+    assert.equal(
+      flushed?.page_location,
+      "https://flashmovies.xyz/full-movie/?type=tv&id=1396",
+    );
+    assert.equal(model.flush(), null);
+    assert.equal(
+      model.onTitle("Watch Breaking Bad Free Online — Flash Movies", "signal"),
+      null,
+    );
+    assert.equal(shouldFlushForPageExit("pagehide"), true);
+    assert.equal(model.flush(), null);
+  });
+
+  it("does not emit the redirect source, so the destination is the only new hit", () => {
+    const direct = createPageViewModel(ORIGIN);
+    assert.deepEqual(direct.skipRedirect("/list-items/", ""), []);
+    const home = direct.onRoute("/", "", "");
+    assert.equal(home.length, 1);
+    assert.equal(home[0].page_title, HOME_PAGE_TITLE);
+    assert.equal(home[0].page_location, "https://flashmovies.xyz/");
+    assert.deepEqual(direct.onRoute("/", "", HOME_PAGE_TITLE), []);
+    assert.deepEqual(direct.skipRedirect("/list-items", ""), []);
+    assert.deepEqual(direct.onRoute("/list-items", "", ""), []);
+
+    const returning = createPageViewModel(ORIGIN);
+    returning.onRoute("/", "", "");
+    assert.deepEqual(returning.skipRedirect("/LIST-ITEMS", ""), []);
+    assert.deepEqual(returning.onRoute("/", "", HOME_PAGE_TITLE), []);
+  });
+
+  it("reads a detail signal once for slash and case variants of the same route", () => {
+    signalDetailTitle(
+      "/Movie-Info/",
+      "?type=movie&id=550",
+      "Fight Club (1999) — Watch Free Online | Flash Movies",
+    );
+    assert.equal(
+      readDetailTitle("/movie-info", "?type=movie&id=550"),
+      "Fight Club (1999) — Watch Free Online | Flash Movies",
+    );
+    assert.equal(readDetailTitle("/movie-info", "?type=movie&id=551"), null);
+    const model = createPageViewModel(ORIGIN);
+    model.onRoute("/movie-info/", "?type=movie&id=550", "");
+    const hit = model.onTitle(readDetailTitle("/MOVIE-INFO/", "?type=movie&id=550") ?? "", "signal");
+    assert.equal(
+      hit?.page_title,
+      "Fight Club (1999) — Watch Free Online | Flash Movies",
+    );
+    assert.equal(hit?.page_location, "https://flashmovies.xyz/movie-info/?type=movie&id=550");
+    assert.equal(model.flush(), null);
   });
 
   it("flushes a pending detail page once when navigating away", () => {

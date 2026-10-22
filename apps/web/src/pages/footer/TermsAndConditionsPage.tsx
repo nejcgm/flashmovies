@@ -1,6 +1,10 @@
 
+import { Meta } from "../../SEO";
+
 export function TermsAndConditionsPage() {
   return (
+    <>
+    <Meta title="Terms and Conditions" />
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       <div className="prose prose-invert max-w-none">
         <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-white">
@@ -235,5 +239,6 @@ export function TermsAndConditionsPage() {
         </section>
       </div>
     </div>
+    </>
   );
 }
