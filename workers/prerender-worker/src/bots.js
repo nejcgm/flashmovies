@@ -111,17 +111,13 @@ export const BOT_AGENTS = [
   "statuscake",
 ];
 
+// Reputation scanners (scamadviser / scam-adviser, urlscan, virustotal,
+// sucuri, siteadvisor, gridinsoft, mywot) are intentionally absent.
+// They are not crawlers and must receive the same origin response as a
+// normal visitor. Do not add scanner-specific HTML for them.
 export const BLOCKED_BOT_AGENTS = [
-  "scamadviser",
-  "scam-adviser",
-  "urlscan",
-  "virustotal",
-  "sucuri",
-  "siteadvisor",
   "quttera",
   "urlvoid",
-  "gridinsoft",
-  "mywot",
   "builtwith",
   "wappalyzer",
   "zoominfobot",

@@ -152,26 +152,73 @@ describe("worker request handling", () => {
     assert.equal(response.headers.get("x-flash-crawler"), null);
   });
 
-  it("returns 403 for blocked security scanner user agents", async () => {
-    const fetchImpl = async () => {
-      throw new Error("blocked bots must not reach origin or TMDB");
-    };
+  it("serves reputation scanners the same origin response as a normal browser", async () => {
+    const originHtml = "<!doctype html><title>SPA</title><div id='root'></div>";
+    const browserUa =
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+    const scanners = [
+      "Scamadviser.com/1.0",
+      "Mozilla/5.0 (compatible; scam-adviser)",
+      "Mozilla/5.0 (compatible; urlscan.io)",
+      "Mozilla/5.0 (compatible; VirusTotal/1.0)",
+      "Sucuri/1.0",
+      "Mozilla/5.0 (compatible; SiteAdvisor)",
+      "Mozilla/5.0 (compatible; Gridinsoft)",
+      "Mozilla/5.0 (compatible; MyWOT/1.0)",
+    ];
+    const fetchImpl = async () =>
+      new Response(originHtml, {
+        status: 200,
+        headers: { "content-type": "text/html; charset=utf-8" },
+      });
 
-    for (const ua of ["Scamadviser.com/1.0", "Mozilla/5.0 (compatible; urlscan.io)"]) {
+    const browser = await handleRequest(
+      new Request("https://flashmovies.xyz/", {
+        headers: { "user-agent": browserUa },
+      }),
+      env,
+      {},
+      { fetch: fetchImpl, cache: memoryCache() },
+    );
+    const browserBody = await browser.text();
+
+    for (const ua of scanners) {
       const response = await handleRequest(
-        new Request("https://flashmovies.xyz/movie-info?type=movie&id=550", {
+        new Request("https://flashmovies.xyz/", {
           headers: { "user-agent": ua },
         }),
         env,
         {},
         { fetch: fetchImpl, cache: memoryCache() },
       );
-
-      assert.equal(response.status, 403, ua);
-      assert.equal(await response.text(), "Forbidden");
-      assert.equal(response.headers.get("x-robots-tag"), "noindex, nofollow");
-      assert.equal(response.headers.get("x-flash-crawler"), null);
+      assert.equal(response.status, 200, ua);
+      assert.equal(response.status, browser.status, ua);
+      assert.equal(await response.text(), browserBody, ua);
+      assert.equal(response.headers.get("content-type"), browser.headers.get("content-type"), ua);
+      assert.equal(response.headers.get("x-flash-crawler"), browser.headers.get("x-flash-crawler"), ua);
+      assert.equal(response.headers.get("x-robots-tag"), null, ua);
+      assert.equal(response.headers.get("x-flash-crawler"), null, ua);
     }
+  });
+
+  it("returns 403 for remaining blocked agents", async () => {
+    const fetchImpl = async () => {
+      throw new Error("blocked bots must not reach origin or TMDB");
+    };
+
+    const response = await handleRequest(
+      new Request("https://flashmovies.xyz/movie-info?type=movie&id=550", {
+        headers: { "user-agent": "Quttera-Scanner/1.0" },
+      }),
+      env,
+      {},
+      { fetch: fetchImpl, cache: memoryCache() },
+    );
+
+    assert.equal(response.status, 403);
+    assert.equal(await response.text(), "Forbidden");
+    assert.equal(response.headers.get("x-robots-tag"), "noindex, nofollow");
+    assert.equal(response.headers.get("x-flash-crawler"), null);
   });
 
   it("sets X-Prerender on origin passthrough (loop protection)", async () => {
