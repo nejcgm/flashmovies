@@ -56,7 +56,7 @@ export const STREAMING_PROVIDERS: StreamingProvider[] = [
 ];
 
 
-//add free
+//add free find them on watch-v2.autoembed.app
 // url: (type: string, movieId: string) => `https://fmov.my/embed/${type}/${movieId}`,
 // url: (type: string, movieId: string) => `https://atlantic.st/embed/${type}/${movieId}`,
 //https://vidflix.club/player
