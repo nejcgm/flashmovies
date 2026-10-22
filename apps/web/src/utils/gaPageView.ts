@@ -7,9 +7,26 @@ export const HOME_PAGE_TITLE =
 export const GA_MEASUREMENT_ID = "G-RNJNNRHPJ0";
 
 /** Detail pages set `<title>` only after TMDB returns. */
-export const ASYNC_TITLE_WAIT_MS = 2000;
+export const ASYNC_TITLE_WAIT_MS = 10000;
+
+export const NOT_FOUND_PAGE_TITLE = "404 - Page Not Found | Flash Movies";
+
+/** Shared by `fallbackPageTitle` and the FAQ / Terms `<Meta>` titles. */
+export const FAQ_PAGE_TITLE = "Frequently Asked Questions — Flash Movies";
+export const TERMS_PAGE_TITLE = "Terms and Conditions — Flash Movies";
 
 const ASYNC_TITLE_PATHS = new Set(["/movie-info", "/full-movie"]);
+
+/**
+ * Route matching ignores trailing slashes and case. The document location
+ * sent to GA stays the raw URL.
+ */
+export function normalizeRoutePath(pathname: string): string {
+  let path = pathname.trim().toLowerCase();
+  if (!path.startsWith("/")) path = `/${path}`;
+  path = path.replace(/\/+$/, "");
+  return path === "" ? "/" : path;
+}
 
 export interface GaPageView {
   page_title: string;
@@ -36,7 +53,19 @@ export interface Pushable {
 }
 
 export function routeKey(pathname: string, search: string): string {
-  return `${pathname}${normalizeSearch(search)}`;
+  return `${normalizeRoutePath(pathname)}${normalizeSearch(search)}`;
+}
+
+/**
+ * Locations that leave the screen immediately. Analytics skips the page_view
+ * so the destination is the only hit.
+ */
+export function isPageViewRedirect(pathname: string, search: string): boolean {
+  if (normalizeRoutePath(pathname) !== "/list-items") return false;
+  const params = new URLSearchParams(
+    normalizeSearch(search).replace(/^\?/, ""),
+  );
+  return !params.get("type") || !params.get("search");
 }
 
 function normalizeSearch(search: string): string {
@@ -59,7 +88,16 @@ export function toPageLocation(
 }
 
 export function isAsyncTitleRoute(pathname: string): boolean {
-  return ASYNC_TITLE_PATHS.has(pathname);
+  return ASYNC_TITLE_PATHS.has(normalizeRoutePath(pathname));
+}
+
+/** `pagehide`, or a tab moving to the background, should send a pending hit once. */
+export function shouldFlushForPageExit(
+  type: "pagehide" | "visibilitychange",
+  visibilityState?: string,
+): boolean {
+  if (type === "pagehide") return true;
+  return visibilityState === "hidden";
 }
 
 /**
@@ -71,7 +109,7 @@ export function fallbackPageTitle(pathname: string, search: string): string {
     normalizeSearch(search).replace(/^\?/, ""),
   );
 
-  switch (pathname) {
+  switch (normalizeRoutePath(pathname)) {
     case "/":
       return HOME_PAGE_TITLE;
     case "/list-items": {
@@ -87,11 +125,11 @@ export function fallbackPageTitle(pathname: string, search: string): string {
     case "/watchlist":
       return "My Watchlist - Flash Movies";
     case "/terms-and-conditions":
-      return "Terms and Conditions — Flash Movies";
+      return TERMS_PAGE_TITLE;
     case "/pro-plan-terms-and-conditions":
       return "Pro Plan Terms — Flash Movies";
     case "/frequently-asked-questions":
-      return "Frequently Asked Questions — Flash Movies";
+      return FAQ_PAGE_TITLE;
     case "/auth/login":
       return "Login — Flash Movies";
     case "/auth/register":
@@ -103,7 +141,7 @@ export function fallbackPageTitle(pathname: string, search: string): string {
     case "/payments/remove-pro":
       return "Remove Pro — Flash Movies";
     default:
-      return "404 - Page Not Found | Flash Movies";
+      return NOT_FOUND_PAGE_TITLE;
   }
 }
 
@@ -154,6 +192,7 @@ export function createPageViewModel(origin: string) {
   let sentKey: string | null = null;
   let previousLocation: string | null = null;
   let pending: PendingRoute | null = null;
+  let skippedKey: string | null = null;
 
   function emit(pathname: string, search: string, title: string): GaPageView {
     const page_title = title.trim() || fallbackPageTitle(pathname, search);
@@ -175,6 +214,28 @@ export function createPageViewModel(origin: string) {
      * One command per location. Sync routes send immediately with the known
      * title. Detail routes wait until `onTitle` or `flush`.
      */
+    /**
+     * The location is being replaced. Flush a different pending route, and
+     * do not emit a page_view for this one.
+     */
+    skipRedirect(pathname: string, search: string): GaPageView[] {
+      const key = routeKey(pathname, search);
+      const commands: GaPageView[] = [];
+      if (pending && pending.key !== key) {
+        commands.push(
+          emit(
+            pending.pathname,
+            pending.search,
+            fallbackPageTitle(pending.pathname, pending.search),
+          ),
+        );
+      } else if (pending && pending.key === key) {
+        pending = null;
+      }
+      skippedKey = key;
+      return commands;
+    },
+
     onRoute(
       pathname: string,
       search: string,
@@ -182,6 +243,12 @@ export function createPageViewModel(origin: string) {
     ): GaPageView[] {
       const key = routeKey(pathname, search);
       const commands: GaPageView[] = [];
+
+      if (skippedKey === key) {
+        skippedKey = null;
+        return commands;
+      }
+      skippedKey = null;
 
       if (pending && pending.key !== key) {
         commands.push(
@@ -209,11 +276,19 @@ export function createPageViewModel(origin: string) {
       return commands;
     },
 
-    onTitle(documentTitle: string): GaPageView | null {
+    onTitle(
+      documentTitle: string,
+      source: "document" | "signal" = "document",
+    ): GaPageView | null {
       if (!pending) return null;
       const title = documentTitle.trim();
-      if (!title || title === pending.startedTitle) return null;
-      if (pending.pathname !== "/" && title === HOME_PAGE_TITLE) return null;
+      if (!title) return null;
+      // A document mutation can still be the previous route's title. An
+      // explicit signal from the detail page is the title for this location.
+      if (source !== "signal" && title === pending.startedTitle) return null;
+      if (normalizeRoutePath(pending.pathname) !== "/" && title === HOME_PAGE_TITLE) {
+        return null;
+      }
       return emit(pending.pathname, pending.search, title);
     },
 
@@ -229,6 +304,42 @@ export function createPageViewModel(origin: string) {
 }
 
 export type PageViewModel = ReturnType<typeof createPageViewModel>;
+
+export interface DetailTitleSignal {
+  key: string;
+  title: string;
+}
+
+let retainedDetailTitle: DetailTitleSignal | null = null;
+const detailTitleListeners = new Set<(signal: DetailTitleSignal) => void>();
+
+/** Detail pages call this when the real title is known, or the load has failed. */
+export function signalDetailTitle(
+  pathname: string,
+  search: string,
+  title: string,
+): void {
+  const trimmed = title.trim();
+  if (!trimmed) return;
+  const signal = { key: routeKey(pathname, search), title: trimmed };
+  retainedDetailTitle = signal;
+  for (const listener of detailTitleListeners) listener(signal);
+}
+
+export function readDetailTitle(pathname: string, search: string): string | null {
+  if (!retainedDetailTitle) return null;
+  if (retainedDetailTitle.key !== routeKey(pathname, search)) return null;
+  return retainedDetailTitle.title;
+}
+
+export function subscribeDetailTitle(
+  listener: (signal: DetailTitleSignal) => void,
+): () => void {
+  detailTitleListeners.add(listener);
+  return () => {
+    detailTitleListeners.delete(listener);
+  };
+}
 
 let activePage: ActivePage | null = null;
 let configured = false;
@@ -322,13 +433,24 @@ function installGtagFunction(): void {
   window.gtag = gtag;
 }
 
+function flushPendingPageView(measurementId: string): void {
+  const command = getPageViewModel().flush();
+  if (command) dispatchPageView(command, measurementId);
+}
+
 function bindPageHide(measurementId: string): void {
   if (pageHideBound) return;
   pageHideBound = true;
   window.addEventListener("pagehide", () => {
-    const command = getPageViewModel().flush();
-    if (command) dispatchPageView(command, measurementId);
+    if (shouldFlushForPageExit("pagehide")) flushPendingPageView(measurementId);
   });
+  if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
+    document.addEventListener("visibilitychange", () => {
+      if (shouldFlushForPageExit("visibilitychange", document.visibilityState)) {
+        flushPendingPageView(measurementId);
+      }
+    });
+  }
 }
 
 function startWebVitals(): void {

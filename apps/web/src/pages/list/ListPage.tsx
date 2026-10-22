@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Meta } from "../../SEO";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { GenreListComponent, ListItem } from "./components";
 import { BackButton, Spinner } from "../../components";
 import { fetchSpecific, fetchThisYearHighlights, fetchTrending } from "../../client/tmdb.ts";
@@ -14,7 +14,6 @@ import { useProUpsell } from "../../context/ProUpsellContext";
 export function ListPage() {
   const [listItems, setListItems] = useState<MediaListItem[]>([]);
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { isPro, isLoading: userLoading } = useUser();
   const { openProUpsell } = useProUpsell();
   const search = searchParams.get("search");
@@ -34,13 +33,6 @@ export function ListPage() {
       .filter((id) => Number.isFinite(id) && id > 0);
   });
   const [endOfList, setEndOfList] = useState(false);
-
-  useEffect(() => {
-    if (!type || !search) {
-      navigate('/', { replace: true });
-      return;
-    }
-  }, [type, search, navigate]);
 
   useEffect(() => {
     if (!userLoading && isTrendingToday && !isPro) {

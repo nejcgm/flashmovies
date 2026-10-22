@@ -52,7 +52,7 @@ export function MediaComponent({
       forceFire: true,
       isPro
     }, incrementClick);
-    navigate(`/full-movie/?id=${movieId}&type=${type}`);
+    navigate(`/full-movie?id=${movieId}&type=${type}`);
   };
 
   return (

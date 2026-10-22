@@ -78,7 +78,7 @@ export function VideoPlayer({
                   isPro
                 }, incrementClick);
                 onCancel();
-                navigate(`/${baseUrl}/?id=${movieId}&type=${type}`);
+                navigate(`/${baseUrl}?id=${movieId}&type=${type}`);
               }}
             >
               Watch Now
