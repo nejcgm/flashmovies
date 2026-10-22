@@ -111,14 +111,19 @@ export const BOT_AGENTS = [
   "statuscake",
 ];
 
-// 403 is only for abusive scrapers or content harvesters that ignore
-// robots.txt, such as bulk SEO-data or AI scrapers. Security, reputation,
-// site-analysis, and tech-lookup scanners are not listed. They receive the
-// same origin response as a normal visitor. Do not add scanner-specific HTML.
-// Removed: quttera, urlvoid, builtwith, wappalyzer, zoominfobot, censys,
-// securitytrails (and earlier: scamadviser, urlscan, virustotal, sucuri,
-// siteadvisor, gridinsoft, mywot).
-export const BLOCKED_BOT_AGENTS = [];
+// Reputation scanners (scamadviser / scam-adviser, urlscan, virustotal,
+// sucuri, siteadvisor, gridinsoft, mywot) are intentionally absent.
+// They are not crawlers and must receive the same origin response as a
+// normal visitor. Do not add scanner-specific HTML for them.
+export const BLOCKED_BOT_AGENTS = [
+  "quttera",
+  "urlvoid",
+  "builtwith",
+  "wappalyzer",
+  "zoominfobot",
+  "censys",
+  "securitytrails",
+];
 
 /**
  * @param {string | null | undefined} userAgent
