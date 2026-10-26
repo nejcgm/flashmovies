@@ -8,7 +8,13 @@ import {
 } from "fs";
 import path from "path";
 import { fileURLToPath, pathToFileURL } from "url";
+import { fetchLiveLastmodMap } from "./lib/fetch-sitemap.js";
 import { resolveSitemapCatalogIds } from "./lib/tmdb-ids.js";
+import {
+  newestLastmod,
+  readLastmodsFromDir,
+  resolveUrlLastmod,
+} from "./lib/sitemap-xml.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,9 +59,43 @@ export function pruneStaleSitemaps(sitemapsDir, keepFilenames, log = console.log
 }
 
 /**
+ * Live sitemap first, then the sitemaps already in public/.
+ * @param {object} options
+ */
+async function loadPreviousLastmods(options) {
+  const log = options.log || (() => {});
+  if (options.fetchLive) {
+    try {
+      const map = await fetchLiveLastmodMap({
+        indexUrl: options.liveIndexUrl,
+        fetchImpl: options.fetchImpl,
+      });
+      log(`Preserving lastmod from live sitemap (${map.size} URLs)`);
+      return map;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      log(
+        `Live sitemap lastmod unavailable (${message}). Using local public/ sitemaps if present.`,
+      );
+    }
+  }
+
+  const map = readLastmodsFromDir(path.resolve(options.webRoot, "public"));
+  if (map.size) {
+    log(`Preserving lastmod from local public sitemaps (${map.size} URLs)`);
+  }
+  return map;
+}
+
+/**
  * @param {object} [options]
  * @param {object} [options.catalog]
  * @param {string} [options.webRoot]
+ * @param {string} [options.today]
+ * @param {Map<string, string>} [options.previousLastmods]
+ * @param {boolean} [options.fetchLive]
+ * @param {typeof fetch} [options.fetchImpl]
+ * @param {string} [options.liveIndexUrl]
  * @param {(message: string) => void} [options.log]
  */
 export async function generateSitemapIndex(options = {}) {
@@ -78,7 +118,17 @@ export async function generateSitemapIndex(options = {}) {
   }
 
   const baseUrl = "https://flashmovies.xyz";
-  const today = new Date().toISOString().split("T")[0];
+  const today = options.today || new Date().toISOString().split("T")[0];
+  const previousLastmods =
+    options.previousLastmods != null
+      ? options.previousLastmods
+      : await loadPreviousLastmods({
+          webRoot,
+          log,
+          fetchLive: Boolean(options.fetchLive),
+          fetchImpl: options.fetchImpl,
+          liveIndexUrl: options.liveIndexUrl,
+        });
 
   const createSitemap = (
     filename,
@@ -91,6 +141,7 @@ export async function generateSitemapIndex(options = {}) {
         path.resolve(sitemapsDir, filename)
       );
       let urlCount = 0;
+      const writtenLastmods = [];
 
       writeStream.write('<?xml version="1.0" encoding="UTF-8"?>\n');
       writeStream.write(
@@ -105,9 +156,12 @@ export async function generateSitemapIndex(options = {}) {
           .replace(/"/g, "&quot;")
           .replace(/'/g, "&apos;");
 
+        const lastmod = resolveUrlLastmod(url, previousLastmods, today);
+        writtenLastmods.push(lastmod);
+
         writeStream.write(`  <url>\n`);
         writeStream.write(`    <loc>${encodedUrl}</loc>\n`);
-        writeStream.write(`    <lastmod>${url.lastmod || today}</lastmod>\n`);
+        writeStream.write(`    <lastmod>${lastmod}</lastmod>\n`);
         writeStream.write(
           `    <changefreq>${url.changefreq || changefreq}</changefreq>\n`
         );
@@ -123,7 +177,11 @@ export async function generateSitemapIndex(options = {}) {
 
       writeStream.on("finish", () => {
         log(`✅ ${filename}: ${urlCount} URLs`);
-        resolve({ filename, urlCount });
+        resolve({
+          filename,
+          urlCount,
+          lastmod: newestLastmod(writtenLastmods, today),
+        });
       });
       writeStream.on("error", reject);
     });
@@ -370,7 +428,7 @@ export async function generateSitemapIndex(options = {}) {
     indexStream.write(
       `    <loc>${baseUrl}/sitemaps/${result.filename}</loc>\n`
     );
-    indexStream.write(`    <lastmod>${today}</lastmod>\n`);
+    indexStream.write(`    <lastmod>${result.lastmod || today}</lastmod>\n`);
     indexStream.write("  </sitemap>\n");
   });
 
@@ -409,7 +467,7 @@ function isMainModule() {
 }
 
 if (isMainModule()) {
-  generateSitemapIndex().catch((error) => {
+  generateSitemapIndex({ fetchLive: true }).catch((error) => {
     console.error("❌ Error generating sitemap index:", error);
     process.exitCode = 1;
   });

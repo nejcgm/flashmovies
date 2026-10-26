@@ -27,6 +27,14 @@ To submit the sitemap already published at `https://flashmovies.xyz/sitemap.xml`
 node scripts/sitemap/notify-indexnow.js --live
 ```
 
+## Hosting deploy
+
+`npm run deploy` builds the site, runs `npm run sync:sitemap-live` (downloads `https://flashmovies.xyz/sitemap.xml` and its child sitemaps into `dist/`, unchanged), then `firebase deploy --only hosting`.
+
+Firebase Hosting `predeploy` runs `node scripts/sitemap/guard-live.js`. The guard fetches the live sitemap and refuses the deploy if `dist/sitemap.xml` or any child sitemap has an older max `lastmod` or fewer URLs than live. A failed live fetch fails the deploy as well. Set `SITEMAP_GUARD_SKIP=1` to bypass the guard.
+
+`npm run deploy:sitemap` still regenerates sitemaps before the hosting deploy. Existing URLs keep their previous `lastmod`; new URLs use the run date. The guard allows that publish when the generated files are not older or smaller than live.
+
 ## Monthly sitemap deploy
 
 Do this before or with the monthly sitemap deploy. The crawler homepage "Popular titles" block is Worker-only. Do not add it back to the SPA.
