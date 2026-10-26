@@ -5,17 +5,17 @@ const SITE_PLAYER_COLOR = "F5C518";
 export const STREAMING_PROVIDERS: StreamingProvider[] = [
   {
     name: "Premium",
-    url: (type: string, movieId: string) => `https://atlantic.st/embed/${type}/${movieId}`,
+    url: (type: string, movieId: string) => `https://fmov.my/embed/${type}/${movieId}`,
     isEpisodeSlugPartOfSlug: true,
+    params: `color=${SITE_PLAYER_COLOR}`,
     priority: 3,
     description: "Ad-free, Best Quality 👑",
     isPremium: true,
   },
   {
     name: "Premium Backup",
-    url: (type: string, movieId: string) => `https://fmov.my/embed/${type}/${movieId}`,
+    url: (type: string, movieId: string) => `https://atlantic.st/embed/${type}/${movieId}`,
     isEpisodeSlugPartOfSlug: true,
-    params: `color=${SITE_PLAYER_COLOR}`,
     priority: 3,
     description: "Ad-free, Best Quality 👑",
     isPremium: true,
